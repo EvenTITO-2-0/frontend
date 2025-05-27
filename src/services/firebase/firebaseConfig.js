@@ -1,8 +1,8 @@
 export const firebaseConfig = {
-  apiKey: 'AIzaSyBJdOMRxl7_IENGO8LB1lp3moUpPeAVaME',
-  authDomain: 'eventito-c15b3.firebaseapp.com',
-  projectId: 'eventito-c15b3',
-  storageBucket: 'eventito-c15b3.appspot.com',
-  messagingSenderId: '759596783571',
-  appId: '1:759596783571:web:c50892a934e12506698126',
+  apiKey: 'AIzaSyAt3qcR-jl5aP5WnIz-phnzRVCfL2em_ZY',
+  authDomain: 'eventito-2.firebaseapp.com',
+  projectId: 'eventito-2',
+  storageBucket: 'eventito-2.firebasestorage.app',
+  messagingSenderId: '1079125982208',
+  appId: '1:1079125982208:web:7ed3a78468850815a42ce5',
 }
