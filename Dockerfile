@@ -3,6 +3,13 @@ WORKDIR /app
 COPY package*.json ./
 RUN npm install
 COPY . .
+
+# Accept VITE_ build arguments and set them as environment variables for the build
+ARG VITE_USERS_URL
+ARG VITE_EVENTS_URL
+ENV VITE_USERS_URL=$VITE_USERS_URL
+ENV VITE_EVENTS_URL=$VITE_EVENTS_URL
+
 RUN npm run build
 
 FROM node:18-slim
