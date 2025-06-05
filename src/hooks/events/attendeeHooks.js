@@ -80,12 +80,24 @@ export function useNewPayment() {
         queryKey: ['getMyInscription', { eventId }],
         queryFn: async () => await getInscriptionWithPayments(eventId),
       })
+
+      if (paymentData.payment_method === 'mercadopago') {
+        return await apiPutInscriptionPayment(
+          eventId,
+          inscription.id,
+          paymentData
+        )
+      }
+
       const res = await apiPutInscriptionPayment(
         eventId,
         inscription.id,
         paymentData
       )
-      await uploadFile(res.data.upload_url, paymentData.file)
+      if (paymentData.file) {
+        await uploadFile(res.data.upload_url, paymentData.file)
+      }
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

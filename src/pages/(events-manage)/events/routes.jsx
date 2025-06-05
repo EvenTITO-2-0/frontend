@@ -12,6 +12,9 @@ import NewPaymentPage from './[id]/roles/attendee/new-payment'
 import NewWorkPage from './[id]/roles/author/new-work'
 import ViewWorkPage from './[id]/roles/author/works'
 import ProtectedRoute from './protection'
+import PaymentSuccessPage from './[id]/payments/success/page'
+import PaymentFailurePage from './[id]/payments/failure/page'
+import PaymentPendingPage from './[id]/payments/pending/page'
 
 export default function RoutesEvents() {
   return (
@@ -71,6 +74,19 @@ export default function RoutesEvents() {
       <Route
         path="/events/:id/roles/author/new-work"
         element={<NewWorkPage />}
+      />
+
+      <Route
+        path="/events/:id/payments/success"
+        element={<PaymentSuccessPage />}
+      />
+      <Route
+        path="/events/:id/payments/failure"
+        element={<PaymentFailurePage />}
+      />
+      <Route
+        path="/events/:id/payments/pending"
+        element={<PaymentPendingPage />}
       />
     </Routes>
   )
