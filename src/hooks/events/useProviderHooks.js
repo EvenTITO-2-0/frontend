@@ -1,5 +1,5 @@
 import { useMutation, useQuery } from '@tanstack/react-query'
-import { eventsClient } from '@/services/api/events/client'
+import { eventsClient } from '@/services/api/clients'
 
 export const useLinkProviderAccount = (eventId) => {
   return useMutation({
