@@ -10,7 +10,7 @@ import TalksDataPage from './[id]/talks'
 import OrganizerActivitiesPage from './[id]/activities'
 import InfoConfigPage from './[id]/info'
 import AdminConfigPage from './[id]/administration'
-import PaymentsConfigPage from './[id]/payments'
+import PaymentsConfigPage from './[id]/payments/page'
 
 export default function RoutesOrganization() {
   return (
