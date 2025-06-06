@@ -14,12 +14,32 @@ export const useLinkProviderAccount = (eventId) => {
 }
 
 export const useGetProviderStatus = (eventId) => {
+  console.log('useGetProviderStatus - Hook called with eventId:', eventId)
+
   return useQuery({
     queryKey: ['provider-status', eventId],
     queryFn: async () => {
-      const response = await eventsClient.get(`/${eventId}/provider/status`)
-      return response.data
+      console.log(
+        'useGetProviderStatus - Fetching provider status for eventId:',
+        eventId
+      )
+      try {
+        const response = await eventsClient.get(`/${eventId}/provider/status`)
+        console.log(
+          'useGetProviderStatus - Provider status response:',
+          response.data
+        )
+        return response.data
+      } catch (error) {
+        console.error(
+          'useGetProviderStatus - Error fetching provider status:',
+          error
+        )
+        throw error
+      }
     },
     enabled: !!eventId,
+    staleTime: 30000, // Mantener los datos frescos por 30 segundos
+    cacheTime: 60000, // Mantener en caché por 1 minuto
   })
 }

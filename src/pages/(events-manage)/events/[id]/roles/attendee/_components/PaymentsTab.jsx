@@ -16,27 +16,71 @@ import { useNavigate } from 'react-router-dom'
 import { useGetProviderStatus } from '@/hooks/events/useProviderHooks'
 import { getEventId } from '@/lib/utils'
 import MercadoPagoPayment from './MercadoPagoPayment'
+import { useEffect } from 'react'
 
 export default function PaymentsTab({ inscription }) {
   const navigator = useNavigator()
   const navigate = useNavigate()
   const eventId = getEventId()
-  const { data: providerStatus } = useGetProviderStatus(eventId)
+  const {
+    data: providerStatus,
+    isLoading: isLoadingProvider,
+    error: providerError,
+  } = useGetProviderStatus(eventId)
 
-  const payments = inscription.payments
+  const payments = inscription.payments || []
   const hasActiveProvider = providerStatus?.account_status === 'ACTIVE'
+  const hasPendingPayments = payments.some(
+    (payment) => payment.status === 'PENDING'
+  )
+
+  useEffect(() => {
+    console.log('PaymentsTab - Provider Status:', {
+      status: providerStatus,
+      isLoading: isLoadingProvider,
+      error: providerError,
+      hasActiveProvider,
+      payments: payments,
+    })
+  }, [
+    providerStatus,
+    isLoadingProvider,
+    providerError,
+    hasActiveProvider,
+    payments,
+  ])
+
+  if (isLoadingProvider) {
+    console.log('PaymentsTab - Loading provider status...')
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Cargando estado del proveedor...</CardTitle>
+        </CardHeader>
+      </Card>
+    )
+  }
+
+  if (providerError) {
+    console.error('PaymentsTab - Provider error:', providerError)
+    return (
+      <Card>
+        <CardHeader>
+          <CardTitle>Error al cargar el estado del proveedor</CardTitle>
+        </CardHeader>
+      </Card>
+    )
+  }
 
   return (
     <Card>
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Mis pagos</span>
-          {!hasActiveProvider && (
+          {hasActiveProvider && !hasPendingPayments && (
             <Button
               onClick={() =>
-                navigator.fowardWithState('/new-payment', {
-                  state: { inscriptionId: inscription.id },
-                })
+                navigate(`/events/${eventId}/roles/attendee/new-payment`)
               }
             >
               <PlusIcon className="mr-2 h-4 w-4" />
@@ -47,57 +91,98 @@ export default function PaymentsTab({ inscription }) {
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
-          {payments.map((payment) => (
-            <div key={payment.id}>
-              {hasActiveProvider ? (
-                <MercadoPagoPayment
-                  payment={payment}
-                  inscription={inscription}
-                />
-              ) : (
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Nombre</TableHead>
-                      <TableHead>Estado</TableHead>
-                      <TableHead>Fecha</TableHead>
-                      <TableHead>Acciones</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    <TableRow>
-                      <TableCell>{payment.name}</TableCell>
-                      <TableCell>
-                        <span className="capitalize">
-                          {PAYMENT_STATUS_LABELS[payment.status]}
-                        </span>
-                      </TableCell>
-                      <TableCell>
-                        {format(payment.date, 'DD/MM/YYYY')}
-                      </TableCell>
-                      <TableCell>
-                        {payment.status === 'PENDING_APPROVAL' && (
-                          <Button
-                            variant="outline"
-                            onClick={() =>
-                              navigator.fowardWithState('/new-payment', {
-                                state: {
-                                  inscriptionId: inscription.id,
-                                  paymentId: payment.id,
-                                },
-                              })
-                            }
-                          >
-                            Actualizar pago
-                          </Button>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  </TableBody>
-                </Table>
-              )}
+          {payments.length === 0 ? (
+            <div className="text-center text-gray-500">
+              No hay pagos registrados
             </div>
-          ))}
+          ) : (
+            payments.map((payment) => (
+              <div key={payment.id}>
+                {hasActiveProvider && payment.status === 'PENDING' && (
+                  <>
+                    <MercadoPagoPayment
+                      payment={payment}
+                      inscription={inscription}
+                    />
+                    <Table className="mt-4">
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Nombre</TableHead>
+                          <TableHead>Estado</TableHead>
+                          <TableHead>Fecha</TableHead>
+                          <TableHead>Acciones</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        <TableRow>
+                          <TableCell>{payment.name}</TableCell>
+                          <TableCell>
+                            {PAYMENT_STATUS_LABELS[payment.status]}
+                          </TableCell>
+                          <TableCell>
+                            {format(payment.created_at, 'DD/MM/YYYY')}
+                          </TableCell>
+                          <TableCell>
+                            {payment.status === 'PENDING' && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() =>
+                                  navigate(
+                                    `/events/${eventId}/roles/attendee/new-payment`
+                                  )
+                                }
+                              >
+                                Reintentar pago
+                              </Button>
+                            )}
+                          </TableCell>
+                        </TableRow>
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
+                {(!hasActiveProvider || payment.status !== 'PENDING') && (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Nombre</TableHead>
+                        <TableHead>Estado</TableHead>
+                        <TableHead>Fecha</TableHead>
+                        <TableHead>Acciones</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      <TableRow>
+                        <TableCell>{payment.name}</TableCell>
+                        <TableCell>
+                          {PAYMENT_STATUS_LABELS[payment.status]}
+                        </TableCell>
+                        <TableCell>
+                          {format(payment.created_at, 'DD/MM/YYYY')}
+                        </TableCell>
+                        <TableCell>
+                          {payment.status === 'PENDING' && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() =>
+                                navigate(
+                                  `/events/${eventId}/roles/attendee/new-payment`
+                                )
+                              }
+                            >
+                              Reintentar pago
+                            </Button>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+            ))
+          )}
         </div>
       </CardContent>
     </Card>

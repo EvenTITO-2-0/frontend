@@ -8,26 +8,61 @@ import { getEventId } from '@/lib/utils'
 
 export default function MercadoPagoPayment({ payment, inscription }) {
   const [mp, setMp] = useState(null)
+  const [sdkLoaded, setSdkLoaded] = useState(false)
   const { toast } = useToast()
   const eventId = getEventId()
-  const { data: providerStatus } = useGetProviderStatus(eventId)
+  const { data: providerStatus, isLoading: isLoadingProvider } =
+    useGetProviderStatus(eventId)
   const { mutateAsync: createPayment, isPending } = useNewPayment()
 
   useEffect(() => {
-    // Cargar el SDK de Mercado Pago
-    const script = document.createElement('script')
-    script.src = 'https://sdk.mercadopago.com/js/v2'
-    script.async = true
-    script.onload = () => {
-      const mp = new window.MercadoPago(providerStatus?.public_key)
-      setMp(mp)
-    }
-    document.body.appendChild(script)
+    console.log('Provider Status:', providerStatus)
+    console.log('Is Loading Provider:', isLoadingProvider)
 
-    return () => {
-      document.body.removeChild(script)
+    if (!providerStatus?.public_key) {
+      console.log('No public key available')
+      return
     }
-  }, [providerStatus?.public_key])
+
+    // Cargar el SDK de Mercado Pago solo si no está cargado y tenemos la public key
+    if (!sdkLoaded && providerStatus.public_key) {
+      console.log('Loading Mercado Pago SDK...')
+      const script = document.createElement('script')
+      script.src = 'https://sdk.mercadopago.com/js/v2'
+      script.async = true
+      script.onload = () => {
+        console.log('SDK loaded successfully')
+        try {
+          const mp = new window.MercadoPago(providerStatus.public_key)
+          setMp(mp)
+          setSdkLoaded(true)
+        } catch (error) {
+          console.error('Error initializing MercadoPago:', error)
+          toast({
+            title: 'Error',
+            description: 'Error al inicializar Mercado Pago',
+            variant: 'destructive',
+          })
+        }
+      }
+      script.onerror = (error) => {
+        console.error('Error loading SDK:', error)
+        toast({
+          title: 'Error',
+          description: 'Error al cargar Mercado Pago',
+          variant: 'destructive',
+        })
+      }
+      document.body.appendChild(script)
+
+      return () => {
+        if (script.parentNode) {
+          document.body.removeChild(script)
+        }
+        setSdkLoaded(false)
+      }
+    }
+  }, [providerStatus?.public_key, sdkLoaded, toast])
 
   const handlePayment = async () => {
     try {
@@ -49,6 +84,7 @@ export default function MercadoPagoPayment({ payment, inscription }) {
         })
       }
     } catch (error) {
+      console.error('Payment error:', error)
       toast({
         title: 'Error',
         description: 'Ocurrió un error al procesar el pago',
@@ -57,7 +93,21 @@ export default function MercadoPagoPayment({ payment, inscription }) {
     }
   }
 
-  if (!providerStatus?.account_status === 'ACTIVE') {
+  if (isLoadingProvider) {
+    console.log('Loading provider status...')
+    return null
+  }
+
+  if (
+    !providerStatus?.account_status ||
+    providerStatus.account_status !== 'ACTIVE'
+  ) {
+    console.log('Provider not active:', providerStatus?.account_status)
+    return null
+  }
+
+  if (!mp || !sdkLoaded) {
+    console.log('MercadoPago not initialized:', { mp: !!mp, sdkLoaded })
     return null
   }
 
