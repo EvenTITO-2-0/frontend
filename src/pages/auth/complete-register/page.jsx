@@ -6,6 +6,7 @@ import { useSelector } from 'react-redux'
 import { useCompleteRegister } from '@/hooks/auth/authHooks'
 import ButtonWithLoading from '@/components/ButtonWithLoading'
 import ContainerAuthPage from '../_components/ContainerAuthPage'
+import { isAuthenticated } from '@/lib/routes/isAuthenticated.js'
 
 export default function CompleteRegisterPage() {
   const [name, setName] = useState('')
@@ -38,8 +39,8 @@ export default function CompleteRegisterPage() {
     }
   }
 
-  if (currentUser) {
-    return <Navigate to="/home" replace />
+  if (isAuthenticated()) {
+    return <Navigate to={'/home'} />
   }
 
   if (!idUser || !email) {
