@@ -8,6 +8,11 @@ export default defineConfig({
   css: {
     postcss: './postcss.config.js',
   },
+  server: {
+    watch: {
+      usePolling: true,
+    }
+  },
   resolve: {
     alias: {
       '@': path.resolve(__dirname, './src'),
