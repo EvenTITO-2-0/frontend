@@ -10,6 +10,7 @@ import {
 import ButtonWithLoading from '@/components/ButtonWithLoading'
 import ContainerAuthPage from '../_components/ContainerAuthPage'
 import GoogleButton from '../_components/GoogleButton'
+import { isAuthenticated } from '@/lib/routes/isAuthenticated.js'
 
 export default function SignupPage() {
   const [email, setEmail] = useState('')
@@ -17,6 +18,8 @@ export default function SignupPage() {
   const [repeatPassword, setRepeatPassword] = useState('')
   const [error, setError] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
+  const [redirectToCompleteRegister, setRedirectToCompleteRegister] =
+    useState(false)
   const { currentUser } = useSelector((state) => state.user)
   const { idUser, email: authEmail } = useSelector((state) => state.auth)
   const validationPasswordRegex =
@@ -27,6 +30,7 @@ export default function SignupPage() {
 
   const onSubmit = async (e) => {
     e.preventDefault()
+    setErrorMessage('')
     if (password !== repeatPassword) {
       setError(true)
       setErrorMessage('Las contraseñas no coinciden')
@@ -41,6 +45,7 @@ export default function SignupPage() {
     }
     try {
       await signupMutation.mutateAsync({ email, password })
+      setRedirectToCompleteRegister(true)
     } catch (error) {
       setError(true)
       const errorCode = error.code
@@ -70,11 +75,17 @@ export default function SignupPage() {
     }
   }
 
-  if (currentUser) {
-    return <Navigate to="/home" replace />
+  console.log('Constantes de validación signup:', {
+    currentUser,
+    idUser,
+    authEmail,
+  })
+
+  if (isAuthenticated()) {
+    return <Navigate to={'/home'} />
   }
 
-  if (idUser && authEmail) {
+  if (redirectToCompleteRegister) {
     return <Navigate to="/complete-register" replace />
   }
 
