@@ -6,14 +6,28 @@ import CalendarTable from '@/pages/(events-manage)/manage/[id]/calendar/_compone
 export default function Page({ event }) {
   return (
     <ContainerPage>
-      <TitlePage
-        title={'Calendario'}
-        rightComponent={<RoomDialog/>}
-      />
+      <TitlePage title={'Calendario'} rightComponent={<RoomDialog />} />
       <div className="space-y-6 pt-6">
-        <h1> Hello </h1>
-        <h1 className="text-xl font-semibold mb-2"> Betoño troluvi</h1>
-        <CalendarTable></CalendarTable>
+        <p>
+          En esta página puedes configurar el calendario del evento. Los
+          elementos disponibles son:
+        </p>
+        <ul className="list-disc pl-5">
+          <li>
+            <strong>Slots:</strong> Espacios para asignar presentaciones de
+            nuevos trabajos.
+          </li>
+          <li>
+            <strong>Plenarias:</strong> Presentaciones únicas que bloquean otras
+            salas.
+          </li>
+          <li>
+            <strong>Breaks:</strong> Descansos sin presentaciones en ninguna
+            sala.
+          </li>
+        </ul>
+        <h2 className="text-xl font-semibold mb-2">Agregar nuevo item</h2>
+        <CalendarTable />
       </div>
     </ContainerPage>
   )

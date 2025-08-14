@@ -1,75 +1,125 @@
-import { useState } from 'react'
+import React, { useState } from 'react'
+import FullCalendar from '@fullcalendar/react'
+import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
+import timeGridPlugin from '@fullcalendar/timegrid'
+import dayGridPlugin from '@fullcalendar/daygrid'
+import interactionPlugin from '@fullcalendar/interaction'
 
-export default function CalendarTable({}) {
-  const [tipo, setTipo] = useState("Slot");
-  const [duracion, setDuracion] = useState(120);
-  const [presentaciones, setPresentaciones] = useState(6);
-  const [agenda, setAgenda] = useState([
-    { start: "9:00 AM", end: "10:00 AM", tipo: "Break" },
-    { start: "10:00 AM", end: "13:00 PM", tipo: "Slot" },
-    { start: "13:00 PM", end: "14:00 PM", tipo: "Break" }
-  ]);
-  const handleAgregar = () => {
-    // Just creating a placeholder time range for the new item
-    // In a real app, you'd calculate times based on previous entries
-    const newItem = {
-      start: "14:00 PM",
-      end: "15:00 PM",
-      tipo: tipo
-    };
-    setAgenda([...agenda, newItem]);
-  };
-  const handleRemove = (index) => {
-    setAgenda(agenda.filter((_, i) => i !== index));
-  };
+export default function ResourceCalendar() {
+  const [events, setEvents] = useState([
+    {
+      id: '1',
+      resourceId: 'a',
+      title: 'Slot',
+      start: '2025-08-14T10:00:00',
+      end: '2025-08-14T12:00:00',
+    },
+    {
+      id: '2',
+      resourceId: 'a',
+      title: 'Break',
+      start: '2025-08-14T12:00:00',
+      end: '2025-08-14T13:00:00',
+    },
+    {
+      id: '3',
+      resourceId: 'a',
+      title: 'Plenaria',
+      start: '2025-08-14T14:00:00',
+      end: '2025-08-14T16:00:00',
+    },
+  ])
+
+  const resources = [{ id: 'a', title: 'Planificacion' }]
+
+  const conferencePeriod = {
+    start: '2025-08-11T00:00:00-03:00',
+    end: '2025-08-16T00:00:00-03:00',
+  }
+
+  const inverseBackground = [
+    {
+      groupId: 'testGroupId',
+      start: conferencePeriod.start.substring(0, 10),
+      end: conferencePeriod.end.substring(0, 10),
+      display: 'inverse-background',
+      backgroundColor: '#595959',
+    },
+  ]
+
+  const isBetweenAllowedDates = (startDate, endDate) => {
+    let result =
+      startDate >= new Date(conferencePeriod.start) &&
+      endDate <= new Date(conferencePeriod.end)
+    console.log(
+      'handleDateSelect' +
+        startDate +
+        ' ' +
+        new Date(conferencePeriod.start) +
+        ' ' +
+        endDate +
+        new Date(conferencePeriod.end) +
+        ' ' +
+        ': ' +
+        result
+    )
+    return result
+  }
+
+  const handleSelectAllow = (selectInfo) => {
+    return isBetweenAllowedDates(selectInfo.start, selectInfo.end)
+  }
+
+  const handleEventClick = (info) => {
+    console.log('info.date: ' + JSON.stringify(info, null, 2))
+    console.log('TESTOOO: ' + info.dateStr)
+    // if (!isBetweenAllowedDates(info.event.start, info.event.end)) {
+    //   console.log("is not isBetweenAllowedDates")
+    //   return
+    // }
+    console.log('is between isBetweenAllowedDates')
+    if (window.confirm(`¿Eliminar el evento "${info.event.title}"?`)) {
+      setEvents((prev) => prev.filter((e) => e.id !== info.event.id))
+    }
+  }
+
+  const handleDateClick = (info) => {
+    console.log('info.date: ' + JSON.stringify(info, null, 2))
+    console.log('TESTOOOXDDASDASDSAD: ' + info.dateStr)
+    console.log('is between isBetweenAllowedDates1')
+    if (!isBetweenAllowedDates(info.date, info.date)) {
+      console.log('is not isBetweenAllowedDates')
+      return
+    }
+    if (window.confirm(`Agregar un evento en "${info.dateStr}"?`)) {
+      setEvents((prev) => prev.filter((e) => e.id !== info.event.id))
+    }
+  }
 
   return (
-    <div style={{ display: "flex", padding: "20px" }}>
-      {/* Left Column */}
-      <div style={{ marginRight: "20px", flex: 1 }}>
-        <h3>Agregar item</h3>
-        <div>
-          <label>Tipo</label>
-          <select value={tipo} onChange={(e) => setTipo(e.target.value)}>
-            <option value="Slot">Slot</option>
-            <option value="Break">Break</option>
-            <option value="Plenaria">Plenaria</option>
-          </select>
-        </div>
-        <div>
-          <label>Duración (minutos)</label>
-          <input
-            type="number"
-            value={duracion}
-            onChange={(e) => setDuracion(Number(e.target.value))}
-          />
-        </div>
-        <div>
-          <label>Cantidad de presentaciones</label>
-          <input
-            type="number"
-            value={presentaciones}
-            onChange={(e) => setPresentaciones(Number(e.target.value))}
-          />
-        </div>
-        <button onClick={handleAgregar}>Agregar</button>
-      </div>
-
-      {/* Right Column */}
-      <div style={{ flex: 2 }}>
-        <h3>Agenda</h3>
-        <div>
-          {agenda.map((item, index) => (
-            <div key={index} style={{ border: "1px solid #ccc", margin: "5px", padding: "10px", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-              <span>
-                {item.start} - {item.end} <strong>{item.tipo}</strong>
-              </span>
-              <button onClick={() => handleRemove(index)}>X</button>
-            </div>
-          ))}
-        </div>
-        <button>Continuar</button>
-      </div>
-    </div>
-  );
+    <FullCalendar
+      schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+      plugins={[
+        resourceTimeGridPlugin,
+        timeGridPlugin,
+        dayGridPlugin,
+        interactionPlugin,
+      ]}
+      initialView="resourceTimeGridDay"
+      selectable={true}
+      selectMirror={true}
+      editable={true}
+      selectAllow={handleSelectAllow}
+      eventResizableFromStart={true}
+      headerToolbar={{
+        left: 'prev,next today',
+        center: 'title',
+        right: 'resourceTimeGridDay,dayGridMonth',
+      }}
+      resources={resources}
+      events={[...events, ...inverseBackground]}
+      eventClick={handleEventClick}
+      dateClick={handleDateClick}
+    />
+  )
 }
