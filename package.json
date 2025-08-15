@@ -101,7 +101,8 @@
     "@fullcalendar/resource-timegrid": "^6.x.x",
     "@fullcalendar/timegrid": "^6.x.x",
     "@fullcalendar/react": "^6.x.x",
-    "@fullcalendar/interaction": "^6.x.x"
+    "@fullcalendar/interaction": "^6.x.x",
+    "@fullcalendar/bootstrap5": "^6.x.x"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",
