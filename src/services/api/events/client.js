@@ -1,9 +1,7 @@
 import { HTTPClient } from '../HTTPClient'
 
-// Crear una instancia del cliente HTTP específica para eventos
 export const eventsClient = new HTTPClient('/api/events')
 
-// Opcionalmente, puedes agregar interceptores específicos para eventos aquí
 eventsClient.interceptors.request.use(
   (config) => {
     return config
@@ -18,7 +16,6 @@ eventsClient.interceptors.response.use(
     return response
   },
   (error) => {
-    // Manejar errores específicos de eventos aquí
     return Promise.reject(error)
   }
 )

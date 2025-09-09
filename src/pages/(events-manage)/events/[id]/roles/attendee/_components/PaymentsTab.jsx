@@ -77,14 +77,15 @@ export default function PaymentsTab({ inscription }) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Mis pagos</span>
-          {hasActiveProvider && !hasPendingPayments && (
+          {/* Mostrar botón también en modo testing (sin proveedor activo) */}
+          {!hasPendingPayments && (
             <Button
               onClick={() =>
                 navigate(`/events/${eventId}/roles/attendee/new-payment`)
               }
             >
               <PlusIcon className="mr-2 h-4 w-4" />
-              Nuevo pago
+              {hasActiveProvider ? 'Nuevo pago' : 'Nuevo pago de prueba'}
             </Button>
           )}
         </CardTitle>

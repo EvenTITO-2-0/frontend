@@ -39,7 +39,7 @@ export const useGetProviderStatus = (eventId) => {
       }
     },
     enabled: !!eventId,
-    staleTime: 30000, // Mantener los datos frescos por 30 segundos
-    cacheTime: 60000, // Mantener en caché por 1 minuto
+    staleTime: 30000,
+    cacheTime: 60000,
   })
 }

@@ -14,7 +14,6 @@ export default function PaymentPendingPage() {
   const eventId = getEventId()
 
   useEffect(() => {
-    // Invalidar la consulta de inscripción para actualizar el estado
     queryClient.invalidateQueries({
       queryKey: ['getMyInscription', { eventId }],
     })

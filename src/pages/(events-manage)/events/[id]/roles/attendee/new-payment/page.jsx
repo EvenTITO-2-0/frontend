@@ -9,6 +9,8 @@ import { Button } from '@/components/ui/button'
 import { useToast } from '@/components/ui/use-toast'
 import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 
 export default function Page({ eventData }) {
   const dispatch = useDispatch()
@@ -19,6 +21,7 @@ export default function Page({ eventData }) {
     useGetProviderStatus(eventId)
   const { mutateAsync: newPayment, isPending } = useNewPayment()
   const [selectedFare, setSelectedFare] = useState(null)
+  const [proofFile, setProofFile] = useState(null)
 
   const hasActiveProvider = providerStatus?.account_status === 'ACTIVE'
 
@@ -31,7 +34,7 @@ export default function Page({ eventData }) {
       })
       navigate(`/events/${eventId}/roles/attendee`)
     }
-  }, [isLoadingProvider, hasActiveProvider, navigate, eventId, toast])
+  }, [isLoadingProvider, hasActiveProvider])
 
   const handleFareSelection = (fare) => {
     setSelectedFare(fare)
@@ -48,20 +51,49 @@ export default function Page({ eventData }) {
     }
 
     try {
-      const paymentData = {
-        payment_method: 'mercadopago',
-        payment_name: selectedFare.name,
-        payment_amount: selectedFare.value,
+      const baseData = {
+        fare_name: selectedFare.name,
+        works: [],
       }
 
-      const result = await newPayment({ paymentData })
+      if (hasActiveProvider) {
+        const result = await newPayment({ paymentData: baseData })
+        if (result?.data?.checkout_url) {
+          window.location.href = result.data.checkout_url
+        } else {
+          toast({
+            title: 'Error',
+            description: 'No se pudo iniciar el pago con Mercado Pago',
+            variant: 'destructive',
+          })
+        }
+        return
+      }
 
-      if (result?.data?.init_point) {
-        window.location.href = result.data.init_point
+      if (!proofFile) {
+        toast({
+          title: 'Falta comprobante',
+          description:
+            'Adjuntá un comprobante para registrar el pago de prueba',
+          variant: 'destructive',
+        })
+        return
+      }
+
+      const result = await newPayment({
+        paymentData: { ...baseData, file: proofFile },
+      })
+      if (result?.data?.id) {
+        toast({
+          title: 'Pago registrado',
+          description: 'Se subió el comprobante correctamente',
+        })
+        dispatch(reset())
+        navigate(`/events/${eventId}/roles/attendee`)
       } else {
         toast({
           title: 'Error',
-          description: 'No se pudo iniciar el pago con Mercado Pago',
+          description: 'No se pudo registrar el pago',
           variant: 'destructive',
         })
       }
@@ -85,14 +117,14 @@ export default function Page({ eventData }) {
     )
   }
 
-  if (!hasActiveProvider) {
-    return null
-  }
-
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Nuevo pago con Mercado Pago</CardTitle>
+        <CardTitle>
+          {hasActiveProvider
+            ? 'Nuevo pago con Mercado Pago'
+            : 'Nuevo pago (modo testing sin tokens)'}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-6">
@@ -120,6 +152,20 @@ export default function Page({ eventData }) {
             ))}
           </div>
 
+          {!hasActiveProvider && (
+            <div className="space-y-2">
+              <Label htmlFor="proofFile">Comprobante (archivo de prueba)</Label>
+              <Input
+                id="proofFile"
+                type="file"
+                onChange={(e) => setProofFile(e.target.files?.[0] || null)}
+              />
+              <p className="text-xs text-muted-foreground">
+                En modo testing, se registra el pago adjuntando un comprobante.
+              </p>
+            </div>
+          )}
+
           <div className="flex justify-end space-x-4">
             <Button
               variant="outline"
@@ -134,7 +180,11 @@ export default function Page({ eventData }) {
               onClick={handlePayment}
               disabled={isPending || !selectedFare}
             >
-              {isPending ? 'Procesando...' : 'Pagar con Mercado Pago'}
+              {isPending
+                ? 'Procesando...'
+                : hasActiveProvider
+                  ? 'Pagar con Mercado Pago'
+                  : 'Registrar pago de prueba'}
             </Button>
           </div>
         </div>

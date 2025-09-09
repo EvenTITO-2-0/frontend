@@ -8,7 +8,7 @@ type ToasterToast = ToastProps & {
   id: string
   title?: React.ReactNode
   description?: React.ReactNode
-  action?: React.ReactNode // Cambiado ToastActionElement a React.ReactNode para corregir el error
+  action?: React.ReactNode
 }
 
 const actionTypes = {

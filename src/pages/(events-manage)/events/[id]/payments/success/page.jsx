@@ -13,7 +13,6 @@ export default function PaymentSuccessPage() {
   const eventId = getEventId()
 
   useEffect(() => {
-    // Invalidar la consulta de inscripción para actualizar el estado
     queryClient.invalidateQueries({
       queryKey: ['getMyInscription', { eventId }],
     })
@@ -23,7 +22,6 @@ export default function PaymentSuccessPage() {
       description: 'Tu pago ha sido procesado correctamente.',
     })
 
-    // Redirigir después de 3 segundos
     const timeout = setTimeout(() => {
       navigate(`/events/${eventId}/roles/attendee`)
     }, 3000)

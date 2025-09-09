@@ -10,12 +10,13 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert'
-import { AlertCircle, CheckCircle2 } from 'lucide-react'
+import { AlertCircle, CheckCircle2, FlaskConical } from 'lucide-react'
 import { useEvent } from '@/lib/layout'
 import {
   useLinkProviderAccount,
   useGetProviderStatus,
 } from '@/hooks/events/useProviderHooks'
+import { eventsClient } from '@/services/api/clients'
 
 export default function PaymentsConfigPage() {
   const eventData = useEvent()
@@ -24,9 +25,8 @@ export default function PaymentsConfigPage() {
     refresh_token: '',
     public_key: '',
     account_id: '',
-    marketplace_fee: 0,
-    marketplace_fee_type: 'percentage',
   })
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
   const { mutateAsync: linkAccount, isPending: isLinking } =
     useLinkProviderAccount(eventData.id)
@@ -48,6 +48,19 @@ export default function PaymentsConfigPage() {
       ...prev,
       [name]: value,
     }))
+  }
+
+  const connectWithMercadoPago = async () => {
+    try {
+      setIsRedirecting(true)
+      const { data: url } = await eventsClient.get(
+        `/${eventData.id}/provider/oauth/url`
+      )
+      window.location.href = url
+    } catch (e) {
+      console.error('No se pudo obtener URL de OAuth', e)
+      setIsRedirecting(false)
+    }
   }
 
   if (isLoadingStatus) {
@@ -73,81 +86,86 @@ export default function PaymentsConfigPage() {
           </AlertDescription>
         </Alert>
       ) : (
-        <Card>
-          <CardHeader>
-            <CardTitle>Vincular cuenta de Mercado Pago</CardTitle>
-            <CardDescription>
-              Para recibir pagos de las inscripciones, necesitas vincular tu
-              cuenta de Mercado Pago. Obtén tus credenciales desde el panel de
-              desarrolladores de Mercado Pago.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div className="space-y-2">
-                  <Label htmlFor="access_token">Access Token</Label>
-                  <Input
-                    id="access_token"
-                    name="access_token"
-                    value={formData.access_token}
-                    onChange={handleInputChange}
-                    required
-                  />
+        <>
+          <Alert className="bg-yellow-50 border-yellow-200">
+            <FlaskConical className="h-4 w-4 text-yellow-600" />
+            <AlertTitle>Modo testing sin tokens</AlertTitle>
+            <AlertDescription>
+              Podés probar pagos sin vincular credenciales: al crear un pago el
+              sistema te pedirá subir un comprobante y lo registrará como pago
+              de prueba.
+            </AlertDescription>
+          </Alert>
+
+          <div className="flex gap-3 items-center">
+            <Button onClick={connectWithMercadoPago} disabled={isRedirecting}>
+              {isRedirecting ? 'Conectando...' : 'Conectar con Mercado Pago'}
+            </Button>
+            <span className="text-sm text-muted-foreground">
+              o completar manualmente
+            </span>
+          </div>
+
+          <Card>
+            <CardHeader>
+              <CardTitle>Vincular cuenta de Mercado Pago (manual)</CardTitle>
+              <CardDescription>
+                Alternativa manual usando credenciales del panel de
+                desarrolladores.
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="access_token">Access Token</Label>
+                    <Input
+                      id="access_token"
+                      name="access_token"
+                      value={formData.access_token}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="refresh_token">
+                      Refresh Token (opcional)
+                    </Label>
+                    <Input
+                      id="refresh_token"
+                      name="refresh_token"
+                      value={formData.refresh_token}
+                      onChange={handleInputChange}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="public_key">Public Key</Label>
+                    <Input
+                      id="public_key"
+                      name="public_key"
+                      value={formData.public_key}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="account_id">Account ID</Label>
+                    <Input
+                      id="account_id"
+                      name="account_id"
+                      value={formData.account_id}
+                      onChange={handleInputChange}
+                      required
+                    />
+                  </div>
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="refresh_token">Refresh Token</Label>
-                  <Input
-                    id="refresh_token"
-                    name="refresh_token"
-                    value={formData.refresh_token}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="public_key">Public Key</Label>
-                  <Input
-                    id="public_key"
-                    name="public_key"
-                    value={formData.public_key}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="account_id">Account ID</Label>
-                  <Input
-                    id="account_id"
-                    name="account_id"
-                    value={formData.account_id}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="marketplace_fee">
-                    Comisión del Marketplace (%)
-                  </Label>
-                  <Input
-                    id="marketplace_fee"
-                    name="marketplace_fee"
-                    type="number"
-                    min="0"
-                    max="100"
-                    step="0.1"
-                    value={formData.marketplace_fee}
-                    onChange={handleInputChange}
-                    required
-                  />
-                </div>
-              </div>
-              <Button type="submit" disabled={isLinking}>
-                {isLinking ? 'Vinculando...' : 'Vincular cuenta'}
-              </Button>
-            </form>
-          </CardContent>
-        </Card>
+                <Button type="submit" disabled={isLinking}>
+                  {isLinking ? 'Vinculando...' : 'Vincular cuenta'}
+                </Button>
+              </form>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   )
