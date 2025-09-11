@@ -97,74 +97,11 @@ export default function PaymentsConfigPage() {
             </AlertDescription>
           </Alert>
 
-          <div className="flex gap-3 items-center">
+          <div className="flex gap-3 items-center justify-center">
             <Button onClick={connectWithMercadoPago} disabled={isRedirecting}>
               {isRedirecting ? 'Conectando...' : 'Conectar con Mercado Pago'}
             </Button>
-            <span className="text-sm text-muted-foreground">
-              o completar manualmente
-            </span>
           </div>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Vincular cuenta de Mercado Pago (manual)</CardTitle>
-              <CardDescription>
-                Alternativa manual usando credenciales del panel de
-                desarrolladores.
-              </CardDescription>
-            </CardHeader>
-            <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="access_token">Access Token</Label>
-                    <Input
-                      id="access_token"
-                      name="access_token"
-                      value={formData.access_token}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="refresh_token">
-                      Refresh Token (opcional)
-                    </Label>
-                    <Input
-                      id="refresh_token"
-                      name="refresh_token"
-                      value={formData.refresh_token}
-                      onChange={handleInputChange}
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="public_key">Public Key</Label>
-                    <Input
-                      id="public_key"
-                      name="public_key"
-                      value={formData.public_key}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="account_id">Account ID</Label>
-                    <Input
-                      id="account_id"
-                      name="account_id"
-                      value={formData.account_id}
-                      onChange={handleInputChange}
-                      required
-                    />
-                  </div>
-                </div>
-                <Button type="submit" disabled={isLinking}>
-                  {isLinking ? 'Vinculando...' : 'Vincular cuenta'}
-                </Button>
-              </form>
-            </CardContent>
-          </Card>
         </>
       )}
     </div>
