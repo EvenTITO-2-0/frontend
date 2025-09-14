@@ -4,155 +4,200 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
+  DialogFooter,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import { format, parseISO, addMilliseconds } from 'date-fns'
 import {
   Select,
-  SelectContent,
-  SelectItem,
   SelectTrigger,
   SelectValue,
+  SelectContent,
+  SelectItem,
 } from '@/components/ui/select'
-
-const EVENT_TYPES = [
-  { value: 'default', label: 'Default' },
-  { value: 'break', label: 'Break' },
-  { value: 'plenary', label: 'Plenary' },
-]
 
 export default function EventDialog({
   open,
   onOpenChange,
-  onConfirm,
-  initialData,
+  onSave,
+  onDelete,
+  eventInfo,
+  isNewEvent,
+  lastSelectedType,
+  lastDurations,
 }) {
-  const [form, setForm] = useState({
-    name: '',
-    start: '',
-    end: '',
-    type: 'default',
+  const [formData, setFormData] = useState({
+    title: 'Intervalo',
+    date: '',
+    startTime: '',
+    endTime: '',
+    type: 'slot',
   })
 
+  // Actualiza la información del formulario cuando se abre el diálogo o cambia eventInfo
   useEffect(() => {
-    if (initialData) {
-      setForm(initialData)
-    } else {
-      setForm({ name: '', start: '', end: '', type: 'default' })
+    if (open && eventInfo) {
+      if (isNewEvent) {
+        const { startStr, endStr } = eventInfo
+        if (startStr && endStr) {
+          setFormData({
+            title: 'Intervalo',
+            date: format(parseISO(startStr), 'yyyy-MM-dd'),
+            startTime: format(parseISO(startStr), 'HH:mm'),
+            endTime: format(parseISO(endStr), 'HH:mm'),
+            type: lastSelectedType,
+          })
+        }
+      } else {
+        const { title, start, end } = eventInfo
+        if (start && end) {
+          setFormData({
+            title,
+            date: format(start, 'yyyy-MM-dd'),
+            startTime: format(start, 'HH:mm'),
+            endTime: format(end, 'HH:mm'),
+            type: eventInfo.extendedProps?.type || 'slot',
+          })
+        }
+      }
     }
-  }, [initialData, open])
+  }, [open, eventInfo, isNewEvent, lastSelectedType])
 
-  const handleChange = (e) => {
-    const { name, value } = e.target
-    setForm((prev) => ({ ...prev, [name]: value }))
+  const handleInputChange = (e) => {
+    const { id, value } = e.target
+    setFormData((prev) => ({ ...prev, [id]: value }))
   }
 
   const handleTypeChange = (value) => {
-    setForm((prev) => ({ ...prev, type: value }))
+    // Actualiza el tiempo al anteriormente usado cuando se cambia el tipo.
+    if (isNewEvent && formData.date && formData.startTime) {
+      const duration = lastDurations[value]
+      const newEndTime = addMilliseconds(
+        parseISO(`${formData.date}T${formData.startTime}`),
+        duration
+      )
+      setFormData((prev) => ({
+        ...prev,
+        type: value,
+        endTime: format(newEndTime, 'HH:mm'),
+      }))
+    } else {
+      setFormData((prev) => ({
+        ...prev,
+        type: value,
+      }))
+    }
   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault()
-    onConfirm(form)
+  const handleSave = () => {
+    const start = parseISO(`${formData.date}T${formData.startTime}`)
+    const end = parseISO(`${formData.date}T${formData.endTime}`)
+    onSave({
+      id: eventInfo?.id || null,
+      title: formData.title,
+      start,
+      end,
+      type: formData.type,
+    })
     onOpenChange(false)
   }
 
+  const handleDelete = () => {
+    if (onDelete && eventInfo?.id) {
+      onDelete(eventInfo.id)
+      onOpenChange(false)
+    }
+  }
+
+  const isFormValid =
+    formData.title && formData.date && formData.startTime && formData.endTime
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent>
+      <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
-          <DialogTitle>Create event</DialogTitle>
+          <DialogTitle>
+            {isNewEvent ? 'Add New Event' : 'Edit Event'}
+          </DialogTitle>
         </DialogHeader>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <Label htmlFor="name">Name</Label>
+        <div className="space-y-4 py-4">
+          <div className="space-y-2">
+            <Label htmlFor="title">Event Title</Label>
             <Input
-              id="name"
-              name="name"
-              value={form.name}
-              onChange={handleChange}
+              id="title"
+              value={formData.title}
+              onChange={handleInputChange}
               required
-              placeholder="Event name"
+              placeholder="e.g., Team Meeting"
             />
           </div>
-          <div>
-            <Label htmlFor="start">Start</Label>
+          <div className="space-y-2">
+            <Label htmlFor="date">Date</Label>
             <Input
-              id="start"
-              name="start"
-              type="datetime-local"
-              value={form.start}
-              onChange={handleChange}
-              required
+              id="date"
+              type="date"
+              value={formData.date}
+              onChange={handleInputChange}
             />
           </div>
-          <div>
-            <Label htmlFor="end">End</Label>
+          <div className="space-y-2">
+            <Label htmlFor="startTime">Start Time</Label>
             <Input
-              id="end"
-              name="end"
-              type="datetime-local"
-              value={form.end}
-              onChange={handleChange}
-              required
+              id="startTime"
+              type="time"
+              value={formData.startTime}
+              onChange={handleInputChange}
             />
           </div>
-          <div>
+          <div className="space-y-2">
+            <Label htmlFor="endTime">End Time</Label>
+            <Input
+              id="endTime"
+              type="time"
+              value={formData.endTime}
+              onChange={handleInputChange}
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="type">Type</Label>
-            <Select value={form.type} onValueChange={handleTypeChange}>
-              <SelectTrigger id="type">
-                <SelectValue placeholder="Select type" />
+            <Select onValueChange={handleTypeChange} value={formData.type}>
+              <SelectTrigger>
+                <SelectValue placeholder="Select a type" />
               </SelectTrigger>
               <SelectContent>
-                {EVENT_TYPES.map((t) => (
-                  <SelectItem key={t.value} value={t.value}>
-                    {t.label}
-                  </SelectItem>
-                ))}
+                <SelectItem value="slot">Slot</SelectItem>
+                <SelectItem value="break">Break</SelectItem>
+                <SelectItem value="plenary">Plenary</SelectItem>
               </SelectContent>
             </Select>
           </div>
-          <div className="flex justify-end gap-2">
+        </div>
+        <DialogFooter className="sm:justify-between">
+          <div className="flex space-x-2">
+            {!isNewEvent && (
+              <Button
+                type="button"
+                variant="destructive"
+                onClick={handleDelete}
+              >
+                Delete
+              </Button>
+            )}
             <Button
-              variant="outline"
               type="button"
+              variant="outline"
               onClick={() => onOpenChange(false)}
             >
               Cancel
             </Button>
-            <Button type="submit">Create</Button>
           </div>
-        </form>
+          <Button type="button" onClick={handleSave} disabled={!isFormValid}>
+            {isNewEvent ? 'Create Event' : 'Save Changes'}
+          </Button>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )
 }
-
-// In CalendarTable.jsx
-import EventDeleteDialog from './EventDeleteDialog'
-import { useState } from 'react'
-
-// ...inside ResourceCalendar component
-const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-const [eventToDelete, setEventToDelete] = useState(null)
-
-const handleEventClick = (info) => {
-  if (!isBetweenAllowedDates(info.event.start, info.event.end)) return
-  setEventToDelete(info.event)
-  setDeleteDialogOpen(true)
-}
-
-const handleDeleteConfirm = () => {
-  setEvents((prev) => prev.filter((e) => e.id !== eventToDelete.id))
-  setDeleteDialogOpen(false)
-  setEventToDelete(null)
-}
-
-// ...in the return JSX, add:
-;<EventDeleteDialog
-  open={deleteDialogOpen}
-  onOpenChange={setDeleteDialogOpen}
-  eventTitle={eventToDelete?.title}
-  onConfirm={handleDeleteConfirm}
-/>

@@ -1,72 +1,81 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-import EventDeleteDialog from './EventDeleteDialog'
+
+import {
+  addMilliseconds,
+  differenceInMilliseconds,
+  format,
+  formatISO,
+  isWithinInterval,
+  parseISO,
+} from 'date-fns'
+import EventDialog from './EventDialog'
+import '/styles.css'
 
 export default function ResourceCalendar() {
-  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
-  const [eventToDelete, setEventToDelete] = useState(null)
-  const [events, setEvents] = useState([
-    {
-      id: '1',
-      resourceId: 'a',
-      title: 'Slot',
-      start: '2025-08-14T10:00:00',
-      end: '2025-08-14T12:00:00',
-    },
-    {
-      id: '2',
-      resourceId: 'a',
-      title: 'Break',
-      start: '2025-08-14T12:00:00',
-      end: '2025-08-14T13:00:00',
-    },
-    {
-      id: '3',
-      resourceId: 'a',
-      title: 'Plenaria',
-      start: '2025-08-14T14:00:00',
-      end: '2025-08-14T16:00:00',
-    },
-  ])
+  const [events, setEvents] = useState([])
 
-  const resources = [{ id: 'a', title: 'Planificacion' }]
+  const [lastSelectedType, setLastSelectedType] = useState('slot')
 
+  // TODO traer del backend
   const conferencePeriod = {
-    start: '2025-08-11T00:00:00-03:00',
-    end: '2025-08-16T00:00:00-03:00',
+    start: parseISO('2025-09-08T00:00:00-03:00'),
+    end: parseISO('2025-09-12T00:00:00-03:00'),
   }
 
+  // Horas por defecto para cada tipo de evento, capaz hacer configurable en el futuro
+  const [lastDurations, setLastDurations] = useState({
+    slot: 3600000 * 2,
+    break: 3600000 / 4,
+    plenary: 3600000,
+  })
+
+  const [selectedEvent, setSelectedEvent] = useState(null)
+  const [copiedEvent, setCopiedEvent] = useState(null)
+  const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
+  const [dialogEventInfo, setDialogEventInfo] = useState(null)
+  const [isNewEvent, setIsNewEvent] = useState(false)
+
+  const resources = [{ id: 'a', title: 'Planificacion' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',
-      start: conferencePeriod.start.substring(0, 10),
-      end: conferencePeriod.end.substring(0, 10),
+      start: format(conferencePeriod.start, 'yyyy-MM-dd'),
+      end: format(conferencePeriod.end, 'yyyy-MM-dd'),
       display: 'inverse-background',
       backgroundColor: '#595959',
     },
   ]
 
+  useEffect(() => {
+    const handleKeyDown = (event) => {
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+        if (selectedEvent) {
+          setCopiedEvent(selectedEvent)
+        }
+      }
+    }
+    document.addEventListener('keydown', handleKeyDown)
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown)
+    }
+  }, [selectedEvent])
+
   const isBetweenAllowedDates = (startDate, endDate) => {
-    let result =
-      startDate >= new Date(conferencePeriod.start) &&
-      endDate <= new Date(conferencePeriod.end)
-    console.log(
-      'handleDateSelect' +
-        startDate +
-        ' ' +
-        new Date(conferencePeriod.start) +
-        ' ' +
-        endDate +
-        new Date(conferencePeriod.end) +
-        ' ' +
-        ': ' +
-        result
+    return (
+      isWithinInterval(startDate, {
+        start: conferencePeriod.start,
+        end: conferencePeriod.end,
+      }) &&
+      isWithinInterval(endDate, {
+        start: conferencePeriod.start,
+        end: conferencePeriod.end,
+      })
     )
-    return result
   }
 
   const handleSelectAllow = (selectInfo) => {
@@ -74,56 +83,149 @@ export default function ResourceCalendar() {
   }
 
   const handleEventClick = (info) => {
-    console.log('handleEventClick')
-    // Only delete if inside allowed range
     if (!isBetweenAllowedDates(info.event.start, info.event.end)) {
       return
     }
+    setSelectedEvent(info.event)
+    setDialogEventInfo(info.event)
+    setIsNewEvent(false)
+    setIsEventDialogOpen(true)
+  }
 
-    if (window.confirm(`¿Eliminar el evento "${info.event.title}"?`)) {
-      setEvents((prev) => prev.filter((e) => e.id !== info.event.id))
+  const handleDateSelect = (selectInfo) => {
+    if (!isBetweenAllowedDates(selectInfo.start, selectInfo.end)) {
+      console.log('Selected range is outside conference period.')
+      return
+    }
+
+    if (copiedEvent) {
+      const duration = differenceInMilliseconds(
+        copiedEvent.end,
+        copiedEvent.start
+      )
+      const newEndTime = addMilliseconds(selectInfo.start, duration)
+      const newEvent = {
+        id: String(Date.now()),
+        title: copiedEvent.title,
+        start: selectInfo.startStr,
+        end: formatISO(newEndTime),
+        resourceId: selectInfo.resource?.id,
+      }
+      setEvents((prev) => [...prev, newEvent])
+      setCopiedEvent(null)
+    } else {
+      // Caso single clic - crear nuevo evento con tiempo por defecto
+      const duration = differenceInMilliseconds(
+        selectInfo.end,
+        selectInfo.start
+      )
+      let calculatedEndStr = selectInfo.endStr
+      if (duration === 0) {
+        const defaultDuration = lastDurations[lastSelectedType]
+        const calculatedEndDate = addMilliseconds(
+          selectInfo.start,
+          defaultDuration
+        )
+        calculatedEndStr = formatISO(calculatedEndDate)
+      }
+
+      // Crear evento
+      setDialogEventInfo({
+        ...selectInfo,
+        endStr: calculatedEndStr,
+      })
+      setIsNewEvent(true)
+      setIsEventDialogOpen(true)
     }
   }
-  const localISO = (d) =>
-    d
-      .toLocaleString('sv-SE', { hour12: false })
-      .replace(' ', 'T')
-      .replace('GMT', '')
 
-  const handleDateClick = (info) => {
-    console.log('handleDateClick')
-    setEventToDelete(info.event)
-    setDeleteDialogOpen(true)
-    // const calendarApi = info.view.calendar
-    // const viewType = calendarApi.view.type // e.g., "dayGridMonth", "resourceTimeGridDay"
-    // console.log("handleDateClick: " + JSON.stringify(info))
-    // // Only add events in Month view inside allowed range
-    // if (viewType === 'resourceTimeGridDay') {
-    //   console.log("viewType: " + viewType)
-    // } else if (viewType === 'resourceTimeGridWeek') {
-    //   console.log("viewType: " + viewType)
-    //   if (!isBetweenAllowedDates(info.date, info.date)) {
-    //     return
-    //   }
-    //   if (window.confirm(`Agregar un evento en "${info.dateStr}"?`)) {
-    //     console.log("newEvent")
-    //     const start = new Date(info.dateStr)
-    //     const end = new Date() // +30 minutes
-    //     end.setTime(start.getTime() + 30 * 60 * 1000)
-    //
-    //     const newEvent = {
-    //       id: String(Date.now()),
-    //       title: 'Nuevo evento',
-    //       start: localISO(start),
-    //       end: localISO(end),
-    //       resourceId: 'a', // Add this line
-    //     }
-    //     console.log(newEvent)
-    //     setEvents((prev) => [...prev, newEvent])
-    //   }
-    // } else {
-    //   console.error("Unexpected viewType: " + viewType)
-    // }
+  const handleSaveEvent = (eventData) => {
+    const { id, title, start, end, type } = eventData
+
+    // Se calcula la diferencia y se reusa en la proxima ejecucion
+    const newDuration = differenceInMilliseconds(end, start)
+    setLastDurations((prev) => ({
+      ...prev,
+      [type]: newDuration,
+    }))
+    setLastSelectedType(type)
+
+    if (id) {
+      setEvents((prevEvents) =>
+        prevEvents.map((event) =>
+          event.id === id
+            ? {
+                ...event,
+                title,
+                start: formatISO(start),
+                end: formatISO(end),
+                extendedProps: { type },
+              }
+            : event
+        )
+      )
+    } else {
+      const newEvent = {
+        id: String(Date.now()),
+        title,
+        start: formatISO(start),
+        end: formatISO(end),
+        resourceId: dialogEventInfo?.resource?.id,
+        extendedProps: { type },
+      }
+      setEvents((prev) => [...prev, newEvent])
+    }
+  }
+
+  const handleDeleteEvent = (eventId) => {
+    setEvents((prev) => prev.filter((e) => e.id !== eventId))
+  }
+
+  const handleEventResize = (info) => {
+    const newStart = info.event.start
+    const newEnd = info.event.end
+    if (!isBetweenAllowedDates(newStart, newEnd)) {
+      console.log('Resize is outside conference period. Reverting.')
+      info.revert()
+      return
+    }
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === info.event.id
+          ? {
+              ...event,
+              start: info.event.startStr,
+              end: info.event.endStr,
+            }
+          : event
+      )
+    )
+  }
+
+  const handleEventDrop = (info) => {
+    const newStart = info.event.start
+    const newEnd = info.event.end
+    const newResource = info.newResource
+    const currentResource = info.event.getResources()[0]
+    const currentResourceId = currentResource ? currentResource.id : null
+    const finalResourceId = newResource ? newResource.id : currentResourceId
+    if (!isBetweenAllowedDates(newStart, newEnd)) {
+      console.log('Drop is outside conference period. Reverting.')
+      info.revert()
+      return
+    }
+    setEvents((prevEvents) =>
+      prevEvents.map((event) =>
+        event.id === info.event.id
+          ? {
+              ...event,
+              start: info.event.startStr,
+              end: info.event.endStr,
+              resourceId: finalResourceId,
+            }
+          : event
+      )
+    )
   }
 
   return (
@@ -141,7 +243,17 @@ export default function ResourceCalendar() {
         editable={true}
         selectAllow={handleSelectAllow}
         eventClick={handleEventClick}
-        dateClick={handleDateClick}
+        select={handleDateSelect}
+        eventResize={handleEventResize}
+        eventDrop={handleEventDrop}
+        eventClassNames={(info) => {
+          const type = info.event.extendedProps?.type || 'slot'
+          const classes = [`event-${type}`]
+          if (info.event.id === selectedEvent?.id) {
+            classes.push('event-selected')
+          }
+          return classes
+        }}
         headerToolbar={{
           left: 'prev,next today',
           center: 'title',
@@ -150,11 +262,15 @@ export default function ResourceCalendar() {
         resources={resources}
         events={[...events, ...inverseBackground]}
       />
-      <EventDeleteDialog
-        open={deleteDialogOpen}
-        onOpenChange={setDeleteDialogOpen}
-        eventTitle={eventToDelete?.title}
-        onConfirm={null}
+      <EventDialog
+        open={isEventDialogOpen}
+        onOpenChange={setIsEventDialogOpen}
+        onSave={handleSaveEvent}
+        onDelete={handleDeleteEvent}
+        eventInfo={dialogEventInfo}
+        isNewEvent={isNewEvent}
+        lastSelectedType={lastSelectedType}
+        lastDurations={lastDurations}
       />
     </>
   )

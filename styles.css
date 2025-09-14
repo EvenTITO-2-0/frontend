@@ -1,0 +1,22 @@
+.fc-event {
+  border-radius: 4px;
+  border: none;
+  color: white !important;
+}
+
+.fc-event.event-slot {
+  background-color: #3b82f6;
+}
+
+.fc-event.event-break {
+  background-color: #909193;
+  color: #374151 !important;
+}
+
+.fc-event.event-plenary {
+  background-color: #33bd91;
+}
+
+.fc-event.event-selected {
+  border: 2px solid #f59e0b;
+}
