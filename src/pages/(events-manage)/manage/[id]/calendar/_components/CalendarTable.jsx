@@ -12,19 +12,19 @@ import {
   formatISO,
   isWithinInterval,
   parseISO,
+  addDays,
 } from 'date-fns'
 import EventDialog from './EventDialog'
 import '/styles.css'
 
-export default function ResourceCalendar() {
+export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
   const [events, setEvents] = useState([])
 
   const [lastSelectedType, setLastSelectedType] = useState('slot')
 
-  // TODO traer del backend
   const conferencePeriod = {
-    start: parseISO('2025-09-08T00:00:00-03:00'),
-    end: parseISO('2025-09-12T00:00:00-03:00'),
+    start: parseISO(startDate),
+    end: addDays(parseISO(endDate), 1),
   }
 
   // Horas por defecto para cada tipo de evento, capaz hacer configurable en el futuro
@@ -142,7 +142,8 @@ export default function ResourceCalendar() {
   const handleSaveEvent = (eventData) => {
     const { id, title, start, end, type } = eventData
 
-    // Se calcula la diferencia y se reusa en la proxima ejecucion
+    // Se calcula la diferencia y se reusa en la proxima ejecucion ---> una poronga esto
+    //TODO que no sea más una poronga
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
       ...prev,
@@ -164,6 +165,7 @@ export default function ResourceCalendar() {
             : event
         )
       )
+      onAddNewSlot(events.find(event => event.id === id))
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -174,6 +176,7 @@ export default function ResourceCalendar() {
         extendedProps: { type },
       }
       setEvents((prev) => [...prev, newEvent])
+      onAddNewSlot(newEvent)
     }
   }
 

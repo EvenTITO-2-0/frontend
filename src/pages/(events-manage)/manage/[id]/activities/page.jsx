@@ -18,7 +18,8 @@ export default function Page({ event }) {
       eventCopy.mdata.informative_dates = []
     }
     eventCopy.mdata.informative_dates.push(newDate)
-
+    console.log('newDate: ' + JSON.stringify(newDate))
+    console.log('eventCopy: ' + JSON.stringify(eventCopy))
     await submitEditEvent({ eventData: eventCopy })
   }
 
