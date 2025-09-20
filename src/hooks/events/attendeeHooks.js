@@ -16,9 +16,17 @@ export function useGetMyInscription() {
 
   return useQuery({
     queryKey: ['getMyInscription', { eventId }],
-    queryFn: async () => await getInscriptionWithPayments(eventId),
+    queryFn: async () => {
+      console.log(
+        'useGetMyInscription - Fetching inscription for eventId:',
+        eventId
+      )
+      const result = await getInscriptionWithPayments(eventId)
+      console.log('useGetMyInscription - Result:', result)
+      return result
+    },
     onError: (e) => {
-      console.error(JSON.stringify(e))
+      console.error('useGetMyInscription - Error:', JSON.stringify(e))
     },
   })
 }
@@ -80,12 +88,24 @@ export function useNewPayment() {
         queryKey: ['getMyInscription', { eventId }],
         queryFn: async () => await getInscriptionWithPayments(eventId),
       })
+
+      if (paymentData.payment_method === 'mercadopago') {
+        return await apiPutInscriptionPayment(
+          eventId,
+          inscription.id,
+          paymentData
+        )
+      }
+
       const res = await apiPutInscriptionPayment(
         eventId,
         inscription.id,
         paymentData
       )
-      await uploadFile(res.data.upload_url, paymentData.file)
+      if (paymentData.file) {
+        await uploadFile(res.data.upload_url, paymentData.file)
+      }
+      return res
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
@@ -99,7 +119,21 @@ export function useNewPayment() {
 }
 
 export async function getInscriptionWithPayments(eventId) {
+  console.log(
+    'getInscriptionWithPayments - Fetching inscription for eventId:',
+    eventId
+  )
   const inscription = await apiGetMyInscriptions(eventId)
+  console.log('getInscriptionWithPayments - Inscription:', inscription)
+
+  console.log(
+    'getInscriptionWithPayments - Fetching payments for inscriptionId:',
+    inscription.id
+  )
   const payments = await apiGetInscriptionPayments(eventId, inscription.id)
-  return convertInscription(inscription, payments)
+  console.log('getInscriptionWithPayments - Payments:', payments)
+
+  const result = convertInscription(inscription, payments)
+  console.log('getInscriptionWithPayments - Converted result:', result)
+  return result
 }
