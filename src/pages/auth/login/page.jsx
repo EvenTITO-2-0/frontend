@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link, Navigate } from 'react-router-dom'
+import { Link, Navigate, Outlet } from 'react-router-dom'
 import { Mail, Lock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
 import { useSelector } from 'react-redux'
@@ -10,6 +10,9 @@ import {
 import ButtonWithLoading from '@/components/ButtonWithLoading'
 import ContainerAuthPage from '../_components/ContainerAuthPage'
 import GoogleButton from '../_components/GoogleButton'
+import { isAuthenticated } from '@/lib/routes/isAuthenticated.js'
+import Header from '@/pages/_components/Headers/home-admin/index.jsx'
+import Footer from '@/components/LayoutPage/Footer.jsx'
 
 export default function LoginPage() {
   const [email, setEmail] = useState('')
@@ -36,18 +39,15 @@ export default function LoginPage() {
   const onGoogleLogin = async () => {
     try {
       await googleLoginMutation.mutateAsync()
+      console.log('Login exitoso con Google')
     } catch (error) {
       setError(true)
       setErrorMessage('Error al iniciar sesión con Google')
     }
   }
 
-  if (currentUser) {
-    return <Navigate to="/home" replace />
-  }
-
-  if (idUser && authEmail) {
-    return <Navigate to="/complete-register" replace />
+  if (isAuthenticated()) {
+    return <Navigate to={'/home'} />
   }
 
   return (
