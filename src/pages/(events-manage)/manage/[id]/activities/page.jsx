@@ -1,8 +1,8 @@
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
-import Activities from './_components/Activities'
 import ConfigurationDates from './_components/ConfigurationDates'
+import CalendarTable from './_components/CalendarTable'
 
 export default function Page({ event }) {
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -50,6 +50,18 @@ export default function Page({ event }) {
     await submitEditEvent({ eventData: eventCopy })
   }
 
+  async function onAddNewSlot({ slot }) {
+    let eventCopy = { ...event }
+    //delete eventCopy.title
+    // if (!eventCopy.mdata.informative_dates) {
+    //   eventCopy.mdata.informative_dates = []
+    // }
+    // eventCopy.mdata.informative_dates.push(newDate)
+    console.log('slot: ' + JSON.stringify(slot))
+    console.log('eventCopy: ' + JSON.stringify(eventCopy))
+    await submitEditEvent({ eventData: eventCopy })
+  }
+
   return (
     <ContainerPage>
       <div className="space-y-6">
@@ -60,13 +72,7 @@ export default function Page({ event }) {
           onEditStartDate={onEditStartDate}
           onEditEndDate={onEditEndDate}
         />
-        <Activities
-          startDate={startDate}
-          endDate={endDate}
-          informativeDates={informativeDates}
-          onAddNewDate={onAddNewDate}
-          onEditDate={onEditActivity}
-        />
+        <CalendarTable startDate={startDate} endDate={endDate} onAddNewSlot={onAddNewSlot}/>
       </div>
     </ContainerPage>
   )

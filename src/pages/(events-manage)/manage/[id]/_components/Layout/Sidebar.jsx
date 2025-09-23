@@ -90,13 +90,6 @@ const itemList = [
         requiredRoles: [ORGANIZER_ROLE],
         isOrganizerRoute: true,
       },
-      {
-        label: 'Calendario',
-        icon: <SidebarIcon name="Calendar" />,
-        to: 'calendar',
-        requiredRoles: [ORGANIZER_ROLE],
-        isOrganizerRoute: true,
-      },
     ],
   },
   {

@@ -16,8 +16,14 @@ import {
 } from 'date-fns'
 import EventDialog from './EventDialog'
 import '/styles.css'
+import Icon from '@/components/Icon.jsx'
 
 export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
+
+  if (!startDate || !endDate) {
+    return <NoDatesMessage />
+  }
+
   const [events, setEvents] = useState([])
 
   const [lastSelectedType, setLastSelectedType] = useState('slot')
@@ -276,5 +282,17 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
         lastDurations={lastDurations}
       />
     </>
+  )
+}
+
+function NoDatesMessage() {
+  return (
+    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+      <Icon name="CalendarClock" />
+      <p className="text-lg">
+        Configura las fechas de inicio y fin de presentaciones para agregar
+        actividades al evento.
+      </p>
+    </div>
   )
 }
