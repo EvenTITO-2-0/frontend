@@ -46,6 +46,7 @@ export function useLoginWithGoogle() {
         const userLoggedin = await getUser(user.uid)
         return { user: userLoggedin, isLogged: true }
       } catch (error) {
+        console.log("Error al obtener el usuario después del inicio de sesión con Google:", error)
         return { user, isLogged: false }
       }
     },
