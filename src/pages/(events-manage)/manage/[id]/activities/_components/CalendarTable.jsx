@@ -247,7 +247,7 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
           dayGridPlugin,
           interactionPlugin,
         ]}
-        initialView="resourceTimeGridDay"
+        initialView="resourceTimeGridWeek"
         selectable={true}
         editable={true}
         selectAllow={handleSelectAllow}
