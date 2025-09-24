@@ -10,7 +10,6 @@ import TalksDataPage from './[id]/talks'
 import OrganizerActivitiesPage from './[id]/activities'
 import InfoConfigPage from './[id]/info'
 import AdminConfigPage from './[id]/administration'
-import PaymentsConfigPage from './[id]/payments/page'
 
 export default function RoutesOrganization() {
   return (
@@ -29,7 +28,6 @@ export default function RoutesOrganization() {
         <Route path="/manage/:id/tracks" element={<TracksConfigPage />} />
         <Route path="/manage/:id/pricing" element={<PricingConfigPage />} />
         <Route path="/manage/:id/rooms" element={<RoomsConfigPage />} />
-        <Route path="/manage/:id/payments" element={<PaymentsConfigPage />} />
         <Route
           path="/manage/:id/inscriptions"
           element={<InscriptionsDataPage />}

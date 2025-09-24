@@ -56,13 +56,6 @@ const itemList = [
         isOrganizerRoute: true,
       },
       {
-        label: 'Pagos',
-        icon: <SidebarIcon name="CreditCard" />,
-        to: 'payments',
-        requiredRoles: [ORGANIZER_ROLE],
-        isOrganizerRoute: true,
-      },
-      {
         label: 'Actividades',
         icon: <SidebarIcon name="Calendar" />,
         to: 'activities',
