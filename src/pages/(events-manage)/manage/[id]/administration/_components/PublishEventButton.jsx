@@ -3,7 +3,6 @@ import { STARTED_STATUS } from '@/lib/Constants'
 import { Button } from '@nextui-org/button'
 
 export default function PublishEventButton({ conditionsMet }) {
-  if (!conditionsMet) return null
   const { mutateAsync: updateEventStatus, isPending } = useUpdateEventStatus()
 
   async function publishEvent() {
@@ -16,8 +15,15 @@ export default function PublishEventButton({ conditionsMet }) {
       className="w-full"
       onPress={publishEvent}
       isLoading={isPending}
+      isDisabled={!conditionsMet}
     >
-      {isPending ? <p>Publicando evento...</p> : <p>Publicar evento</p>}
+      {isPending ? (
+        <p>Publicando evento...</p>
+      ) : conditionsMet ? (
+        <p>Publicar evento</p>
+      ) : (
+        <p>Publicar evento</p>
+      )}
     </Button>
   )
 }
