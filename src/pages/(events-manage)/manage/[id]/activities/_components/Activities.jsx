@@ -34,22 +34,16 @@ export default function Activities({
 }
 
 function ShowActivitiesForDay({ activities, onEditDate }) {
-  if (activities.length === 0) return null
-
   return (
-    <>
-      {activities.map((activity, index) => (
+    <div className="space-y-4">
+      {activities.map((activity) => (
         <ActivityCard
-          key={index}
-          title={activity.title}
-          date={activity.date}
-          startHour={activity.startHour}
-          endHour={activity.endHour}
-          description={activity.description}
+          key={activity.title}
+          activity={activity}
           onEditDate={onEditDate}
         />
       ))}
-    </>
+    </div>
   )
 }
 

@@ -9,6 +9,7 @@ import {
 import { unifyEventTracksWithChairs } from './_components/utils.js'
 import { CREATED_STATUS } from '@/lib/Constants.js'
 import TracksTable from './_components/TracksTable'
+import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
 import AddTrackButton from './_components/AddTrackButton'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
 import DateCard from '@/components/Card/DateCard.jsx'
@@ -110,6 +111,7 @@ export default function Page({
             isLoading={addTrack.isPending}
           />
         ) : null}
+        <StepNavigationButtons currentStep="tracks" eventInfo={event} />
       </div>
     </ContainerPage>
   )
