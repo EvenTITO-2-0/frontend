@@ -42,7 +42,10 @@ function Layout({ eventData }) {
 
   return (
     <div className="flex h-screen bg-white">
-      <OrganizationSidebar eventTitle={eventTitle} />
+      <OrganizationSidebar
+        eventTitle={eventTitle}
+        eventStatus={eventData?.status}
+      />
       <div className="flex-1 flex flex-col overflow-hidden">
         <Header
           eventTitle={eventTitle}

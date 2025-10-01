@@ -46,13 +46,6 @@ export default function StepNavigationButtons({
   // Definir los pasos y sus destinos
   const steps = [
     {
-      title: 'Actividades',
-      shortTitle: 'Fechas del evento',
-      destination: 'activities',
-      condition: () =>
-        startDateIsDefined(eventInfo) && endDateIsDefined(eventInfo),
-    },
-    {
       title: 'Tracks',
       shortTitle: 'Fecha límite y tracks',
       destination: 'tracks',
@@ -62,7 +55,7 @@ export default function StepNavigationButtons({
     {
       title: 'Información',
       shortTitle: 'Información general',
-      destination: 'info',
+      destination: 'basic-config',
       condition: () => metadataIsDefined(eventInfo),
     },
     {

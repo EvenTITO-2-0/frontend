@@ -26,6 +26,7 @@ export function useEditEvent() {
     },
     {
       serviceCode: 'EDIT_EVENT',
+      duration: 2000,
     }
   )
 }

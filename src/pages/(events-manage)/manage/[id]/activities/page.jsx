@@ -53,7 +53,7 @@ export default function Page({ event }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Actividades del evento'} />
+        <TitlePage title={'Fechas del evento'} />
         <ConfigurationDates
           startDate={startDate}
           endDate={endDate}
