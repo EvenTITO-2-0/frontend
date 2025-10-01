@@ -56,7 +56,6 @@ export default function StepsForPublish({ eventInfo }) {
 
   return (
     <div className="space-y-6">
-      <SubtitleStyle>Pasos para publicar el evento</SubtitleStyle>
       <div className="space-y-4">
         <StatusCheck
           title="Definir fecha de comienzo y de fin del evento"

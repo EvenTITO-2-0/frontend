@@ -6,8 +6,15 @@ import { useEditEvent, useUploadEventImage } from '@/hooks/manage/generalHooks'
 import DescriptionCard from './_components/DescriptionCard'
 import MetadataCard from './_components/MetadataCard'
 import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
+import EventDetails from '../administration/_components/EventDetails'
+import DatesCheck from '../administration/_components/DatesCheck'
+import {
+  getDates,
+  getEventStatus,
+  getWorksStatus,
+} from '../administration/_components/utils'
 
-export default function Page({ eventInfo }) {
+export default function Page({ eventInfo, inscriptions }) {
   const { mutateAsync: updateEvent } = useEditEvent()
   const { mutateAsync: uploadEventImage } = useUploadEventImage()
 
@@ -72,6 +79,15 @@ export default function Page({ eventInfo }) {
     <ContainerPage>
       <div className="space-y-6">
         <TitlePage title={eventInfo.title} />
+        <div className="flex items-center justify-between gap-4">
+          <EventDetails
+            eventStatus={getEventStatus(eventInfo)}
+            worksStatus={getWorksStatus(eventInfo)}
+            inscriptions={inscriptions}
+            eventInfo={eventInfo}
+          />
+          <DatesCheck dates={getDates(eventInfo)} />
+        </div>
         <div className="flex gap-4">
           <MetadataCard
             title="Ubicación"

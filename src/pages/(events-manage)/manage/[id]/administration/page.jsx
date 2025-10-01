@@ -2,10 +2,7 @@ import { useEffect } from 'react'
 import { useSearchParams } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
-import DatesCheck from './_components/DatesCheck'
-import EventDetails from './_components/EventDetails'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
-import { getDates, getEventStatus, getWorksStatus } from './_components/utils'
 import StepsForPublish from './_components/StepsForPublish'
 
 export default function Page({ eventInfo, inscriptions }) {
@@ -28,16 +25,9 @@ export default function Page({ eventInfo, inscriptions }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Administración de ' + eventInfo.title} />
-        <div className="flex items-center justify-between gap-4">
-          <EventDetails
-            eventStatus={getEventStatus(eventInfo)}
-            worksStatus={getWorksStatus(eventInfo)}
-            inscriptions={inscriptions}
-            eventInfo={eventInfo}
-          />
-          <DatesCheck dates={getDates(eventInfo)} />
-        </div>
+        <TitlePage
+          title={'Pasos para publicar el evento: ' + eventInfo.title}
+        />
         <StepsForPublish eventInfo={eventInfo} />
       </div>
     </ContainerPage>
