@@ -1,11 +1,22 @@
-import { ORGANIZER_ROLE } from '@/lib/Constants'
+import { ORGANIZER_ROLE, STARTED_STATUS } from '@/lib/Constants'
 import SideBar from '@/pages/(events-manage)/_components/Sidebar'
 import SidebarIcon from '@/components/SidebarIcon'
 import { Button } from '@/components/ui/button'
 import { useState } from 'react'
 
-export default function OrganizationSidebar({ eventTitle }) {
+export default function OrganizationSidebar({ eventTitle, eventStatus }) {
   const [isCollapsed, setIsCollapsed] = useState(false)
+
+  // Filter only if event is published
+  const filteredItemList =
+    eventStatus === STARTED_STATUS
+      ? itemList.map((section) => ({
+          ...section,
+          children: section.children.filter(
+            (item) => item.to !== 'administration'
+          ),
+        }))
+      : itemList
 
   return (
     <aside
@@ -29,7 +40,7 @@ export default function OrganizationSidebar({ eventTitle }) {
         </Button>
       </div>
       <SideBar
-        itemList={itemList}
+        itemList={filteredItemList}
         isSidebarOpen={!isCollapsed}
         roles={[ORGANIZER_ROLE]}
       />

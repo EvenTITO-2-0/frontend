@@ -13,6 +13,7 @@ import {
   getEventStatus,
   getWorksStatus,
 } from '../administration/_components/utils'
+import { STARTED_STATUS } from '@/lib/Constants'
 
 export default function Page({ eventInfo, inscriptions }) {
   const { mutateAsync: updateEvent } = useEditEvent()
@@ -135,7 +136,10 @@ export default function Page({ eventInfo, inscriptions }) {
           defaultValue={eventInfo.mdata?.description}
           handleUpdate={handleUpdateDescription}
         />
-        <StepNavigationButtons currentStep="info" eventInfo={eventInfo} />
+        {/* Only show navigation buttons if event is not published */}
+        {eventInfo.status !== STARTED_STATUS && (
+          <StepNavigationButtons currentStep="info" eventInfo={eventInfo} />
+        )}
       </div>
     </ContainerPage>
   )
