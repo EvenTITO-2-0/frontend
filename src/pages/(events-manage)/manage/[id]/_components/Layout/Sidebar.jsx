@@ -56,13 +56,6 @@ const itemList = [
         isOrganizerRoute: true,
       },
       {
-        label: 'Actividades',
-        icon: <SidebarIcon name="Calendar" />,
-        to: 'activities',
-        requiredRoles: [ORGANIZER_ROLE],
-        isOrganizerRoute: true,
-      },
-      {
         label: 'Comité de miembros',
         icon: <SidebarIcon name="Users" />,
         to: 'members',
