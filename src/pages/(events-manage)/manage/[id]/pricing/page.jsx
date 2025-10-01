@@ -39,6 +39,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Tarifa agregada',
         description: `${newPrice.name} agregada con éxito.`,
+        duration: 1500,
       })
     } catch (error) {
       toast({
@@ -66,6 +67,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Tarifa eliminada',
         description: 'La tarifa fue eliminada con éxito.',
+        duration: 1500,
       })
     } catch (error) {
       toast({
@@ -86,6 +88,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Evento gratuito',
         description: 'El evento ha sido configurado como gratuito.',
+        duration: 1500,
       })
     } catch (error) {
       toast({
