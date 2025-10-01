@@ -83,3 +83,7 @@ export function tracksAreDefined(eventInfo) {
 export function pricesAreDefined(eventInfo) {
   return eventInfo.pricing.length > 0
 }
+
+export function mercadoPagoIsConnected(providerStatus) {
+  return providerStatus && providerStatus.account_status === 'ACTIVE'
+}

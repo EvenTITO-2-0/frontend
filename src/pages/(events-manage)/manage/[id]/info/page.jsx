@@ -5,6 +5,7 @@ import { getBanner, getLogo } from './_components/utils'
 import { useEditEvent, useUploadEventImage } from '@/hooks/manage/generalHooks'
 import DescriptionCard from './_components/DescriptionCard'
 import MetadataCard from './_components/MetadataCard'
+import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
 
 export default function Page({ eventInfo }) {
   const { mutateAsync: updateEvent } = useEditEvent()
@@ -118,6 +119,7 @@ export default function Page({ eventInfo }) {
           defaultValue={eventInfo.mdata?.description}
           handleUpdate={handleUpdateDescription}
         />
+        <StepNavigationButtons currentStep="info" eventInfo={eventInfo} />
       </div>
     </ContainerPage>
   )
