@@ -34,6 +34,7 @@ export default function Page({ eventInfo, inscriptions }) {
             eventStatus={getEventStatus(eventInfo)}
             worksStatus={getWorksStatus(eventInfo)}
             inscriptions={inscriptions}
+            eventInfo={eventInfo}
           />
           <DatesCheck dates={getDates(eventInfo)} />
         </div>
