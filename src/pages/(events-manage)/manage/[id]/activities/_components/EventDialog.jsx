@@ -9,7 +9,7 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
-import { format, parseISO, addMilliseconds } from 'date-fns'
+import { format, parseISO } from 'date-fns' // DELETED: addMilliseconds is no longer needed here
 import {
   Select,
   SelectTrigger,
@@ -26,7 +26,8 @@ export default function EventDialog({
   eventInfo,
   isNewEvent,
   lastSelectedType,
-  lastDurations,
+  // DELETED: lastDurations is no longer needed in this component
+  // lastDurations,
 }) {
   const [formData, setFormData] = useState({
     title: 'Intervalo',
@@ -36,7 +37,6 @@ export default function EventDialog({
     type: 'slot',
   })
 
-  // Actualiza la información del formulario cuando se abre el diálogo o cambia eventInfo
   useEffect(() => {
     if (open && eventInfo) {
       if (isNewEvent) {
@@ -71,24 +71,10 @@ export default function EventDialog({
   }
 
   const handleTypeChange = (value) => {
-    // Actualiza el tiempo al anteriormente usado cuando se cambia el tipo.
-    if (isNewEvent && formData.date && formData.startTime) {
-      const duration = lastDurations[value]
-      const newEndTime = addMilliseconds(
-        parseISO(`${formData.date}T${formData.startTime}`),
-        duration
-      )
-      setFormData((prev) => ({
-        ...prev,
-        type: value,
-        endTime: format(newEndTime, 'HH:mm'),
-      }))
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        type: value,
-      }))
-    }
+    setFormData((prev) => ({
+      ...prev,
+      type: value,
+    }))
   }
 
   const handleSave = () => {

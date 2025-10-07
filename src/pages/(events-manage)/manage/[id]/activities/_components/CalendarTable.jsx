@@ -18,8 +18,7 @@ import EventDialog from './EventDialog'
 import '/styles.css'
 import Icon from '@/components/Icon.jsx'
 
-export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
-
+export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
   if (!startDate || !endDate) {
     return <NoDatesMessage />
   }
@@ -33,7 +32,6 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
     end: addDays(parseISO(endDate), 1),
   }
 
-  // Horas por defecto para cada tipo de evento, capaz hacer configurable en el futuro
   const [lastDurations, setLastDurations] = useState({
     slot: 3600000 * 2,
     break: 3600000 / 4,
@@ -120,12 +118,12 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
       setEvents((prev) => [...prev, newEvent])
       setCopiedEvent(null)
     } else {
-      // Caso single clic - crear nuevo evento con tiempo por defecto
       const duration = differenceInMilliseconds(
         selectInfo.end,
         selectInfo.start
       )
       let calculatedEndStr = selectInfo.endStr
+
       if (duration === 0) {
         const defaultDuration = lastDurations[lastSelectedType]
         const calculatedEndDate = addMilliseconds(
@@ -135,7 +133,6 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
         calculatedEndStr = formatISO(calculatedEndDate)
       }
 
-      // Crear evento
       setDialogEventInfo({
         ...selectInfo,
         endStr: calculatedEndStr,
@@ -148,13 +145,12 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
   const handleSaveEvent = (eventData) => {
     const { id, title, start, end, type } = eventData
 
-    // Se calcula la diferencia y se reusa en la proxima ejecucion ---> una poronga esto
-    //TODO que no sea más una poronga
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
       ...prev,
       [type]: newDuration,
     }))
+
     setLastSelectedType(type)
 
     if (id) {
@@ -171,7 +167,7 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
             : event
         )
       )
-      onAddNewSlot(events.find(event => event.id === id))
+      onAddNewSlot(events.find((event) => event.id === id))
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -194,7 +190,6 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
     const newStart = info.event.start
     const newEnd = info.event.end
     if (!isBetweenAllowedDates(newStart, newEnd)) {
-      console.log('Resize is outside conference period. Reverting.')
       info.revert()
       return
     }
@@ -219,7 +214,6 @@ export default function ResourceCalendar({startDate, endDate, onAddNewSlot}) {
     const currentResourceId = currentResource ? currentResource.id : null
     const finalResourceId = newResource ? newResource.id : currentResourceId
     if (!isBetweenAllowedDates(newStart, newEnd)) {
-      console.log('Drop is outside conference period. Reverting.')
       info.revert()
       return
     }
