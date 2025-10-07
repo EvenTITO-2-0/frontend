@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useRef } from 'react'
 import FullCalendar from '@fullcalendar/react'
 import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
-
 import {
   addMilliseconds,
   differenceInMilliseconds,
@@ -12,19 +11,21 @@ import {
   formatISO,
   isWithinInterval,
   parseISO,
-  addDays,
+  addDays, // This is already imported and is what we need
 } from 'date-fns'
 import EventDialog from './EventDialog'
 import '/styles.css'
 import Icon from '@/components/Icon.jsx'
 
 export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
+  const calendarRef = useRef(null)
+
   if (!startDate || !endDate) {
     return <NoDatesMessage />
   }
 
+  // ... (all state and other handlers remain unchanged) ...
   const [events, setEvents] = useState([])
-
   const [lastSelectedType, setLastSelectedType] = useState('slot')
 
   const conferencePeriod = {
@@ -44,7 +45,7 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
 
-  const resources = [{ id: 'a', title: 'Planificacion' }]
+  const resources = [{ id: 'a', title: 'Sala A' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',
@@ -81,7 +82,6 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
       })
     )
   }
-
   const handleSelectAllow = (selectInfo) => {
     return isBetweenAllowedDates(selectInfo.start, selectInfo.end)
   }
@@ -234,6 +234,7 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
   return (
     <>
       <FullCalendar
+        ref={calendarRef}
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         plugins={[
           resourceTimeGridPlugin,
@@ -241,7 +242,8 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
           dayGridPlugin,
           interactionPlugin,
         ]}
-        initialView="resourceTimeGridWeek"
+        initialView="resourceTimeGridSevenDay"
+        initialDate={startDate}
         selectable={true}
         editable={true}
         selectAllow={handleSelectAllow}
@@ -258,9 +260,59 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
           return classes
         }}
         headerToolbar={{
-          left: 'prev,next today',
+          left: 'prevWeek,prevDay today nextDay,nextWeek',
           center: 'title',
-          right: 'resourceTimeGridDay,resourceTimeGridWeek',
+          right: 'resourceTimeGridDay,resourceTimeGridSevenDay',
+        }}
+        views={{
+          resourceTimeGridSevenDay: {
+            type: 'resourceTimeGrid',
+            duration: { days: 7 },
+            buttonText: 'Week',
+          },
+        }}
+        // --- THIS IS THE CORRECTED LOGIC ---
+        customButtons={{
+          prevWeek: {
+            icon: 'chevrons-left',
+            click: () => {
+              const calendarApi = calendarRef.current?.getApi()
+              if (calendarApi) {
+                const newStart = addDays(calendarApi.view.currentStart, -7)
+                calendarApi.gotoDate(newStart)
+              }
+            },
+          },
+          prevDay: {
+            icon: 'chevron-left',
+            click: () => {
+              const calendarApi = calendarRef.current?.getApi()
+              if (calendarApi) {
+                const newStart = addDays(calendarApi.view.currentStart, -1)
+                calendarApi.gotoDate(newStart)
+              }
+            },
+          },
+          nextDay: {
+            icon: 'chevron-right',
+            click: () => {
+              const calendarApi = calendarRef.current?.getApi()
+              if (calendarApi) {
+                const newStart = addDays(calendarApi.view.currentStart, 1)
+                calendarApi.gotoDate(newStart)
+              }
+            },
+          },
+          nextWeek: {
+            icon: 'chevrons-right',
+            click: () => {
+              const calendarApi = calendarRef.current?.getApi()
+              if (calendarApi) {
+                const newStart = addDays(calendarApi.view.currentStart, 7)
+                calendarApi.gotoDate(newStart)
+              }
+            },
+          },
         }}
         resources={resources}
         events={[...events, ...inverseBackground]}
@@ -273,7 +325,6 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
         eventInfo={dialogEventInfo}
         isNewEvent={isNewEvent}
         lastSelectedType={lastSelectedType}
-        lastDurations={lastDurations}
       />
     </>
   )
