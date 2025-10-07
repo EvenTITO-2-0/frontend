@@ -3,13 +3,29 @@ import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
 import ConfigurationDates from './_components/ConfigurationDates'
 import CalendarTable from './_components/CalendarTable'
+import { useEffect, useState } from 'react'
 
 export default function Page({ event }) {
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
   const endDate = event.dates.filter((d) => d.name === 'END_DATE')[0]?.date
   const informativeDates = event.mdata?.informative_dates || []
+  const [eventStatus, setEventStatus] = useState(event.status || null)
+  const [slots, setSlots] = useState(event.mdata?.slots || [])
 
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
+
+  // Actualizar estado si es que existe
+  useEffect(() => {
+    async function fetchStatus() {
+      if (!event.status && event.id) {
+        // Replace with your actual API call to get status
+        const res = await fetch(`/api/events/${event.id}/status`)
+        const data = await res.json()
+        setEventStatus(data.status)
+      }
+    }
+    fetchStatus()
+  }, [event])
 
   async function onAddNewDate({ newDate }) {
     let eventCopy = { ...event }
@@ -50,15 +66,18 @@ export default function Page({ event }) {
     await submitEditEvent({ eventData: eventCopy })
   }
 
-  async function onAddNewSlot({ slot }) {
+  async function onAddNewSlot(newSlot) {
     let eventCopy = { ...event }
-    //delete eventCopy.title
-    // if (!eventCopy.mdata.informative_dates) {
-    //   eventCopy.mdata.informative_dates = []
-    // }
-    // eventCopy.mdata.informative_dates.push(newDate)
-    console.log('slot: ' + JSON.stringify(slot))
-    console.log('eventCopy: ' + JSON.stringify(eventCopy))
+    if (!eventCopy.mdata) eventCopy.mdata = {}
+    if (!eventCopy.mdata.slots) eventCopy.mdata.slots = []
+    // Add or update slot
+    const idx = eventCopy.mdata.slots.findIndex((s) => s.id === newSlot.id)
+    if (idx > -1) {
+      eventCopy.mdata.slots[idx] = newSlot
+    } else {
+      eventCopy.mdata.slots.push(newSlot)
+    }
+    setSlots([...eventCopy.mdata.slots])
     await submitEditEvent({ eventData: eventCopy })
   }
 
@@ -72,7 +91,13 @@ export default function Page({ event }) {
           onEditStartDate={onEditStartDate}
           onEditEndDate={onEditEndDate}
         />
-        <CalendarTable startDate={startDate} endDate={endDate} onAddNewSlot={onAddNewSlot}/>
+        <CalendarTable
+          startDate={startDate}
+          endDate={endDate}
+          onAddNewSlot={onAddNewSlot}
+          slots={slots}
+          eventStatus={eventStatus}
+        />
       </div>
     </ContainerPage>
   )

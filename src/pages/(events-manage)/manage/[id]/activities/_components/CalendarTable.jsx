@@ -17,14 +17,19 @@ import EventDialog from './EventDialog'
 import '/styles.css'
 import Icon from '@/components/Icon.jsx'
 
-export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
+export default function ResourceCalendar({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
 
   if (!startDate || !endDate) {
     return <NoDatesMessage />
   }
 
-  // ... (all state and other handlers remain unchanged) ...
+  useEffect(() => {
+    setEvents(slots)
+  }, [slots])
+
+  const isEditable = eventStatus !== 'STARTED'
+
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')
 
@@ -244,8 +249,8 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
         ]}
         initialView="resourceTimeGridSevenDay"
         initialDate={startDate}
-        selectable={true}
-        editable={true}
+        editable={isEditable}
+        selectable={isEditable}
         selectAllow={handleSelectAllow}
         eventClick={handleEventClick}
         select={handleDateSelect}
@@ -271,7 +276,6 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
             buttonText: 'Week',
           },
         }}
-        // --- THIS IS THE CORRECTED LOGIC ---
         customButtons={{
           prevWeek: {
             icon: 'chevrons-left',
@@ -325,6 +329,7 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot }) {
         eventInfo={dialogEventInfo}
         isNewEvent={isNewEvent}
         lastSelectedType={lastSelectedType}
+        disabled={!isEditable}
       />
     </>
   )
