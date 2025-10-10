@@ -12,6 +12,7 @@ export default function RegistrationForm({
   eventTitle,
   speakerDisabled,
   setInscriptionSuccess,
+  prices = [],
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState(null)
@@ -25,6 +26,9 @@ export default function RegistrationForm({
     isPending,
     error: submitError,
   } = useSubmitInscription()
+
+  const isPaidEvent =
+    Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
 
   function cleanForm() {
     setRole(null)
@@ -90,6 +94,41 @@ export default function RegistrationForm({
           showFiliation={showFiliation}
           setShowFiliation={setShowFiliation}
         />
+      )}
+
+      {isPaidEvent && (
+        <div className="mt-6 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+          <h3 className="text-lg font-medium text-blue-900 mb-2">
+            Pago requerido
+          </h3>
+          <p className="text-blue-700 mb-4">
+            Selecciona la tarifa correspondiente a tu rol.
+          </p>
+          <div className="space-y-2">
+            {prices.map((price, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center p-3 bg-white border rounded"
+              >
+                <div>
+                  <span className="font-medium">{price.name}</span>
+                  <p className="text-sm text-gray-600">{price.description}</p>
+                </div>
+                <span className="font-bold text-green-600">
+                  ${price.amount || price.price || price.value}{' '}
+                  {price.currency || 'ARS'}
+                </span>
+              </div>
+            ))}
+          </div>
+          <button
+            type="button"
+            className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            onClick={() => alert('Iniciar flujo de pago (próximo paso)')}
+          >
+            Realizar pago
+          </button>
+        </div>
       )}
     </FullModal>
   )
