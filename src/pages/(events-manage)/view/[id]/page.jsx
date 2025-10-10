@@ -52,6 +52,7 @@ export default function Page({ eventInfo, activeRegistration = false }) {
             activeRegistration={activeRegistration}
             inscriptionSuccess={inscriptionSuccess}
             setInscriptionSuccess={setInscriptionSuccess}
+            prices={eventInfo.pricing}
           />
 
           <div className="space-y-14">
