@@ -102,32 +102,30 @@ export default function RegistrationForm({
             label="Selecciona la tarifa correspondiente a tu rol"
             isRequired
           />
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <div className="space-y-2">
-              {prices.map((price, index) => (
-                <div
-                  key={index}
-                  className="flex justify-between items-center p-3 bg-white border rounded"
-                >
-                  <div>
-                    <span className="font-medium">{price.name}</span>
-                    <p className="text-sm text-gray-600">{price.description}</p>
-                  </div>
-                  <span className="font-bold text-green-600">
-                    ${price.amount || price.price || price.value}{' '}
-                    {price.currency || 'ARS'}
-                  </span>
+          <div className="space-y-2">
+            {prices.map((price, index) => (
+              <div
+                key={index}
+                className="flex justify-between items-center p-4 bg-white border border-gray-200 rounded-lg"
+              >
+                <div>
+                  <span className="font-medium">{price.name}</span>
+                  <p className="text-sm text-gray-600">{price.description}</p>
                 </div>
-              ))}
-            </div>
-            <button
-              type="button"
-              className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
-              onClick={() => alert('Iniciar flujo de pago (próximo paso)')}
-            >
-              Realizar pago
-            </button>
+                <span className="font-bold text-green-600">
+                  ${price.amount || price.price || price.value}{' '}
+                  {price.currency || 'ARS'}
+                </span>
+              </div>
+            ))}
           </div>
+          <button
+            type="button"
+            className="mt-4 w-full bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700 transition"
+            onClick={() => alert('Iniciar flujo de pago (próximo paso)')}
+          >
+            Realizar pago
+          </button>
         </div>
       )}
     </FullModal>
