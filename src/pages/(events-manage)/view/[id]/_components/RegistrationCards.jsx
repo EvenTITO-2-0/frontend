@@ -101,6 +101,7 @@ function RegistrationCard({
       speakerDisabled={speakerDisabled}
       setInscriptionSuccess={setInscriptionSuccess}
       prices={prices}
+      eventId={eventId}
     />
   )
 }
