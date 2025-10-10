@@ -7,7 +7,11 @@ import { useSubmitInscription } from '@/hooks/events/attendeeHooks'
 import { sleep } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
-import { EVENT_ROLES_LABELS } from '@/lib/Constants'
+import {
+  EVENT_ROLES_LABELS,
+  ATTENDEE_ROLE,
+  SPEAKER_ROLE,
+} from '@/lib/Constants'
 
 export default function RegistrationForm({
   trigger,
@@ -32,9 +36,45 @@ export default function RegistrationForm({
   const isPaidEvent =
     Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
 
-  function formatRoles(roles) {
-    if (!roles || roles.length === 0) return ''
-    return roles.map((role) => EVENT_ROLES_LABELS[role] || role).join(', ')
+  // Función para obtener las tarifas organizadas por rol
+  function getPricesByRole() {
+    const roles = [
+      {
+        id: ATTENDEE_ROLE,
+        title: EVENT_ROLES_LABELS[ATTENDEE_ROLE],
+        description: 'Acceso para asistir a las charlas',
+        active: true,
+      },
+      {
+        id: SPEAKER_ROLE,
+        title: EVENT_ROLES_LABELS[SPEAKER_ROLE],
+        description: 'Presentar trabajos en el evento',
+        active: !speakerDisabled,
+      },
+      {
+        id: ATTENDEE_ROLE + ',' + SPEAKER_ROLE,
+        title:
+          EVENT_ROLES_LABELS[SPEAKER_ROLE] +
+          ' y ' +
+          EVENT_ROLES_LABELS[ATTENDEE_ROLE],
+        description: 'Presentar trabajos y asistir al evento',
+        active: !speakerDisabled,
+      },
+    ]
+
+    return roles.map((role) => {
+      // Buscar si hay una tarifa para este rol
+      const priceForRole = prices.find((price) => {
+        if (!price.roles || price.roles.length === 0) return false
+        const roleIds = role.id.split(',')
+        return roleIds.every((roleId) => price.roles.includes(roleId))
+      })
+
+      return {
+        ...role,
+        price: priceForRole || null,
+      }
+    })
   }
 
   function cleanForm() {
@@ -109,37 +149,53 @@ export default function RegistrationForm({
             label="Selecciona la tarifa correspondiente a tu rol"
             isRequired
           />
-          <div className="space-y-2">
-            {prices.map((price, index) => (
-              <div
-                key={index}
-                className="p-4 bg-white border border-gray-200 rounded-lg"
-              >
-                <div>
-                  {formatRoles(price.roles) && (
-                    <h3 className="font-semibold mb-2">
-                      {formatRoles(price.roles)}
-                    </h3>
-                  )}
-                  <p className="mt-2 text-sm text-gray-600">
-                    {price.name}: {price.description}
-                  </p>
-                  <span className="font-bold text-black mt-4 block">
-                    ${price.amount || price.price || price.value}{' '}
-                    {price.currency || 'ARS'}
-                  </span>
+          <div className="flex gap-4 w-full">
+            {getPricesByRole().map((roleData) => {
+              if (!roleData.active) return null
+
+              return (
+                <div
+                  key={roleData.id}
+                  className="p-4 bg-white border border-gray-200 rounded-lg w-full"
+                >
+                  <div>
+                    <h3 className="font-semibold">{roleData.title}</h3>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {roleData.description}
+                    </p>
+                    {roleData.price ? (
+                      <div className="mt-4">
+                        <p className="mt-2 text-sm text-gray-600">
+                          {roleData.price.name}: {roleData.price.description}
+                        </p>
+                        <span className="font-bold text-black mt-4 block">
+                          $
+                          {roleData.price.amount ||
+                            roleData.price.price ||
+                            roleData.price.value}{' '}
+                          {roleData.price.currency || 'ARS'}
+                        </span>
+                      </div>
+                    ) : (
+                      <p className="mt-4 text-sm text-gray-400 italic">
+                        Sin tarifa definida
+                      </p>
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
+              )
+            })}
           </div>
-          <Button
-            className="w-full"
-            color="primary"
-            variant="flat"
-            onPress={() => alert('Iniciar flujo de pago (próximo paso)')}
-          >
-            Realizar pago
-          </Button>
+          <div className="flex justify-center">
+            <Button
+              className="w-1/4"
+              color="primary"
+              variant="flat"
+              onPress={() => alert('Iniciar flujo de pago (próximo paso)')}
+            >
+              Realizar pago
+            </Button>
+          </div>
         </div>
       )}
     </FullModal>
