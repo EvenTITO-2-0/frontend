@@ -7,6 +7,7 @@ import { useSubmitInscription } from '@/hooks/events/attendeeHooks'
 import { sleep } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
+import { EVENT_ROLES_LABELS } from '@/lib/Constants'
 
 export default function RegistrationForm({
   trigger,
@@ -30,6 +31,11 @@ export default function RegistrationForm({
 
   const isPaidEvent =
     Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
+
+  function formatRoles(roles) {
+    if (!roles || roles.length === 0) return ''
+    return roles.map((role) => EVENT_ROLES_LABELS[role] || role).join(', ')
+  }
 
   function cleanForm() {
     setRole(null)
@@ -110,9 +116,15 @@ export default function RegistrationForm({
                 className="p-4 bg-white border border-gray-200 rounded-lg"
               >
                 <div>
-                  <span className="font-medium">{price.name}</span>
-                  <p className="text-sm text-gray-600">{price.description}</p>
-                  <span className="font-bold text-black">
+                  {formatRoles(price.roles) && (
+                    <h3 className="font-semibold mb-2">
+                      {formatRoles(price.roles)}
+                    </h3>
+                  )}
+                  <p className="mt-2 text-sm text-gray-600">
+                    {price.name}: {price.description}
+                  </p>
+                  <span className="font-bold text-black mt-4 block">
                     ${price.amount || price.price || price.value}{' '}
                     {price.currency || 'ARS'}
                   </span>
