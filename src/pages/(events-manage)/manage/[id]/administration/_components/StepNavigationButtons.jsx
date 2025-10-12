@@ -4,6 +4,7 @@ import Icon from '@/components/Icon'
 import { useEvent } from '@/lib/layout'
 import { useState } from 'react'
 import { eventsClient } from '@/services/api/clients'
+import { useGetProviderStatus } from '@/hooks/events/useProviderHooks'
 import {
   endDateIsDefined,
   metadataIsDefined,
@@ -24,6 +25,7 @@ export default function StepNavigationButtons({
   const navigator = useNavigator()
   const event = useEvent()
   const [isRedirecting, setIsRedirecting] = useState(false)
+  const { data: providerStatus } = useGetProviderStatus(event.id)
 
   const connectWithMercadoPago = async () => {
     try {
@@ -44,6 +46,10 @@ export default function StepNavigationButtons({
   }
 
   // Definir los pasos y sus destinos
+  const isEventFree =
+    Array.isArray(eventInfo?.pricing) &&
+    eventInfo.pricing.length === 1 &&
+    eventInfo.pricing[0]?.value === 0
   const steps = [
     {
       title: 'Tracks',
@@ -66,9 +72,9 @@ export default function StepNavigationButtons({
     },
     {
       title: 'Administración',
-      shortTitle: 'Mercado Pago',
+      shortTitle: isEventFree ? 'Finalizar' : 'Mercado Pago',
       destination: 'administration',
-      condition: () => mercadoPagoIsConnected(eventInfo),
+      condition: () => isEventFree || mercadoPagoIsConnected(providerStatus),
     },
   ]
 
@@ -110,10 +116,13 @@ export default function StepNavigationButtons({
             <Button
               onClick={() => {
                 if (nextStep.destination === 'administration') {
-                  // Si el siguiente paso es administración, conectar con Mercado Pago
-                  connectWithMercadoPago()
+                  const connected = providerStatus?.account_status === 'ACTIVE'
+                  if (isEventFree || connected) {
+                    navigate(nextStep.destination)
+                  } else {
+                    connectWithMercadoPago()
+                  }
                 } else {
-                  // Para otros pasos, navegar normalmente
                   navigate(nextStep.destination)
                 }
               }}

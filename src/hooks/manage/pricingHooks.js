@@ -42,6 +42,9 @@ export function useAddOrModifyFareInEventPricing() {
         queryClient.invalidateQueries({
           queryKey: ['getEventById', { eventId }],
         })
+        queryClient.invalidateQueries({
+          queryKey: ['provider-status', eventId],
+        })
       },
     },
     {
@@ -63,6 +66,9 @@ export function useDeletePayment() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['getEventById', { eventId }],
+      })
+      queryClient.invalidateQueries({
+        queryKey: ['provider-status', eventId],
       })
     },
   })

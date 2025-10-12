@@ -55,7 +55,7 @@ export default function MercadoPagoPayment({ payment }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pago con Mercado Pago</CardTitle>
+        <CardTitle>Pago online</CardTitle>
       </CardHeader>
       <CardContent>
         <div className="space-y-4">
@@ -68,7 +68,7 @@ export default function MercadoPagoPayment({ payment }) {
             disabled={isPending}
             className="w-full"
           >
-            {isPending ? 'Procesando...' : 'Pagar con Mercado Pago'}
+            {isPending ? 'Procesando...' : 'Pagar'}
           </Button>
         </div>
       </CardContent>
