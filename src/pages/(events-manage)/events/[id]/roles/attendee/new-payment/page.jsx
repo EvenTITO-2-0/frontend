@@ -26,7 +26,12 @@ export default function Page({ eventData }) {
   const hasActiveProvider = providerStatus?.account_status === 'ACTIVE'
 
   useEffect(() => {
-    if (!isLoadingProvider && !hasActiveProvider) {
+    if (
+      !isLoadingProvider &&
+      !hasActiveProvider &&
+      selectedFare &&
+      selectedFare.value !== 0
+    ) {
       toast({
         title: 'Error',
         description: 'El proveedor de pagos no está activo',
@@ -34,7 +39,7 @@ export default function Page({ eventData }) {
       })
       navigate(`/events/${eventId}/roles/attendee`)
     }
-  }, [isLoadingProvider, hasActiveProvider])
+  }, [isLoadingProvider, hasActiveProvider, selectedFare])
 
   const handleFareSelection = (fare) => {
     setSelectedFare(fare)
@@ -56,6 +61,26 @@ export default function Page({ eventData }) {
         works: [],
       }
 
+      if (selectedFare.value === 0) {
+        const result = await newPayment({ paymentData: baseData })
+        if (result?.data?.free) {
+          toast({
+            title: 'Inscripción confirmada',
+            description: 'Tarifa gratuita aplicada',
+          })
+          dispatch(reset())
+          navigate(`/events/${eventId}/roles/attendee`)
+          return
+        }
+        toast({
+          title: 'Inscripción confirmada',
+          description: 'Tarifa gratuita aplicada',
+        })
+        dispatch(reset())
+        navigate(`/events/${eventId}/roles/attendee`)
+        return
+      }
+
       if (hasActiveProvider) {
         const result = await newPayment({ paymentData: baseData })
         if (result?.data?.checkout_url) {
@@ -70,11 +95,11 @@ export default function Page({ eventData }) {
         return
       }
 
+      // Modo testing manual: requiere comprobante solo si no hay proveedor activo y la tarifa no es gratuita
       if (!proofFile) {
         toast({
           title: 'Falta comprobante',
-          description:
-            'Adjuntá un comprobante para registrar el pago de prueba',
+          description: 'Adjuntá un comprobante para registrar el pago',
           variant: 'destructive',
         })
         return
@@ -121,9 +146,11 @@ export default function Page({ eventData }) {
     <Card>
       <CardHeader>
         <CardTitle>
-          {hasActiveProvider
-            ? 'Nuevo pago con Mercado Pago'
-            : 'Nuevo pago (modo testing sin tokens)'}
+          {selectedFare?.value === 0
+            ? 'Confirmar inscripción gratuita'
+            : hasActiveProvider
+              ? 'Nuevo pago con Mercado Pago'
+              : 'Nuevo pago (modo testing sin tokens)'}
         </CardTitle>
       </CardHeader>
       <CardContent>
@@ -152,16 +179,17 @@ export default function Page({ eventData }) {
             ))}
           </div>
 
-          {!hasActiveProvider && (
+          {/* Solo pedir comprobante si no hay proveedor y la tarifa no es gratuita */}
+          {!hasActiveProvider && selectedFare?.value !== 0 && (
             <div className="space-y-2">
-              <Label htmlFor="proofFile">Comprobante (archivo de prueba)</Label>
+              <Label htmlFor="proofFile">Comprobante (archivo)</Label>
               <Input
                 id="proofFile"
                 type="file"
                 onChange={(e) => setProofFile(e.target.files?.[0] || null)}
               />
               <p className="text-xs text-muted-foreground">
-                En modo testing, se registra el pago adjuntando un comprobante.
+                Se registra el pago adjuntando un comprobante.
               </p>
             </div>
           )}
@@ -182,9 +210,11 @@ export default function Page({ eventData }) {
             >
               {isPending
                 ? 'Procesando...'
-                : hasActiveProvider
-                  ? 'Pagar con Mercado Pago'
-                  : 'Registrar pago de prueba'}
+                : selectedFare?.value === 0
+                  ? 'Confirmar inscripción'
+                  : hasActiveProvider
+                    ? 'Pagar'
+                    : 'Registrar pago'}
             </Button>
           </div>
         </div>

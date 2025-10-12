@@ -133,18 +133,22 @@ function MercadoPagoStatusCheck({
       <div className="flex-grow">
         {title}
         {status && providerStatus && (
-          <div className="text-sm text-green-600 mt-1">
-            Cuenta vinculada y{' '}
-            {providerStatus.account_status === 'ACTIVE'
-              ? 'activa'
-              : 'pendiente de aprobación'}
+          <div className="text-sm mt-1">
+            {providerStatus.provider === 'free' ? (
+              <span className="text-gray-600">
+                Evento gratuito: no requiere conexión
+              </span>
+            ) : (
+              <span className="text-green-600">
+                Cuenta vinculada y{' '}
+                {providerStatus.account_status === 'ACTIVE'
+                  ? 'activa'
+                  : 'pendiente de aprobación'}
+              </span>
+            )}
           </div>
         )}
-        {!status && (
-          <div className="text-sm text-red-600 mt-1">
-            {/*isRedirecting ? 'Conectando...' : 'Haz clic para conectar'*/}
-          </div>
-        )}
+        {!status && <div className="text-sm text-red-600 mt-1"></div>}
       </div>
     </CardWithFocus>
   )

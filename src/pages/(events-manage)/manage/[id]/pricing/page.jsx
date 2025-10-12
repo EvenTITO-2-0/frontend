@@ -109,6 +109,9 @@ export default function Page({ prices, dates }) {
             onSave={handleAddPrice}
             isLoading={addOrModifyFare.isPending}
             dates={dates}
+            hasFreePrice={
+              (prices || []).length === 1 && prices?.[0]?.value === 0
+            }
           />
         }
       />
