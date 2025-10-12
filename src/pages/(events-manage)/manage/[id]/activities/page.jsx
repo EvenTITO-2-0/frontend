@@ -4,6 +4,7 @@ import { useEditEvent } from '@/hooks/manage/generalHooks'
 import ConfigurationDates from './_components/ConfigurationDates'
 import CalendarTable from './_components/CalendarTable'
 import { useEffect, useState } from 'react'
+import SetCalendarDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SetCalendarDialog.jsx'
 
 export default function Page({ event }) {
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -11,8 +12,19 @@ export default function Page({ event }) {
   const informativeDates = event.mdata?.informative_dates || []
   const [eventStatus, setEventStatus] = useState(event.status || null)
   const [slots, setSlots] = useState(event.mdata?.slots || [])
-
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
+
+  // Helper to check if calendar was configured
+  const wasConfigured = event.mdata?.was_configured
+
+  // Callback to set was_configured and save event
+  const handleCalendarSet = async () => {
+    const updatedEvent = { ...event, mdata: { ...event.mdata, was_configured: true } }
+    //TODO PASAR EL UPDATE AL BACKEND
+    await submitEditEvent({ eventData: updatedEvent })
+    // Optionally, you may want to update the UI after saving
+    event.mdata.was_configured = true
+  }
 
   // Actualizar estado si es que existe
   useEffect(() => {
@@ -84,20 +96,32 @@ export default function Page({ event }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Actividades del evento'} />
-        <ConfigurationDates
-          startDate={startDate}
-          endDate={endDate}
-          onEditStartDate={onEditStartDate}
-          onEditEndDate={onEditEndDate}
-        />
-        <CalendarTable
+        <TitlePage title={'Actividades del evento'} rightComponent={!wasConfigured && <SetCalendarDialog onCalendarSet={handleCalendarSet} />}/>
+        {wasConfigured ?
+          <CalendarTable
           startDate={startDate}
           endDate={endDate}
           onAddNewSlot={onAddNewSlot}
           slots={slots}
           eventStatus={eventStatus}
-        />
+          />
+          :
+          <>
+            <ConfigurationDates
+              startDate={startDate}
+              endDate={endDate}
+              onEditStartDate={onEditStartDate}
+              onEditEndDate={onEditEndDate}
+            />
+            <CalendarTable
+              startDate={startDate}
+              endDate={endDate}
+              onAddNewSlot={onAddNewSlot}
+              slots={slots}
+              eventStatus={eventStatus}
+            />
+          </>
+        }
       </div>
     </ContainerPage>
   )

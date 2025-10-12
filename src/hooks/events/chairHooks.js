@@ -16,7 +16,7 @@ import {
   apiPutReviewDeadline,
 } from '@/services/api/events/reviewer/queries'
 import { format } from 'date-fns'
-import { apiGetMyEventChair } from '@/services/api/events/chair/queries.js'
+import { apiGenerateFromPlantilla, apiGetMyEventChair } from '@/services/api/events/chair/queries.js'
 import { convertEventChair } from '@/services/api/events/chair/conversor.js'
 import { ORGANIZER_ROLE } from '@/lib/Constants.js'
 
@@ -167,4 +167,13 @@ export function useGetMyTracks(roles) {
     },
     enabled: !!roles,
   })
+}
+
+export function useGenerateFromPlantillaMutation() {
+  const eventId = getEventId();
+  return useMutation({
+    mutationFn: async () => {
+      return await apiGenerateFromPlantilla(eventId);
+    },
+  });
 }

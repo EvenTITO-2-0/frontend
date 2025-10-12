@@ -25,3 +25,9 @@ export const apiUpdateTracks = async (eventId, tracks) => {
     tracks
   )
 }
+
+export const apiGenerateFromPlantilla = async (eventId) => {
+  return await eventsClient.get(
+    `/${eventId}/configuration/slots`
+  )
+}

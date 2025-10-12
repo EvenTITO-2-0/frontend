@@ -50,7 +50,7 @@ export default function ResourceCalendar({ startDate, endDate, onAddNewSlot, slo
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
 
-  const resources = [{ id: 'a', title: 'Sala A' }]
+  const resources = [{ id: 'a', title: 'Sala A' }, { id: 'b', title: 'Sala B' }, { id: 'c', title: 'Sala C' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',
