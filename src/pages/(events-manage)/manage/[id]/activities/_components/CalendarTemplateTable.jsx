@@ -17,7 +17,7 @@ import EventDialog from './EventDialog'
 import '/styles.css'
 import Icon from '@/components/Icon.jsx'
 
-export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
+export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
 
   if (!startDate || !endDate) {
@@ -50,7 +50,7 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
 
-  const resources = [{ id: 'a', title: 'Sala A' }, { id: 'b', title: 'Sala B' }, { id: 'c', title: 'Sala C' }]
+  const resources = [{ id: 'a', title: 'Plantilla de planificacion' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',

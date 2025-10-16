@@ -2,9 +2,10 @@ import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
 import ConfigurationDates from './_components/ConfigurationDates'
-import CalendarTable from './_components/CalendarTable'
+import CalendarTemplateTable from './_components/CalendarTemplateTable'
 import { useEffect, useState } from 'react'
 import SetCalendarDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SetCalendarDialog.jsx'
+import CalendarTable from '@/pages/(events-manage)/manage/[id]/activities/_components/CalendarTable.jsx'
 
 export default function Page({ event }) {
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -113,7 +114,7 @@ export default function Page({ event }) {
               onEditStartDate={onEditStartDate}
               onEditEndDate={onEditEndDate}
             />
-            <CalendarTable
+            <CalendarTemplateTable
               startDate={startDate}
               endDate={endDate}
               onAddNewSlot={onAddNewSlot}
