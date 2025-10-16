@@ -11,18 +11,13 @@ import {
   formatISO,
   isWithinInterval,
   parseISO,
-  addDays, // This is already imported and is what we need
+  addDays,
 } from 'date-fns'
 import EventDialog from './EventDialog'
 import '/styles.css'
-import Icon from '@/components/Icon.jsx'
 
 export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
-
-  if (!startDate || !endDate) {
-    return <NoDatesMessage />
-  }
 
   useEffect(() => {
     setEvents(slots)
@@ -247,7 +242,7 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
           dayGridPlugin,
           interactionPlugin,
         ]}
-        initialView="resourceTimeGridSevenDay"
+        initialView="resourceTimeGridDay"
         initialDate={startDate}
         editable={isEditable}
         selectable={isEditable}
@@ -265,28 +260,12 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
           return classes
         }}
         headerToolbar={{
-          left: 'prevWeek,prevDay today nextDay,nextWeek',
+          left: 'prevDay today nextDay',
           center: 'title',
-          right: 'resourceTimeGridDay,resourceTimeGridSevenDay',
+          right: '',
         }}
-        views={{
-          resourceTimeGridSevenDay: {
-            type: 'resourceTimeGrid',
-            duration: { days: 7 },
-            buttonText: 'Week',
-          },
-        }}
+
         customButtons={{
-          prevWeek: {
-            icon: 'chevrons-left',
-            click: () => {
-              const calendarApi = calendarRef.current?.getApi()
-              if (calendarApi) {
-                const newStart = addDays(calendarApi.view.currentStart, -7)
-                calendarApi.gotoDate(newStart)
-              }
-            },
-          },
           prevDay: {
             icon: 'chevron-left',
             click: () => {
@@ -297,22 +276,22 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
               }
             },
           },
+          today: {
+            text: 'Primer día del evento',
+            click: () => {
+              const calendarApi = calendarRef.current?.getApi()
+              if (calendarApi) {
+                // Go to the event start date, not the real "today"
+                calendarApi.gotoDate(startDate)
+              }
+            },
+          },
           nextDay: {
             icon: 'chevron-right',
             click: () => {
               const calendarApi = calendarRef.current?.getApi()
               if (calendarApi) {
                 const newStart = addDays(calendarApi.view.currentStart, 1)
-                calendarApi.gotoDate(newStart)
-              }
-            },
-          },
-          nextWeek: {
-            icon: 'chevrons-right',
-            click: () => {
-              const calendarApi = calendarRef.current?.getApi()
-              if (calendarApi) {
-                const newStart = addDays(calendarApi.view.currentStart, 7)
                 calendarApi.gotoDate(newStart)
               }
             },
@@ -332,17 +311,5 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
         disabled={!isEditable}
       />
     </>
-  )
-}
-
-function NoDatesMessage() {
-  return (
-    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-      <Icon name="CalendarClock" />
-      <p className="text-lg">
-        Configura las fechas de inicio y fin de presentaciones para agregar
-        actividades al evento.
-      </p>
-    </div>
   )
 }
