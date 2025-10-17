@@ -167,7 +167,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
                 title,
                 start: formatISO(start),
                 end: formatISO(end),
-                extendedProps: { type },
+                type: type,
               }
             : event
         )
@@ -180,7 +180,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: formatISO(start),
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
-        extendedProps: { type },
+                type: type,
       }
       setEvents((prev) => [...prev, newEvent])
       onAddNewSlot(newEvent)
@@ -257,7 +257,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
         eventClassNames={(info) => {
-          const type = info.event.extendedProps?.type || 'slot'
+          const type = info.event.type || 'slot'
           const classes = [`event-${type}`]
           if (info.event.id === selectedEvent?.id) {
             classes.push('event-selected')

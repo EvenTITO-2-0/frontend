@@ -7,6 +7,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 
+// TODO borrar realmente en el backend
 export default function EventDeleteDialog({
   open,
   onOpenChange,

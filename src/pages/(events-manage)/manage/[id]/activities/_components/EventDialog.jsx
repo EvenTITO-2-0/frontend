@@ -58,7 +58,7 @@ export default function EventDialog({
             date: format(start, 'yyyy-MM-dd'),
             startTime: format(start, 'HH:mm'),
             endTime: format(end, 'HH:mm'),
-            type: eventInfo.extendedProps?.type || 'slot',
+            type: eventInfo.type || 'slot',
           })
         }
       }
