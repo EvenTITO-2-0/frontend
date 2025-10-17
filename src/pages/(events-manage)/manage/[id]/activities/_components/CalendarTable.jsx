@@ -16,12 +16,37 @@ import {
 import EventDialog from './EventDialog'
 import '/styles.css'
 
-export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
+export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots, eventRooms, eventStatus }) {
   const calendarRef = useRef(null)
 
+  //const resources = [{ id: 'a', title: 'Sala A' }, { id: 'b', title: 'Sala B' }, { id: 'c', title: 'Sala C' }]
+  // Create a map for efficient lookup of resource IDs from room names.
+
+  const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
+
+  // This hook now transforms the backend `slots` data into the format FullCalendar needs.
   useEffect(() => {
-    setEvents(slots)
-  }, [slots])
+    // Helper function to infer event type from its title (from backend's `slot_id`).
+    // This is used for styling and setting default durations on the frontend.
+    const determineType = (title) => {
+      const lowerCaseTitle = title.toLowerCase()
+      if (lowerCaseTitle.includes('break')) return 'break'
+      if (lowerCaseTitle.includes('plenary')) return 'plenary'
+      return 'slot'
+    }
+    console.log('Received slots from parent:', slots)
+    if (slots) {
+      const transformedSlots = slots.map(slot => ({
+        id: String(slot.id),                          // Maps from DB 'id'
+        start: slot.start,                          // Maps from DB 'start'
+        end: slot.end,                              // Maps from DB 'end'
+        resourceId: slot.room_name, // Maps from DB 'room_name'
+        type: determineType(slot.type),          // 'type' is derived for frontend use
+      }))
+      setEvents(transformedSlots)
+    }
+  }, [slots]) // This hook re-runs whenever the parent passes new 'slots' data.
+
 
   const isEditable = eventStatus !== 'STARTED'
 
@@ -45,7 +70,6 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
 
-  const resources = [{ id: 'a', title: 'Sala A' }, { id: 'b', title: 'Sala B' }, { id: 'c', title: 'Sala C' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',
@@ -114,6 +138,7 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
         start: selectInfo.startStr,
         end: formatISO(newEndTime),
         resourceId: selectInfo.resource?.id,
+        type: copiedEvent.type,
       }
       setEvents((prev) => [...prev, newEvent])
       setCopiedEvent(null)
@@ -154,20 +179,20 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
     setLastSelectedType(type)
 
     if (id) {
+        const updatedEvent = {
+            id,
+            title,
+            start: formatISO(start),
+            end: formatISO(end),
+            type: type,
+            resourceId: dialogEventInfo?.resource?.id || events.find(e => e.id === id)?.resourceId
+        };
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
-          event.id === id
-            ? {
-                ...event,
-                title,
-                start: formatISO(start),
-                end: formatISO(end),
-                extendedProps: { type },
-              }
-            : event
+          event.id === id ? updatedEvent : event
         )
       )
-      onAddNewSlot(events.find((event) => event.id === id))
+      onAddNewSlot(updatedEvent)
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -175,7 +200,7 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
         start: formatISO(start),
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
-        extendedProps: { type },
+        type: type,
       }
       setEvents((prev) => [...prev, newEvent])
       onAddNewSlot(newEvent)
@@ -252,7 +277,9 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots 
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
         eventClassNames={(info) => {
-          const type = info.event.extendedProps?.type || 'slot'
+          // Note: FullCalendar uses `event.extendedProps.type` but we are passing a top-level `type` property.
+          // This works for now, but for robustness, you might move `type` into an `extendedProps` object.
+          const type = info.event.extendedProps.type || info.event.type || 'slot'
           const classes = [`event-${type}`]
           if (info.event.id === selectedEvent?.id) {
             classes.push('event-selected')

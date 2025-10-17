@@ -8,13 +8,14 @@ import SetCalendarDialog from '@/pages/(events-manage)/manage/[id]/activities/_c
 import CalendarTable from '@/pages/(events-manage)/manage/[id]/activities/_components/CalendarTable.jsx'
 
 export default function Page({ event }) {
+  const eventRooms = event.mdata?.rooms || []
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
   const endDate = event.dates.filter((d) => d.name === 'END_DATE')[0]?.date
   const informativeDates = event.mdata?.informative_dates || []
   const [eventStatus, setEventStatus] = useState(event.status || null)
-  const [slots, setSlots] = useState(event.mdata?.slots || [])
+  const [slots, setSlots] = useState(event.event_slots || [])
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
-
+  console.log(event)
   // Helper to check if calendar was configured
   const wasConfigured = event.mdata?.was_configured
 
@@ -104,6 +105,7 @@ export default function Page({ event }) {
           endDate={endDate}
           onAddNewSlot={onAddNewSlot}
           slots={slots}
+          eventRooms={eventRooms}
           eventStatus={eventStatus}
           />
           :
