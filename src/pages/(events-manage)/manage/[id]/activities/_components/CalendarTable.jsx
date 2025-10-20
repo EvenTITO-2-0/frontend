@@ -19,29 +19,26 @@ import '/styles.css'
 export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots, eventRooms, eventStatus }) {
   const calendarRef = useRef(null)
 
-  //const resources = [{ id: 'a', title: 'Sala A' }, { id: 'b', title: 'Sala B' }, { id: 'c', title: 'Sala C' }]
-  // Create a map for efficient lookup of resource IDs from room names.
-
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
 
-  // This hook now transforms the backend `slots` data into the format FullCalendar needs.
   useEffect(() => {
-    // Helper function to infer event type from its title (from backend's `slot_id`).
-    // This is used for styling and setting default durations on the frontend.
-    const determineType = (title) => {
-      const lowerCaseTitle = title.toLowerCase()
+    const determineType = (type) => {
+      if (!type) return 'slot'
+      const lowerCaseTitle = type.toLowerCase()
       if (lowerCaseTitle.includes('break')) return 'break'
       if (lowerCaseTitle.includes('plenary')) return 'plenary'
       return 'slot'
     }
     console.log('Received slots from parent:', slots)
+    console.log('Received eventRooms from parent:', eventRooms)
     if (slots) {
       const transformedSlots = slots.map(slot => ({
-        id: String(slot.id),                          // Maps from DB 'id'
-        start: slot.start,                          // Maps from DB 'start'
-        end: slot.end,                              // Maps from DB 'end'
-        resourceId: slot.room_name, // Maps from DB 'room_name'
-        type: determineType(slot.type),          // 'type' is derived for frontend use
+        id: String(slot.id),
+        start: slot.start,
+        end: slot.end,
+        resourceId: slot.room_name,
+        type: determineType(slot.slot_type),
+        title: slot.slot_type
       }))
       setEvents(transformedSlots)
     }
@@ -49,7 +46,6 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots,
 
 
   const isEditable = eventStatus !== 'STARTED'
-
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')
 
@@ -277,8 +273,6 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots,
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
         eventClassNames={(info) => {
-          // Note: FullCalendar uses `event.extendedProps.type` but we are passing a top-level `type` property.
-          // This works for now, but for robustness, you might move `type` into an `extendedProps` object.
           const type = info.event.extendedProps.type || info.event.type || 'slot'
           const classes = [`event-${type}`]
           if (info.event.id === selectedEvent?.id) {
