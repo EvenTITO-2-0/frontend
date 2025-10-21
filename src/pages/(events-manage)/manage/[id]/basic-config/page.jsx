@@ -1,21 +1,13 @@
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import FilePicker from '@/components/Modal/FilePickerModal'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
-import { getBanner, getLogo } from './_components/utils'
+import { getBanner, getLogo } from '../info/_components/utils'
 import { useEditEvent, useUploadEventImage } from '@/hooks/manage/generalHooks'
-import DescriptionCard from './_components/DescriptionCard'
-import MetadataCard from './_components/MetadataCard'
+import DescriptionCard from '../info/_components/DescriptionCard'
+import MetadataCard from '../info/_components/MetadataCard'
 import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
-import EventDetails from '../administration/_components/EventDetails'
-import DatesCheck from '../administration/_components/DatesCheck'
-import {
-  getDates,
-  getEventStatus,
-  getWorksStatus,
-} from '../administration/_components/utils'
-import { STARTED_STATUS } from '@/lib/Constants'
 
-export default function Page({ eventInfo, inscriptions }) {
+export default function Page({ eventInfo }) {
   const { mutateAsync: updateEvent } = useEditEvent()
   const { mutateAsync: uploadEventImage } = useUploadEventImage()
 
@@ -79,16 +71,7 @@ export default function Page({ eventInfo, inscriptions }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={eventInfo.title} />
-        <div className="flex items-center justify-between gap-4">
-          <EventDetails
-            eventStatus={getEventStatus(eventInfo)}
-            worksStatus={getWorksStatus(eventInfo)}
-            inscriptions={inscriptions}
-            eventInfo={eventInfo}
-          />
-          <DatesCheck dates={getDates(eventInfo)} />
-        </div>
+        <TitlePage title="Configuración básica del evento" />
         <div className="flex gap-4">
           <MetadataCard
             title="Ubicación"
@@ -136,10 +119,10 @@ export default function Page({ eventInfo, inscriptions }) {
           defaultValue={eventInfo.mdata?.description}
           handleUpdate={handleUpdateDescription}
         />
-        {/* Only show navigation buttons if event is not published */}
-        {eventInfo.status !== STARTED_STATUS && (
-          <StepNavigationButtons currentStep="info" eventInfo={eventInfo} />
-        )}
+        <StepNavigationButtons
+          currentStep="basic-config"
+          eventInfo={eventInfo}
+        />
       </div>
     </ContainerPage>
   )

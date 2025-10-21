@@ -12,6 +12,9 @@ import NewPaymentPage from './[id]/roles/attendee/new-payment'
 import NewWorkPage from './[id]/roles/author/new-work'
 import ViewWorkPage from './[id]/roles/author/works'
 import ProtectedRoute from './protection'
+import PaymentSuccessPage from './[id]/payments/success/page'
+import PaymentFailurePage from './[id]/payments/failure/page'
+import PaymentPendingPage from './[id]/payments/pending/page'
 
 export default function RoutesEvents() {
   return (
@@ -41,37 +44,103 @@ export default function RoutesEvents() {
             </ProtectedRoute>
           }
         />
-        <Route path="/events/:id/roles/attendee" element={<AttendeePage />} />
-
-        <Route path="/events/:id/roles/author" element={<AuthorPage />} />
-
-        <Route path="/events/:id/roles/chair" element={<ChairPage />} />
         <Route
-          path="/events/:id/roles/chair/works/:workId"
-          element={<ChairWorkPage />}
+          path=":id/roles/attendee"
+          element={
+            <ProtectedRoute>
+              <AttendeePage />
+            </ProtectedRoute>
+          }
         />
-
-        <Route path="/events/:id/roles/reviewer" element={<ReviewerPage />} />
         <Route
-          path="/events/:id/roles/reviewer/assignments/:workId"
-          element={<AssignmentPage />}
+          path=":id/roles/author"
+          element={
+            <ProtectedRoute>
+              <AuthorPage />
+            </ProtectedRoute>
+          }
         />
-
-        <Route path="/events/:id/roles/author" element={<AuthorPage />} />
         <Route
-          path="/events/:id/roles/author/works/:workId"
-          element={<ViewWorkPage />}
+          path=":id/roles/chair"
+          element={
+            <ProtectedRoute>
+              <ChairPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/chair/works/:workId"
+          element={
+            <ProtectedRoute>
+              <ChairWorkPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/reviewer"
+          element={
+            <ProtectedRoute>
+              <ReviewerPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/reviewer/assignments/:workId"
+          element={
+            <ProtectedRoute>
+              <AssignmentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/author/works/:workId"
+          element={
+            <ProtectedRoute>
+              <ViewWorkPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/attendee/new-payment"
+          element={
+            <ProtectedRoute>
+              <NewPaymentPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/roles/author/new-work"
+          element={
+            <ProtectedRoute>
+              <NewWorkPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/payments/success"
+          element={
+            <ProtectedRoute>
+              <PaymentSuccessPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/payments/failure"
+          element={
+            <ProtectedRoute>
+              <PaymentFailurePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path=":id/payments/pending"
+          element={
+            <ProtectedRoute>
+              <PaymentPendingPage />
+            </ProtectedRoute>
+          }
         />
       </Route>
-
-      <Route
-        path="/events/:id/roles/attendee/new-payment"
-        element={<NewPaymentPage />}
-      />
-      <Route
-        path="/events/:id/roles/author/new-work"
-        element={<NewWorkPage />}
-      />
     </Routes>
   )
 }

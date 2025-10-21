@@ -3,6 +3,7 @@ import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
 import Activities from './_components/Activities'
 import ConfigurationDates from './_components/ConfigurationDates'
+import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
 
 export default function Page({ event }) {
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -52,7 +53,7 @@ export default function Page({ event }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Actividades del evento'} />
+        <TitlePage title={'Fechas del evento'} />
         <ConfigurationDates
           startDate={startDate}
           endDate={endDate}
@@ -65,6 +66,11 @@ export default function Page({ event }) {
           informativeDates={informativeDates}
           onAddNewDate={onAddNewDate}
           onEditDate={onEditActivity}
+        />
+        <StepNavigationButtons
+          currentStep="activities"
+          eventInfo={event}
+          showPrevious={false}
         />
       </div>
     </ContainerPage>

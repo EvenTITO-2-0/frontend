@@ -77,9 +77,13 @@ export function metadataIsDefined(eventInfo) {
 }
 
 export function tracksAreDefined(eventInfo) {
-  return eventInfo.tracks.length > 0
+  return eventInfo.tracks && eventInfo.tracks.length > 0
 }
 
 export function pricesAreDefined(eventInfo) {
-  return eventInfo.pricing.length > 0
+  return eventInfo.pricing && eventInfo.pricing.length > 0
+}
+
+export function mercadoPagoIsConnected(providerStatus) {
+  return providerStatus && providerStatus.account_status === 'ACTIVE'
 }

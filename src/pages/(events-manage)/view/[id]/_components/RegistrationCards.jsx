@@ -12,6 +12,7 @@ export default function RegistrationCards({
   activeRegistration,
   inscriptionSuccess,
   setInscriptionSuccess,
+  prices = [],
 }) {
   return (
     <div>
@@ -31,6 +32,7 @@ export default function RegistrationCards({
         activeRegistration={activeRegistration}
         inscriptionSuccess={inscriptionSuccess}
         setInscriptionSuccess={setInscriptionSuccess}
+        prices={prices}
       />
       <RegistrationCard
         open={{
@@ -48,6 +50,7 @@ export default function RegistrationCards({
         activeRegistration={activeRegistration}
         inscriptionSuccess={inscriptionSuccess}
         setInscriptionSuccess={setInscriptionSuccess}
+        prices={prices}
       />
     </div>
   )
@@ -64,6 +67,7 @@ function RegistrationCard({
   activeRegistration,
   inscriptionSuccess,
   setInscriptionSuccess,
+  prices = [],
 }) {
   const navigator = useNavigator()
 
@@ -96,6 +100,7 @@ function RegistrationCard({
       trigger={trigger}
       speakerDisabled={speakerDisabled}
       setInscriptionSuccess={setInscriptionSuccess}
+      prices={prices}
     />
   )
 }
