@@ -3,15 +3,14 @@ import InscriptionRoleSelector from '@/components/Forms/InscriptionRoleSelector'
 import LabelForm from '@/components/Forms/LabelForm'
 import FullModal from '@/components/Modal/FullModal'
 import { Switch } from '@/components/ui/switch'
-import { useSubmitInscription } from '@/hooks/events/attendeeHooks'
+import {
+  useNewPayment,
+  useSubmitInscription,
+} from '@/hooks/events/attendeeHooks'
 import { sleep } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
-import {
-  EVENT_ROLES_LABELS,
-  ATTENDEE_ROLE,
-  SPEAKER_ROLE,
-} from '@/lib/Constants'
+import { useToast } from '@/components/ui/use-toast'
 
 export default function RegistrationForm({
   trigger,
@@ -25,6 +24,7 @@ export default function RegistrationForm({
   const [filiation, setFiliation] = useState(null)
   const [filiationFile, setFiliationFile] = useState(null)
   const [selectedRoleForPricing, setSelectedRoleForPricing] = useState(null)
+  const [paymentCompleted, setPaymentCompleted] = useState(false)
 
   const [showFiliation, setShowFiliation] = useState(false)
 
@@ -33,6 +33,9 @@ export default function RegistrationForm({
     isPending,
     error: submitError,
   } = useSubmitInscription()
+
+  const { mutateAsync: newPayment } = useNewPayment()
+  const { toast } = useToast()
 
   const isPaidEvent =
     Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
@@ -51,6 +54,42 @@ export default function RegistrationForm({
     setRole(null)
     setFiliation(null)
     setFiliationFile(null)
+  }
+
+  async function handlePaymentRedirect(price) {
+    try {
+      const inscriptionData = {
+        file: filiationFile,
+        roles: selectedRoleForPricing ? selectedRoleForPricing.split(',') : [],
+        affiliation: filiation,
+      }
+      await submitInscription({ inscriptionData })
+
+      const paymentData = {
+        fare_name: price.name,
+        works: [],
+      }
+
+      const result = await newPayment({ paymentData })
+
+      const checkoutUrl = result?.data?.checkout_url || result?.data?.init_point
+      if (checkoutUrl) {
+        setPaymentCompleted(true)
+        window.location.href = checkoutUrl
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Error connecting with payment service',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Error while processing payment',
+        variant: 'destructive',
+      })
+    }
   }
 
   async function handleSubmit(onClose) {
@@ -86,6 +125,7 @@ export default function RegistrationForm({
       onSubmit={handleSubmit}
       isPending={isLoading}
       submitButtonText={'Finalizar inscripción'}
+      submitButtonDisabled={isPaidEvent && !paymentCompleted}
     >
       {showFiliation ? (
         <FiliationInput
@@ -125,7 +165,7 @@ export default function RegistrationForm({
                 key={index}
                 className="p-4 bg-white border border-gray-200 rounded-lg"
               >
-                <div className="flex justify-between items-start">
+                <div className="flex justify-between items-center">
                   <div className="flex-1">
                     <h3 className="font-semibold">{price.name}</h3>
                     <p className="mt-2 text-sm text-gray-600">
@@ -137,9 +177,9 @@ export default function RegistrationForm({
                       className="w-32"
                       color="primary"
                       variant="flat"
-                      onPress={() =>
-                        alert('Iniciar flujo de pago (próximo paso)')
-                      }
+                      onPress={() => {
+                        handlePaymentRedirect(price)
+                      }}
                     >
                       <div className="flex flex-col items-center">
                         <span>Realizar pago</span>

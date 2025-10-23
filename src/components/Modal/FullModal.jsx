@@ -16,6 +16,7 @@ export default function FullModal({
   onSubmit,
   submitButtonText,
   isPending,
+  submitButtonDisabled = false,
   placement = 'top-center',
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -48,6 +49,7 @@ export default function FullModal({
                   variant="flat"
                   onPress={() => handleSubmit(onClose)}
                   isLoading={isPending}
+                  isDisabled={submitButtonDisabled}
                 >
                   {!isPending ? (
                     <>
