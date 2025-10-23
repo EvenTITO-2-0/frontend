@@ -16,7 +16,7 @@ import {
 import EventDialog from './EventDialog'
 import '/styles.css'
 
-export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots, eventRooms, eventStatus }) {
+export default function CalendarTable({ startDate, endDate, onAddNewSlot, eventSlots, eventRooms, eventStatus }) {
   const calendarRef = useRef(null)
 
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
@@ -29,10 +29,10 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots,
       if (lowerCaseTitle.includes('plenary')) return 'plenary'
       return 'slot'
     }
-    console.log('Received slots from parent:', slots)
+    console.log('Received slots from parent:', eventSlots)
     console.log('Received eventRooms from parent:', eventRooms)
-    if (slots) {
-      const transformedSlots = slots.map(slot => ({
+    if (eventSlots) {
+      const transformedSlots = eventSlots.map(slot => ({
         id: String(slot.id),
         start: slot.start,
         end: slot.end,
@@ -42,7 +42,7 @@ export default function CalendarTable({ startDate, endDate, onAddNewSlot, slots,
       }))
       setEvents(transformedSlots)
     }
-  }, [slots]) // This hook re-runs whenever the parent passes new 'slots' data.
+  }, [eventSlots]) // This hook re-runs whenever the parent passes new 'slots' data.
 
 
   const isEditable = eventStatus !== 'STARTED'

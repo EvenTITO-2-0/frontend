@@ -11,9 +11,9 @@ export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
   const endDate = event.dates.filter((d) => d.name === 'END_DATE')[0]?.date
-  const informativeDates = event.mdata?.informative_dates || []
   const [eventStatus, setEventStatus] = useState(event.status || null)
-  const [slots, setSlots] = useState(event.event_slots || [])
+  const [mdataSlots, setMdataSlots] = useState(event.mdata.slots || [])
+  const [eventSlots, setEventSlots] = useState(event.event_slots || [])
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
   console.log(event)
   // Helper to check if calendar was configured
@@ -91,7 +91,7 @@ export default function Page({ event }) {
     } else {
       eventCopy.mdata.slots.push(newSlot)
     }
-    setSlots([...eventCopy.mdata.slots])
+    setMdataSlots([...eventCopy.mdata.slots])
     await submitEditEvent({ eventData: eventCopy })
   }
 
@@ -104,7 +104,7 @@ export default function Page({ event }) {
           startDate={startDate}
           endDate={endDate}
           onAddNewSlot={onAddNewSlot}
-          slots={slots}
+          eventSlots={eventSlots}
           eventRooms={eventRooms}
           eventStatus={eventStatus}
           />
@@ -120,7 +120,7 @@ export default function Page({ event }) {
               startDate={startDate}
               endDate={endDate}
               onAddNewSlot={onAddNewSlot}
-              slots={slots}
+              slots={mdataSlots}
               eventStatus={eventStatus}
             />
           </>
