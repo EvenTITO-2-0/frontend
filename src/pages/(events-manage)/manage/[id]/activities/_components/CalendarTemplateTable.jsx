@@ -17,7 +17,7 @@ import EventDialog from './EventDialog'
 import '/styles.css'
 import Icon from '@/components/Icon.jsx'
 
-export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, slots = [], eventStatus }) {
+export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, onDeleteSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
 
   if (!startDate || !endDate) {
@@ -187,10 +187,6 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     }
   }
 
-  const handleDeleteEvent = (eventId) => {
-    setEvents((prev) => prev.filter((e) => e.id !== eventId))
-  }
-
   const handleEventResize = (info) => {
     const newStart = info.event.start
     const newEnd = info.event.end
@@ -198,17 +194,27 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
       info.revert()
       return
     }
+
+    let updatedEvent = info.event // To capture the updated event
+
     setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === info.event.id
-          ? {
+        prevEvents.map((event) => {
+          if (event.id === info.event.id) {
+            updatedEvent = {
               ...event,
               start: info.event.startStr,
               end: info.event.endStr,
             }
-          : event
-      )
+            return updatedEvent
+          }
+          return event
+        })
     )
+
+    // Save the change to the parent
+    if (updatedEvent) {
+      onAddNewSlot(updatedEvent) // <-- THIS WAS MISSING
+    }
   }
 
   const handleEventDrop = (info) => {
@@ -218,24 +224,33 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     const currentResource = info.event.getResources()[0]
     const currentResourceId = currentResource ? currentResource.id : null
     const finalResourceId = newResource ? newResource.id : currentResourceId
+
     if (!isBetweenAllowedDates(newStart, newEnd)) {
       info.revert()
       return
     }
+
+    let updatedEvent = null // To capture the updated event
+
     setEvents((prevEvents) =>
-      prevEvents.map((event) =>
-        event.id === info.event.id
-          ? {
+        prevEvents.map((event) => {
+          if (event.id === info.event.id) {
+            updatedEvent = {
               ...event,
               start: info.event.startStr,
               end: info.event.endStr,
               resourceId: finalResourceId,
             }
-          : event
-      )
+            return updatedEvent
+          }
+          return event
+        })
     )
-  }
 
+    if (updatedEvent) {
+      onAddNewSlot(updatedEvent)
+    }
+  }
   return (
     <>
       <FullCalendar
@@ -257,7 +272,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
         eventClassNames={(info) => {
-          const type = info.event.type || 'slot'
+          const type = info.event.extendedProps.type || 'slot'
           const classes = [`event-${type}`]
           if (info.event.id === selectedEvent?.id) {
             classes.push('event-selected')
@@ -265,7 +280,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
           return classes
         }}
         headerToolbar={{
-          left: 'prevWeek,prevDay today nextDay,nextWeek',
+          left: 'prevWeek,prevDay nextDay,nextWeek',
           center: 'title',
           right: 'resourceTimeGridDay,resourceTimeGridSevenDay',
         }}
@@ -325,7 +340,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}
-        onDelete={handleDeleteEvent}
+        onDelete={onDeleteSlot}
         eventInfo={dialogEventInfo}
         isNewEvent={isNewEvent}
         lastSelectedType={lastSelectedType}

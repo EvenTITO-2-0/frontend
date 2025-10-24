@@ -95,6 +95,20 @@ export default function Page({ event }) {
     await submitEditEvent({ eventData: eventCopy })
   }
 
+  async function onDeleteSlot(slotIdToDelete) {
+    let eventCopy = { ...event }
+    if (!eventCopy.mdata || !eventCopy.mdata.slots) {
+      console.warn('Cannot delete slot: mdata.slots is not initialized.')
+      return
+    }
+    const updatedSlots = eventCopy.mdata.slots.filter(
+        (slot) => slot.id !== slotIdToDelete
+    )
+    eventCopy.mdata.slots = updatedSlots
+    setMdataSlots(updatedSlots)
+    await submitEditEvent({ eventData: eventCopy })
+  }
+
   return (
     <ContainerPage>
       <div className="space-y-6">
@@ -120,6 +134,7 @@ export default function Page({ event }) {
               startDate={startDate}
               endDate={endDate}
               onAddNewSlot={onAddNewSlot}
+              onDeleteSlot={onDeleteSlot}
               slots={mdataSlots}
               eventStatus={eventStatus}
             />
