@@ -52,16 +52,6 @@ export default function Page({ event }) {
     await onEditDate({ newDate: newDate, nameDate: 'END_DATE' })
   }
 
-  async function onEditActivity({ newDate, oldTitle }) {
-    let eventCopy = { ...event }
-    delete eventCopy.title
-    eventCopy.mdata.informative_dates = eventCopy.mdata.informative_dates.map(
-      (d) => (d.title === oldTitle ? { ...newDate } : d)
-    )
-
-    await submitEditEvent({ eventData: eventCopy })
-  }
-
   async function onAddNewSlot(newSlot) {
     let eventCopy = { ...event }
     if (!eventCopy.mdata) eventCopy.mdata = {}
@@ -95,13 +85,12 @@ export default function Page({ event }) {
     <ContainerPage>
       <div className="space-y-6">
         <TitlePage title={'Actividades del evento'}
-             rightComponent={wasConfigured ? <SetDeleteDialog eventId={event.id}/> : <SetCalendarDialog eventRooms={eventRooms} eventId={event.id}/>}
+             rightComponent={wasConfigured ? <SetDeleteDialog/> : <SetCalendarDialog eventRooms={eventRooms} eventId={event.id}/>}
         />
         {wasConfigured ?
           <CalendarTable
           startDate={startDate}
           endDate={endDate}
-          onAddNewSlot={onAddNewSlot}
           eventSlots={eventSlots}
           eventRooms={eventRooms}
           eventStatus={eventStatus}

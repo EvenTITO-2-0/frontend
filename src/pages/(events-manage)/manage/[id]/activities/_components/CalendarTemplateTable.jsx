@@ -159,20 +159,20 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     setLastSelectedType(type)
 
     if (id) {
+      const originalEvent = events.find((e) => e.id === id);
+      const updatedEvent = {
+        ...originalEvent,
+        title,
+        start: formatISO(start),
+        end: formatISO(end),
+        type: type,
+      };
       setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === id
-            ? {
-                ...event,
-                title,
-                start: formatISO(start),
-                end: formatISO(end),
-                type: type,
-              }
-            : event
-        )
+          prevEvents.map((event) =>
+              event.id === id ? updatedEvent : event
+          )
       )
-      onAddNewSlot(events.find((event) => event.id === id))
+      onAddNewSlot(updatedEvent);
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -180,7 +180,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: formatISO(start),
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
-                type: type,
+        type: type,
       }
       setEvents((prev) => [...prev, newEvent])
       onAddNewSlot(newEvent)

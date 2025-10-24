@@ -16,7 +16,7 @@ import {
 import EventDialog from './EventDialog'
 import '/styles.css'
 
-export default function CalendarTable({ startDate, endDate, onAddNewSlot, eventSlots, eventRooms, eventStatus }) {
+export default function CalendarTable({ startDate, endDate, eventSlots, eventRooms, eventStatus }) {
   const calendarRef = useRef(null)
 
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))

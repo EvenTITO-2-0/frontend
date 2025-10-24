@@ -12,6 +12,7 @@ import { AlertTriangle } from 'lucide-react'
 import { ChevronsRight, Loader2 } from 'lucide-react'
 
 import { useGenerateFromPlantillaMutation } from '@/hooks/events/chairHooks'
+import {getEventId} from "@/lib/utils.js";
 
 export default function SetCalendarDialog({ eventRooms, eventId }) {
 
@@ -20,7 +21,7 @@ export default function SetCalendarDialog({ eventRooms, eventId }) {
   const navigate = useNavigate()
 
   const handleRedirectToRooms = () => {
-    navigate(`/manage/${eventId}/rooms`) // Assumes this is your rooms URL
+    navigate(`/manage/${getEventId()}/rooms`) // Assumes this is your rooms URL
     setOpen(false)
   }
 
