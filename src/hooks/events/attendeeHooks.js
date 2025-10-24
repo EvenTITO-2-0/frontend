@@ -31,6 +31,23 @@ export function useGetMyInscription() {
   })
 }
 
+export function useHasMyInscription() {
+  const eventId = getEventId()
+
+  return useQuery({
+    queryKey: ['hasMyInscription', { eventId }],
+    queryFn: async () => {
+      try {
+        await apiGetMyInscriptions(eventId)
+        return true
+      } catch (e) {
+        return false
+      }
+    },
+    retry: false,
+  })
+}
+
 export function useSubmitInscription() {
   const eventId = getEventId()
   const queryClient = useQueryClient()

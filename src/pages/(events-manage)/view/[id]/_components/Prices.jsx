@@ -43,13 +43,13 @@ export default function Prices({ prices, dates }) {
       <TitlePage title="Tarifas del evento" />
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
         {validPrices.map((price, index) => (
-          <Card key={index} className="flex flex-col">
+          <Card key={index} className="flex flex-col border-dashed">
             <CardHeader>
               <CardTitle>{price.name}</CardTitle>
               <CardDescription>{price.description}</CardDescription>
             </CardHeader>
             <CardContent className="flex-grow flex flex-col justify-between">
-              <div className="text-3xl font-bold mb-4">
+              <div className="text-3xl font-bold mb-1">
                 $ {price.value.toFixed(2)}
               </div>
               {price.related_date && (

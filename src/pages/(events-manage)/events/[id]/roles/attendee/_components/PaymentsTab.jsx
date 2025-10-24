@@ -30,9 +30,13 @@ export default function PaymentsTab({ inscription }) {
 
   const payments = inscription.payments || []
   const hasActiveProvider = providerStatus?.account_status === 'ACTIVE'
-  const hasPendingPayments = payments.some(
-    (payment) => payment.status === 'PENDING'
+  const hasPendingApproval = payments.some(
+    (payment) => payment.status === 'PENDING_APPROVAL'
   )
+  const hasApprovedPayment = payments.some(
+    (payment) => payment.status === 'APPROVED'
+  )
+  const canCreateNewPayment = !hasPendingApproval && !hasApprovedPayment
 
   useEffect(() => {
     console.log('PaymentsTab - Provider Status:', {
@@ -77,8 +81,8 @@ export default function PaymentsTab({ inscription }) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Mis pagos</span>
-          {/* Mostrar botón también en modo testing (sin proveedor activo) */}
-          {!hasPendingPayments && (
+          {/* Botón de nuevo pago (deshabilitado si hay pago aprobado o en revisión) */}
+          {canCreateNewPayment ? (
             <Button
               onClick={() =>
                 navigate(`/events/${eventId}/roles/attendee/new-payment`)
@@ -86,6 +90,10 @@ export default function PaymentsTab({ inscription }) {
             >
               <PlusIcon className="mr-2 h-4 w-4" />
               {hasActiveProvider ? 'Nuevo pago' : 'Nuevo pago de prueba'}
+            </Button>
+          ) : (
+            <Button disabled variant="secondary">
+              {hasApprovedPayment ? 'Pago aprobado' : 'Pago en revisión'}
             </Button>
           )}
         </CardTitle>
@@ -160,10 +168,15 @@ export default function PaymentsTab({ inscription }) {
                           {PAYMENT_STATUS_LABELS[payment.status]}
                         </TableCell>
                         <TableCell>
-                          {format(payment.created_at, 'DD/MM/YYYY')}
+                          {format(
+                            payment.date || payment.created_at,
+                            'DD/MM/YYYY'
+                          )}
                         </TableCell>
                         <TableCell>
-                          {payment.status === 'PENDING' && (
+                          {['REJECTED', 'UNCOMPLETED'].includes(
+                            payment.status
+                          ) && (
                             <Button
                               variant="outline"
                               size="sm"

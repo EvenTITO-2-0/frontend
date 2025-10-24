@@ -29,7 +29,12 @@ export default function RegisterTab({ inscription }) {
     error,
   } = useUpdateInscription()
 
+  const hasApprovedPayment = (inscription.payments || []).some(
+    (p) => p.status === 'APPROVED'
+  )
+
   const handleEdit = () => {
+    if (hasApprovedPayment) return
     setIsEditing(true)
   }
 
@@ -69,6 +74,7 @@ export default function RegisterTab({ inscription }) {
             handleSave={handleSave}
             handleCancel={handleCancel}
             isLoading={isPending}
+            disabled={hasApprovedPayment}
           />
         </CardTitle>
       </CardHeader>
@@ -93,6 +99,7 @@ function EditInscriptionButton({
   handleCancel,
   handleSave,
   isLoading,
+  disabled = false,
 }) {
   if (isEditing) {
     return (
@@ -110,8 +117,8 @@ function EditInscriptionButton({
   }
 
   return (
-    <Button onClick={handleEdit} variant="outline">
-      Editar
+    <Button onClick={handleEdit} variant="outline" disabled={disabled}>
+      {disabled ? 'Inscripción finalizada' : 'Editar'}
     </Button>
   )
 }
