@@ -13,7 +13,7 @@ import { ChevronsRight, Loader2 } from 'lucide-react'
 
 import { useGenerateFromPlantillaMutation } from '@/hooks/events/chairHooks'
 
-export default function SetCalendarDialog({ onCalendarSet, eventRooms, eventId }) {
+export default function SetCalendarDialog({ eventRooms, eventId }) {
 
   const [open, setOpen] = useState(false)
   const { mutateAsync, isPending } = useGenerateFromPlantillaMutation()
@@ -28,7 +28,6 @@ export default function SetCalendarDialog({ onCalendarSet, eventRooms, eventId }
     try {
       const res = await mutateAsync()
       if (res?.status === 201 || res?.ok) {
-        if (onCalendarSet) onCalendarSet()
         setOpen(false) // Close dialog on success
       }
     } catch (e) {

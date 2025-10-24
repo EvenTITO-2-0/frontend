@@ -171,9 +171,15 @@ export function useGetMyTracks(roles) {
 
 export function useGenerateFromPlantillaMutation() {
   const eventId = getEventId();
+  const queryClient = useQueryClient()
   return useMutation({
     mutationFn: async () => {
       return await apiGenerateFromPlantilla(eventId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getEventById', { eventId }],
+      })
     },
   });
 }

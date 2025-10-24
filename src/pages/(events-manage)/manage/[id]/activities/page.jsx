@@ -16,19 +16,8 @@ export default function Page({ event }) {
   const [eventSlots, setEventSlots] = useState(event.event_slots || [])
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
   console.log(event)
-  // Helper to check if calendar was configured
   const wasConfigured = event.mdata?.was_configured
 
-  // Callback to set was_configured and save event
-  const handleCalendarSet = async () => {
-    const updatedEvent = { ...event, mdata: { ...event.mdata, was_configured: true } }
-    //TODO PASAR EL UPDATE AL BACKEND
-    await submitEditEvent({ eventData: updatedEvent })
-    // Optionally, you may want to update the UI after saving
-    event.mdata.was_configured = true
-  }
-
-  // Actualizar estado si es que existe
   useEffect(() => {
     async function fetchStatus() {
       if (!event.status && event.id) {
@@ -41,17 +30,9 @@ export default function Page({ event }) {
     fetchStatus()
   }, [event])
 
-  async function onAddNewDate({ newDate }) {
-    let eventCopy = { ...event }
-    delete eventCopy.title
-    if (!eventCopy.mdata.informative_dates) {
-      eventCopy.mdata.informative_dates = []
-    }
-    eventCopy.mdata.informative_dates.push(newDate)
-    console.log('newDate: ' + JSON.stringify(newDate))
-    console.log('eventCopy: ' + JSON.stringify(eventCopy))
-    await submitEditEvent({ eventData: eventCopy })
-  }
+  useEffect(() => {
+    setEventSlots(event.event_slots || [])
+  }, [event.event_slots])
 
   async function onEditDate({ newDate, nameDate }) {
     let eventCopy = { ...event }
@@ -114,7 +95,7 @@ export default function Page({ event }) {
       <div className="space-y-6">
         <TitlePage title={'Actividades del evento'}
              rightComponent={!wasConfigured &&
-                 <SetCalendarDialog onCalendarSet={handleCalendarSet} eventRooms={eventRooms} eventId={event.id}/>}
+                 <SetCalendarDialog eventRooms={eventRooms} eventId={event.id}/>}
         />
         {wasConfigured ?
           <CalendarTable
