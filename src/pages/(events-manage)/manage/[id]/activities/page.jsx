@@ -112,7 +112,10 @@ export default function Page({ event }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Actividades del evento'} rightComponent={!wasConfigured && <SetCalendarDialog onCalendarSet={handleCalendarSet} />}/>
+        <TitlePage title={'Actividades del evento'}
+             rightComponent={!wasConfigured &&
+                 <SetCalendarDialog onCalendarSet={handleCalendarSet} eventRooms={eventRooms} eventId={event.id}/>}
+        />
         {wasConfigured ?
           <CalendarTable
           startDate={startDate}
