@@ -16,7 +16,7 @@ import {
   apiPutReviewDeadline,
 } from '@/services/api/events/reviewer/queries'
 import { format } from 'date-fns'
-import { apiGenerateFromPlantilla, apiGetMyEventChair } from '@/services/api/events/chair/queries.js'
+import {apiDeleteRooms, apiGenerateFromPlantilla, apiGetMyEventChair} from '@/services/api/events/chair/queries.js'
 import { convertEventChair } from '@/services/api/events/chair/conversor.js'
 import { ORGANIZER_ROLE } from '@/lib/Constants.js'
 
@@ -175,6 +175,21 @@ export function useGenerateFromPlantillaMutation() {
   return useMutation({
     mutationFn: async () => {
       return await apiGenerateFromPlantilla(eventId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getEventById', { eventId }],
+      })
+    },
+  });
+}
+
+export function useDeleteRoomsMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      return await apiDeleteRooms(eventId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({
