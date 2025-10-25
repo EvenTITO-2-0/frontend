@@ -16,7 +16,14 @@ import {
   apiPutReviewDeadline,
 } from '@/services/api/events/reviewer/queries'
 import { format } from 'date-fns'
-import {apiDeleteRooms, apiGenerateFromPlantilla, apiGetMyEventChair} from '@/services/api/events/chair/queries.js'
+import {
+  apiCreateSlot,
+  apiDeleteSlot,
+  apiUpdateSlot,
+  apiDeleteRooms,
+  apiGenerateFromPlantilla,
+  apiGetMyEventChair,
+} from '@/services/api/events/chair/queries.js'
 import { convertEventChair } from '@/services/api/events/chair/conversor.js'
 import { ORGANIZER_ROLE } from '@/lib/Constants.js'
 
@@ -190,6 +197,51 @@ export function useDeleteRoomsMutation() {
   return useMutation({
     mutationFn: async () => {
       return await apiDeleteRooms(eventId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getEventById', { eventId }],
+      })
+    },
+  });
+}
+
+export function useCreateSlotMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({slot}) => {
+      return await apiCreateSlot(eventId, slot);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getEventById', { eventId }],
+      })
+    },
+  });
+}
+
+export function useUpdateSlotMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({slotId, slot}) => {
+      return await apiUpdateSlot(eventId, slotId, slot);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getEventById', { eventId }],
+      })
+    },
+  });
+}
+
+export function useDeleteSlotMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({slotId}) => {
+      return await apiDeleteSlot(eventId, slotId);
     },
     onSuccess: () => {
       queryClient.invalidateQueries({

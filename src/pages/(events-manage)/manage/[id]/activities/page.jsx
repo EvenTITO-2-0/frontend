@@ -88,7 +88,8 @@ export default function Page({ event }) {
              rightComponent={wasConfigured ? <SetDeleteDialog/> : <SetCalendarDialog eventRooms={eventRooms} eventId={event.id}/>}
         />
         {wasConfigured ?
-          <CalendarTable
+          <CalendarTable 
+          eventId={event.id}
           startDate={startDate}
           endDate={endDate}
           eventSlots={eventSlots}

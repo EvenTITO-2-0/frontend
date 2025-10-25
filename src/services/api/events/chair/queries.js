@@ -38,3 +38,23 @@ export const apiDeleteRooms = async (eventId) => {
       `/${eventId}/configuration/slots`
   )
 }
+
+export const apiCreateSlot = async (eventId, slot) => {
+  return await eventsClient.post(
+      `/${eventId}/configuration/slots`,
+    slot
+  )
+}
+
+export const apiUpdateSlot = async (eventId, slotId, slot) => {
+  return await eventsClient.put(
+      `/${eventId}/configuration/slots/${slotId}`,
+      slot
+  )
+}
+
+export const apiDeleteSlot = async (eventId, slotId) => {
+  return await eventsClient.delete(
+      `/${eventId}/configuration/slots/${slotId}`
+  )
+}

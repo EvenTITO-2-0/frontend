@@ -15,10 +15,23 @@ import {
 } from 'date-fns'
 import EventDialog from './EventDialog'
 import '/styles.css'
+import {
+  useCreateSlotMutation,
+  useDeleteSlotMutation,
+  useUpdateSlotMutation,
+} from '@/hooks/events/chairHooks.js'
 
-export default function CalendarTable({ startDate, endDate, eventSlots, eventRooms, eventStatus }) {
+export default function CalendarTable({
+  startDate,
+  endDate,
+  eventSlots,
+  eventRooms,
+  eventStatus,
+}) {
   const calendarRef = useRef(null)
-
+  const useDeleteSlot = useDeleteSlotMutation()
+  const useCreateSlot = useCreateSlotMutation()
+  const useUpdateSlot = useUpdateSlotMutation()
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
 
   useEffect(() => {
@@ -188,7 +201,8 @@ export default function CalendarTable({ startDate, endDate, eventSlots, eventRoo
           event.id === id ? updatedEvent : event
         )
       )
-      onAddNewSlot(updatedEvent)
+      // Update the slot on backend (if we have a numeric id)
+      updateSlotAsync(updatedEvent)
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -199,11 +213,14 @@ export default function CalendarTable({ startDate, endDate, eventSlots, eventRoo
         type: type,
       }
       setEvents((prev) => [...prev, newEvent])
-      onAddNewSlot(newEvent)
+      // Create the slot on backend
+      createSlotAsync(newEvent)
     }
   }
 
   const handleDeleteEvent = (eventId) => {
+    // Attempt to delete on backend first
+    deleteSlotAsync(eventId)
     setEvents((prev) => prev.filter((e) => e.id !== eventId))
   }
 
@@ -225,6 +242,15 @@ export default function CalendarTable({ startDate, endDate, eventSlots, eventRoo
           : event
       )
     )
+    // Persist change to backend
+    updateSlotAsync({
+      id: info.event.id,
+      start: info.event.startStr,
+      end: info.event.endStr,
+      resourceId: info.event.getResources()[0]?.id,
+      title: info.event.title,
+      type: info.event.extendedProps.type || info.event.type,
+    })
   }
 
   const handleEventDrop = (info) => {
@@ -250,6 +276,56 @@ export default function CalendarTable({ startDate, endDate, eventSlots, eventRoo
           : event
       )
     )
+    updateSlotAsync({
+      id: info.event.id,
+      start: info.event.startStr,
+      end: info.event.endStr,
+      resourceId: finalResourceId,
+      title: info.event.title,
+      type: info.event.extendedProps.type || info.event.type,
+    })
+  }
+
+  const isNumericId = (id) => /^\d+$/.test(String(id))
+
+  const createSlotAsync = async (slot) => {
+    try {
+      const body = {
+        title: slot.title,
+        start: slot.start,
+        end: slot.end,
+        type: slot.type,
+        room_name: slot.resourceId || slot.room_name,
+      }
+      return await useCreateSlot.mutateAsync({slot: body})
+    } catch (err) {
+      console.error('Failed to create slot', err)
+    }
+  }
+
+  const updateSlotAsync = async (slot) => {
+    if (!isNumericId(slot.id)) return
+    try {
+      const body = {
+        title: slot.title,
+        start: slot.start,
+        end: slot.end,
+        type: slot.type,
+        room_name: slot.resourceId || slot.room_name,
+      }
+      return await useUpdateSlot.mutateAsync({slotId: slot.id, slot: body})
+    } catch (err) {
+      console.error('Failed to update slot', err)
+    }
+  }
+
+  const deleteSlotAsync = async (slotId) => {
+    if (!isNumericId(slotId)) return
+    try {
+      return await useDeleteSlot.mutateAsync({ slotId: slotId })
+    } catch (err) {
+      console.error('Failed to delete slot', err)
+    }
   }
 
   return (
@@ -302,7 +378,6 @@ export default function CalendarTable({ startDate, endDate, eventSlots, eventRoo
             click: () => {
               const calendarApi = calendarRef.current?.getApi()
               if (calendarApi) {
-                // Go to the event start date, not the real "today"
                 calendarApi.gotoDate(startDate)
               }
             },
