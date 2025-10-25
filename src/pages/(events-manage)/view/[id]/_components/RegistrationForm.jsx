@@ -11,6 +11,7 @@ import { sleep } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from 'react-router-dom'
 
 export default function RegistrationForm({
   trigger,
@@ -18,6 +19,7 @@ export default function RegistrationForm({
   speakerDisabled,
   setInscriptionSuccess,
   prices = [],
+  eventId,
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState(null)
@@ -36,6 +38,7 @@ export default function RegistrationForm({
 
   const { mutateAsync: newPayment } = useNewPayment()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const isPaidEvent =
     Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
@@ -64,6 +67,12 @@ export default function RegistrationForm({
         affiliation: filiation,
       }
       await submitInscription({ inscriptionData })
+
+      const priceValue = price.amount || price.price || price.value
+      if (Number(priceValue) === 0) {
+        navigate(`/events/${eventId}/roles/attendee`)
+        return
+      }
 
       const paymentData = {
         fare_name: price.name,
@@ -124,7 +133,7 @@ export default function RegistrationForm({
       title={'Inscripción al evento ' + eventTitle}
       onSubmit={handleSubmit}
       isPending={isLoading}
-      submitButtonText={'Finalizar inscripción'}
+      hideSubmitButton={true}
       submitButtonDisabled={isPaidEvent && !paymentCompleted}
     >
       {showFiliation ? (

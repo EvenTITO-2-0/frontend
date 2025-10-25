@@ -89,7 +89,7 @@ export default function PriceDialog({
         <span>
           <Button variant="outline" disabled={!price && hasFreePrice}>
             <Plus className="h-4 w-4 mr-2" />
-            {price ? 'Editar tarifa' : 'Nueva tarifa'}
+            {price ? 'Editar' : 'Nueva tarifa'}
           </Button>
         </span>
       </DialogTrigger>
