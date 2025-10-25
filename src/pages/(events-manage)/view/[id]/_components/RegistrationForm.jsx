@@ -147,7 +147,12 @@ export default function RegistrationForm({
         />
       )}
       <InscriptionRoleSelector
-        label={<LabelForm label="Seleccionar el rol en el evento" isRequired />}
+        label={
+          <LabelForm
+            label="Seleccionar un rol para visualizar sus tarifas"
+            isRequired
+          />
+        }
         role={role}
         setRole={(newRole) => {
           setRole(newRole)
@@ -174,7 +179,7 @@ export default function RegistrationForm({
                   </div>
                   <div className="ml-4 flex flex-col items-center">
                     <Button
-                      className="w-32"
+                      className="w-full"
                       color="primary"
                       variant="flat"
                       onPress={() => {
@@ -182,7 +187,7 @@ export default function RegistrationForm({
                       }}
                     >
                       <div className="flex flex-col items-center">
-                        <span>Realizar pago</span>
+                        <span>Inscribirme</span>
                         <span className="text-sm font-bold">
                           ${price.amount || price.price || price.value}{' '}
                           {price.currency || 'ARS'}
