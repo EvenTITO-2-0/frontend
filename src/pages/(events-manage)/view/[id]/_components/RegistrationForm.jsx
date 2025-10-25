@@ -163,7 +163,6 @@ export default function RegistrationForm({
 
       {isPaidEvent && selectedRoleForPricing && (
         <div className="space-y-4">
-          <LabelForm label="Selecciona una tarifa" isRequired />
           <div className="space-y-2">
             {getPricesForSelectedRole().map((price, index) => (
               <div
@@ -187,8 +186,8 @@ export default function RegistrationForm({
                       }}
                     >
                       <div className="flex flex-col items-center">
-                        <span>Inscribirme</span>
-                        <span className="text-sm font-bold">
+                        <span className="text-sm font-bold">Inscribirme</span>
+                        <span>
                           ${price.amount || price.price || price.value}{' '}
                           {price.currency || 'ARS'}
                         </span>
