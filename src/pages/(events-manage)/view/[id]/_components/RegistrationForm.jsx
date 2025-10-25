@@ -170,7 +170,7 @@ export default function RegistrationForm({
         speakerDisabled={speakerDisabled}
       />
 
-      {isPaidEvent && selectedRoleForPricing && (
+      {selectedRoleForPricing && (
         <div className="space-y-4">
           <div className="space-y-2">
             {getPricesForSelectedRole().map((price, index) => (
