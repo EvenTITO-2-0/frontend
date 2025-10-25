@@ -175,16 +175,7 @@ export default function Details({
                             </ul>
                           </div>
                         )}
-                        <div className="flex space-x-2">
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => handleDownloadPDF(payment.id)}
-                          >
-                            <Download className="mr-2 h-4 w-4" /> Descargar
-                            comprobante
-                          </Button>
-                        </div>
+                        <div className="flex space-x-2"></div>
                       </CardContent>
                     </Card>
                   ))}
