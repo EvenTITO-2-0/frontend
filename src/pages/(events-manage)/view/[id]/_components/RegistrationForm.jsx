@@ -179,9 +179,9 @@ export default function RegistrationForm({
                   </div>
                   <div className="ml-4 flex flex-col items-center">
                     <Button
-                      className="w-full"
+                      className="w-full rounded-md"
                       color="primary"
-                      variant="flat"
+                      variant="solid"
                       onPress={() => {
                         handlePaymentRedirect(price)
                       }}
