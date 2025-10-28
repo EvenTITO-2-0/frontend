@@ -28,7 +28,8 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     setEvents(slots)
   }, [slots])
 
-  const isEditable = eventStatus !== 'STARTED'
+  //const isEditable = eventStatus !== 'STARTED'
+  const isEditable = true
 
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')

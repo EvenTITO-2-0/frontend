@@ -22,7 +22,7 @@ import {
   apiUpdateSlot,
   apiDeleteRooms,
   apiGenerateFromPlantilla,
-  apiGetMyEventChair,
+  apiGetMyEventChair, apiAssignWorks,
 } from '@/services/api/events/chair/queries.js'
 import { convertEventChair } from '@/services/api/events/chair/conversor.js'
 import { ORGANIZER_ROLE } from '@/lib/Constants.js'
@@ -248,5 +248,14 @@ export function useDeleteSlotMutation() {
         queryKey: ['getEventById', { eventId }],
       })
     },
+  });
+}
+
+export function useAssignWorksMutation() {
+  const eventId = getEventId();
+  return useMutation({
+    mutationFn: async () => {
+      return await apiAssignWorks(eventId);
+    }
   });
 }

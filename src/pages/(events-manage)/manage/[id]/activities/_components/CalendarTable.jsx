@@ -58,7 +58,7 @@ export default function CalendarTable({
   }, [eventSlots]) // This hook re-runs whenever the parent passes new 'slots' data.
 
 
-  const isEditable = eventStatus !== 'STARTED'
+  const isEditable = true // eventStatus !== 'STARTED'
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')
 

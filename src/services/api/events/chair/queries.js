@@ -1,5 +1,5 @@
 import { eventsClient } from '../../clients'
-import {useDeleteRoomsMutation} from "@/hooks/events/chairHooks.js";
+import {useAssignWorksMutation, useDeleteRoomsMutation} from "@/hooks/events/chairHooks.js";
 
 export const apiGetEventChairs = async (eventId) => {
   return (await eventsClient.get(`/${eventId}/chairs`)).data
@@ -56,5 +56,11 @@ export const apiUpdateSlot = async (eventId, slotId, slot) => {
 export const apiDeleteSlot = async (eventId, slotId) => {
   return await eventsClient.delete(
       `/${eventId}/configuration/slots/${slotId}`
+  )
+}
+
+export const apiAssignWorks = async (eventId) => {
+  return await eventsClient.get(
+      `/${eventId}/configuration/slots/assign`
   )
 }

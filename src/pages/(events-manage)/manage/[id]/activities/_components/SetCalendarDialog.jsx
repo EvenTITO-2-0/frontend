@@ -14,7 +14,7 @@ import { ChevronsRight, Loader2 } from 'lucide-react'
 import { useGenerateFromPlantillaMutation } from '@/hooks/events/chairHooks'
 import {getEventId} from "@/lib/utils.js";
 
-export default function SetCalendarDialog({ eventRooms, eventId }) {
+export default function SetCalendarDialog({ eventRooms }) {
 
   const [open, setOpen] = useState(false)
   const { mutateAsync, isPending } = useGenerateFromPlantillaMutation()

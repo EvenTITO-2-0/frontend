@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 import SetCalendarDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SetCalendarDialog.jsx'
 import CalendarTable from '@/pages/(events-manage)/manage/[id]/activities/_components/CalendarTable.jsx'
 import SetDeleteDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/SetDeleteDialog.jsx";
+import AssignDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/AssignDialog.jsx";
 
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
@@ -85,7 +86,12 @@ export default function Page({ event }) {
     <ContainerPage>
       <div className="space-y-6">
         <TitlePage title={'Actividades del evento'}
-             rightComponent={wasConfigured ? <SetDeleteDialog/> : <SetCalendarDialog eventRooms={eventRooms} eventId={event.id}/>}
+             rightComponent={wasConfigured ?
+                 <>
+                   <SetDeleteDialog/>
+                   <AssignDialog/>
+                 </> :
+                 <SetCalendarDialog eventRooms={eventRooms}/>}
         />
         {wasConfigured ?
           <CalendarTable 
