@@ -20,10 +20,6 @@ import Icon from '@/components/Icon.jsx'
 export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, onDeleteSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
 
-  if (!startDate || !endDate) {
-    return <NoDatesMessage />
-  }
-
   useEffect(() => {
     setEvents(slots)
   }, [slots])
@@ -348,17 +344,5 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         disabled={!isEditable}
       />
     </>
-  )
-}
-
-function NoDatesMessage() {
-  return (
-    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
-      <Icon name="CalendarClock" />
-      <p className="text-lg">
-        Configura las fechas de inicio y fin de presentaciones para agregar
-        actividades al evento.
-      </p>
-    </div>
   )
 }

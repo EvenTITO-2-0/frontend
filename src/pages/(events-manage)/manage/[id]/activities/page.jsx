@@ -3,11 +3,12 @@ import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 import { useEditEvent } from '@/hooks/manage/generalHooks'
 import ConfigurationDates from './_components/ConfigurationDates'
 import CalendarTemplateTable from './_components/CalendarTemplateTable'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import SetCalendarDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SetCalendarDialog.jsx'
 import CalendarTable from '@/pages/(events-manage)/manage/[id]/activities/_components/CalendarTable.jsx'
 import SetDeleteDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/SetDeleteDialog.jsx";
 import AssignDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/AssignDialog.jsx";
+import Icon from '@/components/Icon.jsx'
 
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
@@ -85,24 +86,29 @@ export default function Page({ event }) {
   return (
     <ContainerPage>
       <div className="space-y-6">
-        <TitlePage title={'Actividades del evento'}
-             rightComponent={wasConfigured ?
-                 <>
-                   <SetDeleteDialog/>
-                   <AssignDialog/>
-                 </> :
-                 <SetCalendarDialog eventRooms={eventRooms}/>}
+        <TitlePage
+          title={'Actividades del evento'}
+          rightComponent={
+            wasConfigured ? (
+              <>
+                <SetDeleteDialog />
+                <AssignDialog />
+              </>
+            ) : (
+              <SetCalendarDialog eventRooms={eventRooms} />
+            )
+          }
         />
-        {wasConfigured ?
-          <CalendarTable 
-          eventId={event.id}
-          startDate={startDate}
-          endDate={endDate}
-          eventSlots={eventSlots}
-          eventRooms={eventRooms}
-          eventStatus={eventStatus}
+        {wasConfigured ? (
+          <CalendarTable
+            eventId={event.id}
+            startDate={startDate}
+            endDate={endDate}
+            eventSlots={eventSlots}
+            eventRooms={eventRooms}
+            eventStatus={eventStatus}
           />
-          :
+        ) : (
           <>
             <ConfigurationDates
               startDate={startDate}
@@ -110,17 +116,33 @@ export default function Page({ event }) {
               onEditStartDate={onEditStartDate}
               onEditEndDate={onEditEndDate}
             />
-            <CalendarTemplateTable
-              startDate={startDate}
-              endDate={endDate}
-              onAddNewSlot={onAddNewSlot}
-              onDeleteSlot={onDeleteSlot}
-              slots={mdataSlots}
-              eventStatus={eventStatus}
-            />
+            {(!startDate || !endDate) ? (
+              <NoDatesMessage />
+            ) : (
+              <CalendarTemplateTable
+                startDate={startDate}
+                endDate={endDate}
+                onAddNewSlot={onAddNewSlot}
+                onDeleteSlot={onDeleteSlot}
+                slots={mdataSlots}
+                eventStatus={eventStatus}
+              />
+            )}
           </>
-        }
+        )}
       </div>
     </ContainerPage>
+  )
+}
+
+function NoDatesMessage() {
+  return (
+    <div className="flex items-center gap-2 mt-2 text-muted-foreground">
+      <Icon name="CalendarClock" />
+      <p className="text-lg">
+        Configura las fechas de inicio y fin de presentaciones para agregar
+        actividades al evento.
+      </p>
+    </div>
   )
 }
