@@ -19,9 +19,9 @@ export default function SetCalendarDialog({ eventRooms }) {
   const [open, setOpen] = useState(false)
   const { mutateAsync, isPending } = useGenerateFromPlantillaMutation()
   const navigate = useNavigate()
-
+  const eventId = getEventId()
   const handleRedirectToRooms = () => {
-    navigate(`/manage/${getEventId()}/rooms`) // Assumes this is your rooms URL
+    navigate(`/manage/${eventId}/rooms`) // Assumes this is your rooms URL
     setOpen(false)
   }
 
