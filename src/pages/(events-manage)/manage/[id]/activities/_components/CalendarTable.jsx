@@ -352,6 +352,7 @@ export default function CalendarTable({
     }
   }
 
+
   return (
     <>
       <FullCalendar
@@ -372,6 +373,7 @@ export default function CalendarTable({
         select={handleDateSelect}
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
+        eventContent={renderEventContent}
         eventClassNames={(info) => {
           const type = info.event.extendedProps.originalType || info.event.type || 'slot'
           const classes = [`event-${type}`]
@@ -439,3 +441,55 @@ export default function CalendarTable({
     </>
   )
 }
+
+
+const renderEventContent = (eventInfo) => {
+    const { works, originalType } = eventInfo.event.extendedProps;
+    const type = originalType || 'slot';
+
+    // ... (Plenary and Break logic remains the same) ...
+    if (type.includes('plenary') || type.includes('break')) {
+      return (
+        <div className="event-content-simple">
+          <strong>{eventInfo.event.title}</strong>
+        </div>
+      );
+    }
+
+    // --- Render Assigned Slots (with works) ---
+    if (works && works.length > 0) {
+      return (
+        <div className="event-content-work">
+          {works.map((work) => {
+            // --- Logic to get a track-specific class ---
+            // (From the previous "bonus" answer)
+            const trackClass = work.track
+              ? `event-track-${work.track.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
+              : '';
+
+            return (
+              <div key={work.id} className="work-item">
+                <span className="track-tag">
+                  {work.track || 'No Track'}
+                </span>
+
+                {/* --- CONTAINER FOR ID WITH SQUARE --- */}
+                <div className="work-id-container">
+                  {/* We apply the trackClass to the square */}
+                  <div className={`color-square ${trackClass}`}></div>
+                  <span className="work-id">ID: {work.id.substring(0, 8)}...</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      );
+    }
+
+    // ... (Empty slot logic remains the same) ...
+    return (
+      <div className="event-content-simple">
+        <em>{eventInfo.event.title}</em>
+      </div>
+    );
+  };
