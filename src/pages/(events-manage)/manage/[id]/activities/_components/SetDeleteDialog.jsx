@@ -8,7 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import {ChevronsLeft} from 'lucide-react'
-import {useDeleteRoomsMutation} from "@/hooks/events/chairHooks.js";
+import { useDeleteRoomsMutation } from '@/hooks/events/slotHooks.js'
 
 export default function SetDeleteDialog() {
 

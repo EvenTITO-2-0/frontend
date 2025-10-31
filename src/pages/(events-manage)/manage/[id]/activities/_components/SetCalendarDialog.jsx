@@ -11,7 +11,7 @@ import { useNavigate } from 'react-router-dom'
 import { AlertTriangle } from 'lucide-react'
 import { ChevronsRight, Loader2 } from 'lucide-react'
 
-import { useGenerateFromPlantillaMutation } from '@/hooks/events/chairHooks'
+import { useGenerateFromPlantillaMutation } from '@/hooks/events/slotHooks'
 import {getEventId} from "@/lib/utils.js";
 
 export default function SetCalendarDialog({ eventRooms }) {

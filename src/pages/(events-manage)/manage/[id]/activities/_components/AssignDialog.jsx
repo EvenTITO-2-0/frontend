@@ -8,8 +8,7 @@ import {
 } from '@/components/ui/dialog'
 import {Button} from '@/components/ui/button'
 import {ChevronsRight, Loader2} from 'lucide-react'
-
-import {useAssignWorksMutation} from '@/hooks/events/chairHooks'
+import { useAssignWorksMutation } from '@/hooks/events/slotHooks.js'
 
 export default function AssignDialog() {
 

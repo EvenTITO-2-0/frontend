@@ -18,16 +18,16 @@ import '/styles.css'
 import {
   useCreateSlotMutation,
   useDeleteSlotMutation,
+  useGetSlotsWithWorksQuery,
   useUpdateSlotMutation,
-} from '@/hooks/events/chairHooks.js'
+} from '@/hooks/events/slotHooks.js'
 
 export default function CalendarTable({
   startDate,
   endDate,
-  eventSlots,
   eventRooms,
-  eventStatus,
 }) {
+  const { data: eventSlots, isLoading } = useGetSlotsWithWorksQuery()
   const calendarRef = useRef(null)
   const useDeleteSlot = useDeleteSlotMutation()
   const useCreateSlot = useCreateSlotMutation()
