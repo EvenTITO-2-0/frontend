@@ -1,4 +1,5 @@
-import { useState } from 'react'
+// --- 1. Import useEffect ---
+import { useState, useEffect } from 'react'
 import {
     Dialog,
     DialogContent,
@@ -9,22 +10,37 @@ import {
 import { Button } from '@/components/ui/button'
 import { ChevronsRight, Loader2 } from 'lucide-react'
 import { useAssignWorksMutation } from '@/hooks/events/slotHooks.js'
-
-// --- Import new components for the form ---
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
+
+// --- 2. Define localStorage keys ---
+const TIME_KEY = 'assignDialog_timePerWork'
+const RESET_KEY = 'assignDialog_resetAssignments'
 
 export default function AssignDialog() {
     const [open, setOpen] = useState(false)
     const { mutateAsync: assignWorks, isPending } = useAssignWorksMutation()
 
-    // --- Add state for your form parameters ---
-    const [timePerWork, setTimePerWork] = useState(15) // Default: 15 minutes
-    const [resetAssignments, setResetAssignments] = useState(true)
+    const [timePerWork, setTimePerWork] = useState(() => {
+        const savedTime = localStorage.getItem(TIME_KEY)
+        return savedTime !== null ? parseInt(savedTime, 10) : 15
+    })
+
+    const [resetAssignments, setResetAssignments] = useState(() => {
+        const savedReset = localStorage.getItem(RESET_KEY)
+        return savedReset !== null ? JSON.parse(savedReset) : false
+    })
+
+    useEffect(() => {
+        localStorage.setItem(TIME_KEY, String(timePerWork))
+    }, [timePerWork])
+
+    useEffect(() => {
+        localStorage.setItem(RESET_KEY, JSON.stringify(resetAssignments))
+    }, [resetAssignments])
 
     const handleClick = async () => {
-        // --- Package parameters into an object ---
         const parameters = {
             time_per_work: timePerWork,
             reset_previous_assignments: resetAssignments,
