@@ -9,6 +9,7 @@ import InscriptionsDataPage from './[id]/inscriptions'
 import TalksDataPage from './[id]/talks'
 import OrganizerActivitiesPage from './[id]/activities'
 import InfoConfigPage from './[id]/info'
+import BasicConfigPage from './[id]/basic-config'
 import AdminConfigPage from './[id]/administration'
 
 export default function RoutesOrganization() {
@@ -23,6 +24,7 @@ export default function RoutesOrganization() {
         <Route path="/manage/:id/general" element={<AdminConfigPage />} />
         <Route path="/manage/:id/view" element={<AdminConfigPage />} />
         <Route path="/manage/:id/info" element={<InfoConfigPage />} />
+        <Route path="/manage/:id/basic-config" element={<BasicConfigPage />} />
         <Route path="/manage/:id/members" element={<MembersConfigPage />} />
         <Route path="/manage/:id/reviews" element={<ReviewsConfigPage />} />
         <Route path="/manage/:id/tracks" element={<TracksConfigPage />} />

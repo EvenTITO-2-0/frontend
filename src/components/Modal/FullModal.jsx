@@ -16,6 +16,8 @@ export default function FullModal({
   onSubmit,
   submitButtonText,
   isPending,
+  submitButtonDisabled = false,
+  hideSubmitButton = false,
   placement = 'top-center',
 }) {
   const { isOpen, onOpen, onOpenChange } = useDisclosure()
@@ -41,25 +43,28 @@ export default function FullModal({
                 {title}
               </ModalHeader>
               <ModalBody className="space-y-6">{children}</ModalBody>
-              <ModalFooter>
-                <Button
-                  className="w-full"
-                  color="primary"
-                  variant="flat"
-                  onPress={() => handleSubmit(onClose)}
-                  isLoading={isPending}
-                >
-                  {!isPending ? (
-                    <>
-                      {submitButtonText ? (
-                        <span className="mr-2">{submitButtonText}</span>
-                      ) : (
-                        <p>Crear evento</p>
-                      )}
-                    </>
-                  ) : null}
-                </Button>
-              </ModalFooter>
+              {!hideSubmitButton && (
+                <ModalFooter>
+                  <Button
+                    className="w-full"
+                    color="primary"
+                    variant="flat"
+                    onPress={() => handleSubmit(onClose)}
+                    isLoading={isPending}
+                    isDisabled={submitButtonDisabled}
+                  >
+                    {!isPending ? (
+                      <>
+                        {submitButtonText ? (
+                          <span className="mr-2">{submitButtonText}</span>
+                        ) : (
+                          <p>Crear evento</p>
+                        )}
+                      </>
+                    ) : null}
+                  </Button>
+                </ModalFooter>
+              )}
             </div>
           )}
         </ModalContent>

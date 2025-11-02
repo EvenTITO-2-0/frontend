@@ -10,15 +10,38 @@ import {
   startDateIsDefined,
   submissionLimitIsDefined,
   tracksAreDefined,
+  mercadoPagoIsConnected,
 } from './utils'
 import PublishEventButton from './PublishEventButton'
+import { useEvent } from '@/lib/layout'
+import { useGetProviderStatus } from '@/hooks/events/useProviderHooks'
+import { useState } from 'react'
+import { eventsClient } from '@/services/api/clients'
 
 export default function StepsForPublish({ eventInfo }) {
   if (eventInfo.status === STARTED_STATUS) return null
 
+  const eventData = useEvent()
+  const [isRedirecting, setIsRedirecting] = useState(false)
+  const { data: providerStatus, isLoading: isLoadingStatus } =
+    useGetProviderStatus(eventData.id)
+
   const navigator = useNavigator()
   function navigate(to) {
     navigator.replaceOrAppend(['administration', 'general', 'view'], to)
+  }
+
+  const connectWithMercadoPago = async () => {
+    try {
+      setIsRedirecting(true)
+      const { data: url } = await eventsClient.get(
+        `/${eventData.id}/provider/oauth/url`
+      )
+      window.location.href = url
+    } catch (e) {
+      console.error('No se pudo obtener URL de OAuth', e)
+      setIsRedirecting(false)
+    }
   }
 
   const statusList = [
@@ -27,14 +50,12 @@ export default function StepsForPublish({ eventInfo }) {
     metadataIsDefined(eventInfo),
     tracksAreDefined(eventInfo),
     pricesAreDefined(eventInfo),
+    mercadoPagoIsConnected(providerStatus),
   ]
   const amountOK = statusList.filter((s) => s).length
 
   return (
     <div className="space-y-6">
-      <SubtitleStyle>
-        ({amountOK}/{statusList.length}) Pasos para publicar el evento{' '}
-      </SubtitleStyle>
       <div className="space-y-4">
         <StatusCheck
           title="Definir fecha de comienzo y de fin del evento"
@@ -61,6 +82,13 @@ export default function StepsForPublish({ eventInfo }) {
           navigateTo={() => navigate('pricing')}
           status={statusList[4]}
         />
+        <MercadoPagoStatusCheck
+          title="Conectar cuenta de Mercado Pago"
+          status={statusList[5]}
+          onConnect={connectWithMercadoPago}
+          isRedirecting={isRedirecting}
+          providerStatus={providerStatus}
+        />
       </div>
       <PublishEventButton conditionsMet={amountOK === statusList.length} />
     </div>
@@ -77,6 +105,51 @@ function StatusCheck({ title, navigateTo, status }) {
   return (
     <CardWithFocus onClick={navigateTo} icon={rightComponent}>
       <div className="flex-grow">{title}</div>
+    </CardWithFocus>
+  )
+}
+
+function MercadoPagoStatusCheck({
+  title,
+  status,
+  onConnect,
+  isRedirecting,
+  providerStatus,
+}) {
+  const rightComponent = status ? (
+    <Icon name="CircleCheck" classNames={'text-green-500'} />
+  ) : (
+    <Icon name="CircleX" classNames={'text-red-500'} />
+  )
+
+  const handleClick = () => {
+    if (!status) {
+      onConnect()
+    }
+  }
+
+  return (
+    <CardWithFocus onClick={handleClick} icon={rightComponent}>
+      <div className="flex-grow">
+        {title}
+        {status && providerStatus && (
+          <div className="text-sm mt-1">
+            {providerStatus.provider === 'free' ? (
+              <span className="text-gray-600">
+                Evento gratuito: no requiere conexión
+              </span>
+            ) : (
+              <span className="text-green-600">
+                Cuenta vinculada y{' '}
+                {providerStatus.account_status === 'ACTIVE'
+                  ? 'activa'
+                  : 'pendiente de aprobación'}
+              </span>
+            )}
+          </div>
+        )}
+        {!status && <div className="text-sm text-red-600 mt-1"></div>}
+      </div>
     </CardWithFocus>
   )
 }

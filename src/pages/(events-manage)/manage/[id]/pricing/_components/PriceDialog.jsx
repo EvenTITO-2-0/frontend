@@ -26,7 +26,13 @@ import { format } from 'date-fns'
 import { es } from 'date-fns/locale'
 import ButtonWithLoading from '@/components/ButtonWithLoading'
 
-export default function PriceDialog({ price, dates, onSave, isLoading }) {
+export default function PriceDialog({
+  price,
+  dates,
+  onSave,
+  isLoading,
+  hasFreePrice = false,
+}) {
   const [isOpen, setIsOpen] = useState(false)
   const [formData, setFormData] = useState(price || defaultFormData)
   const [relatedDate, setRelatedDate] = useState(
@@ -80,10 +86,12 @@ export default function PriceDialog({ price, dates, onSave, isLoading }) {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          <Plus className="h-4 w-4 mr-2" />
-          {price ? 'Editar tarifa' : 'Nueva tarifa'}
-        </Button>
+        <span>
+          <Button variant="outline" disabled={!price && hasFreePrice}>
+            <Plus className="h-4 w-4 mr-2" />
+            {price ? 'Editar' : 'Nueva tarifa'}
+          </Button>
+        </span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[650px] h-[90vh] flex flex-col">
         <DialogHeader>

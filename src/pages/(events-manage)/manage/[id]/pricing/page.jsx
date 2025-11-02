@@ -8,8 +8,11 @@ import {
 } from '@/hooks/manage/pricingHooks'
 import { toast } from '@/hooks/use-toast'
 import PriceDialog from './_components/PriceDialog'
+import StepNavigationButtons from '../administration/_components/StepNavigationButtons'
+import { useEvent } from '@/lib/layout'
 
 export default function Page({ prices, dates }) {
+  const event = useEvent()
   const [expandedPrices, setExpandedPrices] = useState(new Set())
   const addOrModifyFare = useAddOrModifyFareInEventPricing()
   const deletePayment = useDeletePayment()
@@ -36,6 +39,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Tarifa agregada',
         description: `${newPrice.name} agregada con éxito.`,
+        duration: 1500,
       })
     } catch (error) {
       toast({
@@ -63,6 +67,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Tarifa eliminada',
         description: 'La tarifa fue eliminada con éxito.',
+        duration: 1500,
       })
     } catch (error) {
       toast({
@@ -83,6 +88,7 @@ export default function Page({ prices, dates }) {
       toast({
         title: 'Evento gratuito',
         description: 'El evento ha sido configurado como gratuito.',
+        duration: 1500,
       })
     } catch (error) {
       toast({
@@ -103,6 +109,9 @@ export default function Page({ prices, dates }) {
             onSave={handleAddPrice}
             isLoading={addOrModifyFare.isPending}
             dates={dates}
+            hasFreePrice={
+              (prices || []).length === 1 && prices?.[0]?.value === 0
+            }
           />
         }
       />
@@ -116,6 +125,7 @@ export default function Page({ prices, dates }) {
         onMakeEventFree={handleMakeEventFree}
         isLoading={addOrModifyFare.isPending || deletePayment.isPending}
       />
+      <StepNavigationButtons currentStep="pricing" eventInfo={event} />
       <div className="space-y-6 pt-6"></div>
     </ContainerPage>
   )

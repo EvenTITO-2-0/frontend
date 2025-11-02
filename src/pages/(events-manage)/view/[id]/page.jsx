@@ -1,4 +1,3 @@
-import AboutEvent from './_components/AboutEvent'
 import Banner from './_components/Banner'
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import MetadataList from './_components/MetadataList'
@@ -52,16 +51,11 @@ export default function Page({ eventInfo, activeRegistration = false }) {
             activeRegistration={activeRegistration}
             inscriptionSuccess={inscriptionSuccess}
             setInscriptionSuccess={setInscriptionSuccess}
+            prices={eventInfo.pricing}
           />
 
           <div className="space-y-14">
             <Prices prices={eventInfo.pricing} dates={eventInfo.dates} />
-            <AboutEvent
-              description={
-                eventInfo.mdata?.description ||
-                'Este evento no cuenta con una descripción por el momento.'
-              }
-            />
           </div>
         </div>
       </ContainerPage>

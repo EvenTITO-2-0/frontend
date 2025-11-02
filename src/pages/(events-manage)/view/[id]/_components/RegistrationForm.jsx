@@ -3,20 +3,30 @@ import InscriptionRoleSelector from '@/components/Forms/InscriptionRoleSelector'
 import LabelForm from '@/components/Forms/LabelForm'
 import FullModal from '@/components/Modal/FullModal'
 import { Switch } from '@/components/ui/switch'
-import { useSubmitInscription } from '@/hooks/events/attendeeHooks'
+import {
+  useNewPayment,
+  useSubmitInscription,
+} from '@/hooks/events/attendeeHooks'
 import { sleep } from '@/lib/utils'
 import { useState } from 'react'
+import { Button } from '@nextui-org/button'
+import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from 'react-router-dom'
 
 export default function RegistrationForm({
   trigger,
   eventTitle,
   speakerDisabled,
   setInscriptionSuccess,
+  prices = [],
+  eventId,
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState(null)
   const [filiation, setFiliation] = useState(null)
   const [filiationFile, setFiliationFile] = useState(null)
+  const [selectedRoleForPricing, setSelectedRoleForPricing] = useState(null)
+  const [paymentCompleted, setPaymentCompleted] = useState(false)
 
   const [showFiliation, setShowFiliation] = useState(false)
 
@@ -26,10 +36,69 @@ export default function RegistrationForm({
     error: submitError,
   } = useSubmitInscription()
 
+  const { mutateAsync: newPayment } = useNewPayment()
+  const { toast } = useToast()
+  const navigate = useNavigate()
+
+  const isPaidEvent =
+    Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
+
+  function getPricesForSelectedRole() {
+    if (!selectedRoleForPricing) return []
+
+    return prices.filter((price) => {
+      if (!price.roles || price.roles.length === 0) return false
+      const selectedRoleIds = selectedRoleForPricing.split(',')
+      return selectedRoleIds.every((roleId) => price.roles.includes(roleId))
+    })
+  }
+
   function cleanForm() {
     setRole(null)
     setFiliation(null)
     setFiliationFile(null)
+  }
+
+  async function handlePaymentRedirect(price) {
+    try {
+      const inscriptionData = {
+        file: filiationFile,
+        roles: selectedRoleForPricing ? selectedRoleForPricing.split(',') : [],
+        affiliation: filiation,
+      }
+      await submitInscription({ inscriptionData })
+
+      const priceValue = price.amount || price.price || price.value
+      if (Number(priceValue) === 0) {
+        navigate(`/events/${eventId}/roles/attendee`)
+        return
+      }
+
+      const paymentData = {
+        fare_name: price.name,
+        works: [],
+      }
+
+      const result = await newPayment({ paymentData })
+
+      const checkoutUrl = result?.data?.checkout_url || result?.data?.init_point
+      if (checkoutUrl) {
+        setPaymentCompleted(true)
+        window.location.href = checkoutUrl
+      } else {
+        toast({
+          title: 'Error',
+          description: 'Error connecting with payment service',
+          variant: 'destructive',
+        })
+      }
+    } catch (error) {
+      toast({
+        title: 'Error',
+        description: 'Error while processing payment',
+        variant: 'destructive',
+      })
+    }
   }
 
   async function handleSubmit(onClose) {
@@ -64,14 +133,9 @@ export default function RegistrationForm({
       title={'Inscripción al evento ' + eventTitle}
       onSubmit={handleSubmit}
       isPending={isLoading}
-      submitButtonText={'Finalizar inscripción'}
+      hideSubmitButton={true}
+      submitButtonDisabled={isPaidEvent && !paymentCompleted}
     >
-      <InscriptionRoleSelector
-        label={<LabelForm label="Seleccionar el rol en el evento" isRequired />}
-        role={role}
-        setRole={setRole}
-        speakerDisabled={speakerDisabled}
-      />
       {showFiliation ? (
         <FiliationInput
           label={
@@ -90,6 +154,67 @@ export default function RegistrationForm({
           showFiliation={showFiliation}
           setShowFiliation={setShowFiliation}
         />
+      )}
+      <InscriptionRoleSelector
+        label={
+          <LabelForm
+            label="Seleccionar un rol para visualizar sus tarifas"
+            isRequired
+          />
+        }
+        role={role}
+        setRole={(newRole) => {
+          setRole(newRole)
+          setSelectedRoleForPricing(newRole)
+        }}
+        speakerDisabled={speakerDisabled}
+      />
+
+      {selectedRoleForPricing && (
+        <div className="space-y-4">
+          <div className="space-y-2">
+            {getPricesForSelectedRole().map((price, index) => (
+              <div
+                key={index}
+                className="p-4 bg-white border border-gray-200 rounded-lg"
+              >
+                <div className="flex justify-between items-center">
+                  <div className="flex-1">
+                    <h3 className="font-semibold">{price.name}</h3>
+                    <p className="mt-2 text-sm text-gray-600">
+                      {price.description}
+                    </p>
+                  </div>
+                  <div className="ml-4 flex flex-col items-center">
+                    <Button
+                      className="w-full rounded-md"
+                      color="primary"
+                      variant="solid"
+                      onPress={() => {
+                        handlePaymentRedirect(price)
+                      }}
+                    >
+                      <div className="flex flex-col items-center">
+                        <span className="text-sm font-bold">Inscribirme</span>
+                        <span>
+                          ${price.amount || price.price || price.value}{' '}
+                          {price.currency || 'ARS'}
+                        </span>
+                      </div>
+                    </Button>
+                  </div>
+                </div>
+              </div>
+            ))}
+            {getPricesForSelectedRole().length === 0 && (
+              <div className="p-4 bg-gray-50 border border-gray-200 rounded-lg">
+                <p className="text-sm text-gray-400 italic text-center">
+                  No hay tarifas definidas para este rol
+                </p>
+              </div>
+            )}
+          </div>
+        </div>
       )}
     </FullModal>
   )
