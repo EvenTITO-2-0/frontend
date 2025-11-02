@@ -87,9 +87,15 @@ export function useDeleteSlotMutation() {
 
 export function useAssignWorksMutation() {
   const eventId = getEventId();
+  const queryClient = useQueryClient()
   return useMutation({
-    mutationFn: async () => {
-      return await apiAssignWorks(eventId);
+    mutationFn: async ({parameters}) => {
+      return await apiAssignWorks(eventId, parameters);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getSlotsWithWorks', { eventId }],
+      })
     }
   });
 }

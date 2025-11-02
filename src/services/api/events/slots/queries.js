@@ -32,9 +32,10 @@ export const apiDeleteSlot = async (eventId, slotId) => {
   )
 }
 
-export const apiAssignWorks = async (eventId) => {
-  return await eventsClient.get(
-      `/${eventId}/configuration/slots/assign`
+export const apiAssignWorks = async (eventId, parameters) => {
+  return await eventsClient.post(
+      `/${eventId}/configuration/slots/assign`,
+      parameters
   )
 }
 

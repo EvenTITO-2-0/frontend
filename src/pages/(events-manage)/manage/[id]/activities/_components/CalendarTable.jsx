@@ -48,32 +48,27 @@ export default function CalendarTable({
     if (eventSlots) {
       const transformedSlots = eventSlots.map(slot => {
         const type = determineType(slot.slot_type)
-        const works = slot.works || [] // Get the new works array
-        let title = slot.slot_type   // Default title
+        const works = slot.works || []
+        let title = slot.slot_type
 
-        // --- THIS IS THE NEW LOGIC ---
         if (works.length > 0) {
-          // Create a title with a list of work IDs
-          // Using \n creates new lines inside the calendar event
           title = works.map(w =>
-            // Using first 8 chars of UUID, not 3, for better uniqueness
             `Work ID: ${w.id.substring(0, 8)}...`
           ).join('\n')
         } else if (type === 'slot') {
-          title = 'Available Slot' // Make empty slots clearer
+          title = 'Available Slot'
         }
-        // --- END NEW LOGIC ---
 
         return {
           id: String(slot.id),
           start: slot.start,
           end: slot.end,
           resourceId: slot.room_name,
-          type: type,      // Used for base styling (e.g., event-slot)
-          title: title,    // The new dynamic title
+          type: type,
+          title: title,
           extendedProps: {
-            works: works,  // Store works data for dialogs
-            originalType: slot.slot_type // Keep original type
+            works: works,
+            originalType: slot.slot_type
           }
         }
       })
@@ -447,7 +442,6 @@ const renderEventContent = (eventInfo) => {
     const { works, originalType } = eventInfo.event.extendedProps;
     const type = originalType || 'slot';
 
-    // ... (Plenary and Break logic remains the same) ...
     if (type.includes('plenary') || type.includes('break')) {
       return (
         <div className="event-content-simple">
@@ -456,13 +450,10 @@ const renderEventContent = (eventInfo) => {
       );
     }
 
-    // --- Render Assigned Slots (with works) ---
     if (works && works.length > 0) {
       return (
         <div className="event-content-work">
           {works.map((work) => {
-            // --- Logic to get a track-specific class ---
-            // (From the previous "bonus" answer)
             const trackClass = work.track
               ? `event-track-${work.track.toLowerCase().replace(/[^a-z0-9]+/g, '-')}`
               : '';
@@ -473,9 +464,7 @@ const renderEventContent = (eventInfo) => {
                   {work.track || 'No Track'}
                 </span>
 
-                {/* --- CONTAINER FOR ID WITH SQUARE --- */}
                 <div className="work-id-container">
-                  {/* We apply the trackClass to the square */}
                   <div className={`color-square ${trackClass}`}></div>
                   <span className="work-id">ID: {work.id.substring(0, 8)}...</span>
                 </div>
@@ -485,8 +474,6 @@ const renderEventContent = (eventInfo) => {
         </div>
       );
     }
-
-    // ... (Empty slot logic remains the same) ...
     return (
       <div className="event-content-simple">
         <em>{eventInfo.event.title}</em>
