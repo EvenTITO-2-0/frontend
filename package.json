@@ -96,8 +96,7 @@
     "tailwindcss-animate": "^1.0.7",
     "vite-plugin-svgr": "^4.2.0",
     "zod": "^3.23.8",
-    "@heroicons/react": "^2.1.1"
-    "zod": "^3.23.8",
+    "@heroicons/react": "^2.1.1",
     "@fullcalendar/core": "^6.x.x",
     "@fullcalendar/daygrid": "^6.x.x",
     "@fullcalendar/resource-timegrid": "^6.x.x",
