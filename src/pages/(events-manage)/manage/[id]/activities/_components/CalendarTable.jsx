@@ -370,17 +370,16 @@ export default function CalendarTable({
         eventDrop={handleEventDrop}
         eventContent={renderEventContent}
         eventClassNames={(info) => {
-          const type = info.event.extendedProps.originalType || info.event.type || 'slot'
-          const classes = [`event-${type}`]
+          const type = info.event.extendedProps.type || 'slot'
+          const hasWorks = info.event.extendedProps.works?.length > 0
+          const classes = [
+            `event-${type}`,
+            hasWorks && 'event-with-works'
+          ].filter(Boolean)
 
           if (info.event.id === selectedEvent?.id) {
             classes.push('event-selected')
           }
-
-          if (info.event.extendedProps.works?.length > 0) {
-            classes.push('event-assigned')
-          }
-
           return classes
         }}
         headerToolbar={{

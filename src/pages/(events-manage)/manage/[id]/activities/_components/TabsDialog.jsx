@@ -17,9 +17,10 @@ import {
   SelectContent,
   SelectItem,
 } from '@/components/ui/select'
-import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs'
+import {Tabs} from "@nextui-org/tabs";
+import {TabsContent, TabsList, TabsTrigger} from "@radix-ui/react-tabs";
 import AssignedWorksTab from "@/pages/(events-manage)/manage/[id]/activities/_components/AssignedWorksTab.jsx";
-import { Badge } from "@/components/ui/badge"
+
 export default function EventDialog({
   open,
   onOpenChange,
@@ -101,9 +102,6 @@ export default function EventDialog({
 
   const isFormValid =
     formData.title && formData.date && formData.startTime && formData.endTime
-
-  const hasAssignedWorks = eventInfo?.extendedProps?.works?.length > 0
-  const defaultTab = hasAssignedWorks ? "works" : "details"
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>

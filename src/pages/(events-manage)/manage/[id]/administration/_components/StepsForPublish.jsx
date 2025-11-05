@@ -50,7 +50,7 @@ export default function StepsForPublish({ eventInfo }) {
     metadataIsDefined(eventInfo),
     tracksAreDefined(eventInfo),
     pricesAreDefined(eventInfo),
-    mercadoPagoIsConnected(providerStatus),
+    // mercadoPagoIsConnected(providerStatus),
   ]
   const amountOK = statusList.filter((s) => s).length
 
