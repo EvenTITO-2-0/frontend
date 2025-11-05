@@ -401,7 +401,7 @@ export default function CalendarTable({
             },
           },
           today: {
-            text: 'Primer día del evento',
+            text: 'Primer día',
             click: () => {
               const calendarApi = calendarRef.current?.getApi()
               if (calendarApi) {
