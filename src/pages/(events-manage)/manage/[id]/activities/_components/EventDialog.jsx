@@ -182,7 +182,7 @@ export default function EventDialog({
           </TabsContent>
 
           <TabsContent value="works">
-            <AssignedWorksTab works={eventInfo?.extendedProps?.works || []} />
+            <AssignedWorksTab works={eventInfo?.extendedProps?.works} />
           </TabsContent>
         </Tabs>
         <DialogFooter className="sm:justify-between">

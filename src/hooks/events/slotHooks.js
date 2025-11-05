@@ -2,7 +2,7 @@ import {
   apiAssignWorks,
   apiCreateSlot,
   apiDeleteRooms,
-  apiDeleteSlot,
+  apiDeleteSlot, apiDeleteWorkSlot,
   apiGenerateFromPlantilla,
   apiGetSlotsWithWorks,
   apiUpdateSlot,
@@ -108,5 +108,20 @@ export function useGetSlotsWithWorksQuery() {
     queryFn: async () => {
       return await apiGetSlotsWithWorks(eventId);
     }
+  });
+}
+
+export function useDeleteWorkSlotMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({workId}) => {
+      return await apiDeleteWorkSlot(eventId, workId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getSlotsWithWorks', { eventId }],
+      })
+    },
   });
 }

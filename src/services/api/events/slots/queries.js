@@ -45,3 +45,10 @@ export const apiGetSlotsWithWorks = async (eventId) => {
   )
   return response.data;
 }
+
+export const apiDeleteWorkSlot = async (eventId, work_id) => {
+  const response = await eventsClient.delete(
+      `/${eventId}/configuration/slots/works/${work_id}`
+  )
+  return response.data;
+}
