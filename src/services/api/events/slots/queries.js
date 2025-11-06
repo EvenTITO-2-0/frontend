@@ -52,3 +52,10 @@ export const apiDeleteWorkSlot = async (eventId, work_id) => {
   )
   return response.data;
 }
+
+export const apiAssignWorkToSlot = async (eventId, work_id, slot_id) => {
+  const response = await eventsClient.patch(
+      `/${eventId}/configuration/slots/${slot_id}/works/${work_id}`,
+  )
+  return response.data;
+}

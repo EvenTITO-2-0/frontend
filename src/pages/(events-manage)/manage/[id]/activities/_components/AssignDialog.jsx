@@ -1,4 +1,3 @@
-// --- 1. Import useEffect ---
 import { useState, useEffect } from 'react'
 import {
     Dialog,
@@ -14,7 +13,6 @@ import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
 import { Checkbox } from "@/components/ui/checkbox"
 
-// --- 2. Define localStorage keys ---
 const TIME_KEY = 'assignDialog_timePerWork'
 const RESET_KEY = 'assignDialog_resetAssignments'
 
@@ -63,22 +61,19 @@ export default function AssignDialog() {
                 if (!isPending) {
                     setOpen(isOpen)
                 }
-            }}
-        >
+            }}>
             <DialogTrigger asChild>
                 <Button variant={'success'} style={{ display: 'flex', gap: '8px' }}>
                     Asignar trabajos
                     <ChevronsRight />
                 </Button>
             </DialogTrigger>
-
             <DialogContent
                 onInteractOutside={(e) => {
                     if (isPending) {
                         e.preventDefault()
                     }
-                }}
-            >
+                }}>
                 <>
                     <DialogHeader>
                         <DialogTitle>

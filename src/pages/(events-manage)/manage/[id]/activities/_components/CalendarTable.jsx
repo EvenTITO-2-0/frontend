@@ -18,7 +18,7 @@ import '/styles.css'
 import {
   useCreateSlotMutation,
   useDeleteSlotMutation,
-  useGetSlotsWithWorksQuery,
+  useGetSlotsWithWorksQuery, useGetUnassignedSlotsWithWorksQuery,
   useUpdateSlotMutation,
 } from '@/hooks/events/slotHooks.js'
 
@@ -27,13 +27,16 @@ export default function CalendarTable({
   endDate,
   eventRooms,
 }) {
-  const { data: eventSlots, isLoading } = useGetSlotsWithWorksQuery()
+  const { data: eventSlots, boolean: isLoading } = useGetSlotsWithWorksQuery()
+  const { data: unassignedWorks, boolean: _isLoading } = useGetUnassignedSlotsWithWorksQuery()
+
   const calendarRef = useRef(null)
   const useDeleteSlot = useDeleteSlotMutation()
   const useCreateSlot = useCreateSlotMutation()
   const useUpdateSlot = useUpdateSlotMutation()
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
 
+  // console.log("Unassigned works" + JSON.parse(unassignedEventSlots))
   useEffect(() => {
     const determineType = (type) => {
       if (!type) return 'slot'
@@ -431,6 +434,7 @@ export default function CalendarTable({
         isNewEvent={isNewEvent}
         lastSelectedType={lastSelectedType}
         disabled={!isEditable}
+        unassignedWorks={unassignedWorks}
       />
     </>
   )

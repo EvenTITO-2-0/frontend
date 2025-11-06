@@ -28,8 +28,7 @@ export default function EventDialog({
   eventInfo,
   isNewEvent,
   lastSelectedType,
-  // DELETED: lastDurations is no longer needed in this component
-  // lastDurations,
+  unassignedWorks
 }) {
   const [formData, setFormData] = useState({
     title: 'Intervalo',
@@ -116,7 +115,7 @@ export default function EventDialog({
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
             <TabsTrigger value="details">Details</TabsTrigger>
-            <TabsTrigger value="works">
+            <TabsTrigger value="works" disabled={isNewEvent}>
               Works
               {hasAssignedWorks && (
                 <Badge variant="secondary" className="ml-2">
@@ -179,35 +178,35 @@ export default function EventDialog({
                 </Select>
               </div>
             </div>
+            <DialogFooter className="sm:justify-between">
+              <div className="flex space-x-2">
+                {!isNewEvent && (
+                  <Button
+                    type="button"
+                    variant="destructive"
+                    onClick={handleDelete}
+                  >
+                    Delete
+                  </Button>
+                )}
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                >
+                  Cancel
+                </Button>
+              </div>
+              <Button type="button" onClick={handleSave} disabled={!isFormValid}>
+                {isNewEvent ? 'Create Event' : 'Save Changes'}
+              </Button>
+            </DialogFooter>
           </TabsContent>
 
           <TabsContent value="works">
-            <AssignedWorksTab works={eventInfo?.extendedProps?.works} />
+            <AssignedWorksTab works={eventInfo?.extendedProps?.works} slotId={eventInfo?.id} unassignedWorks={unassignedWorks}/>
           </TabsContent>
         </Tabs>
-        <DialogFooter className="sm:justify-between">
-          <div className="flex space-x-2">
-            {!isNewEvent && (
-              <Button
-                type="button"
-                variant="destructive"
-                onClick={handleDelete}
-              >
-                Delete
-              </Button>
-            )}
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
-              Cancel
-            </Button>
-          </div>
-          <Button type="button" onClick={handleSave} disabled={!isFormValid}>
-            {isNewEvent ? 'Create Event' : 'Save Changes'}
-          </Button>
-        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

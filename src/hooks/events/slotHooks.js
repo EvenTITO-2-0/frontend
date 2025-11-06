@@ -1,5 +1,5 @@
 import {
-  apiAssignWorks,
+  apiAssignWorks, apiAssignWorkToSlot,
   apiCreateSlot,
   apiDeleteRooms,
   apiDeleteSlot, apiDeleteWorkSlot,
@@ -9,6 +9,7 @@ import {
 } from '@/services/api/events/slots/queries.js'
 import { getEventId } from '@/lib/utils.js'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {apiGetUnassignedWorks} from "@/services/api/works/queries.js";
 
 export function useGenerateFromPlantillaMutation() {
   const eventId = getEventId();
@@ -95,7 +96,11 @@ export function useAssignWorksMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['getSlotsWithWorks', { eventId }],
-      })
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['getUnassignedWorks', { eventId }],
+      });
     }
   });
 }
@@ -111,6 +116,17 @@ export function useGetSlotsWithWorksQuery() {
   });
 }
 
+export function useGetUnassignedSlotsWithWorksQuery() {
+  const eventId = getEventId();
+  return useQuery({
+    queryKey: ['getUnassignedWorks', { eventId }],
+
+    queryFn: async () => {
+      return await apiGetUnassignedWorks(eventId);
+    }
+  });
+}
+
 export function useDeleteWorkSlotMutation() {
   const eventId = getEventId();
   const queryClient = useQueryClient()
@@ -121,7 +137,31 @@ export function useDeleteWorkSlotMutation() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['getSlotsWithWorks', { eventId }],
-      })
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['getUnassignedWorks', { eventId }],
+      });
+    },
+  });
+}
+
+export function useAssignWorkToSlotMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async ({slot_id: slotId, work_id: workId}) => {
+      console.log(`Called mutation assign work ${workId} to slot ${slotId}`)
+      return await apiAssignWorkToSlot(eventId, workId, slotId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getSlotsWithWorks', { eventId }],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['getUnassignedWorks', { eventId }],
+      });
     },
   });
 }
