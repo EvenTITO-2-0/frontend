@@ -59,3 +59,10 @@ export const apiAssignWorkToSlot = async (eventId, work_id, slot_id) => {
   )
   return response.data;
 }
+
+export const apiDeleteAllWorkAssignmentsRooms = async (eventId) => {
+  const response = await eventsClient.delete(
+      `/${eventId}/configuration/slots/works`,
+  )
+  return response.data;
+}

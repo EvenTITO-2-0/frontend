@@ -9,6 +9,8 @@ import CalendarTable from '@/pages/(events-manage)/manage/[id]/activities/_compo
 import SetDeleteDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/SetDeleteDialog.jsx";
 import AssignDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/AssignDialog.jsx";
 import Icon from '@/components/Icon.jsx'
+import SetRemoveAllAssignmentsDialog
+  from '@/pages/(events-manage)/manage/[id]/activities/_components/SetRemoveAllAssignmentsDialog.jsx'
 
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
@@ -90,10 +92,11 @@ export default function Page({ event }) {
           title={'Actividades del evento'}
           rightComponent={
             wasConfigured ? (
-              <>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <SetDeleteDialog />
+                <SetRemoveAllAssignmentsDialog />
                 <AssignDialog />
-              </>
+              </div>
             ) : (
               <SetCalendarDialog eventRooms={eventRooms} />
             )

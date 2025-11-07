@@ -7,7 +7,7 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
-import { ChevronsRight, Loader2 } from 'lucide-react'
+import { Loader2 } from 'lucide-react'
 import { useAssignWorksMutation } from '@/hooks/events/slotHooks.js'
 import { Label } from "@/components/ui/label"
 import { Input } from "@/components/ui/input"
@@ -65,7 +65,6 @@ export default function AssignDialog() {
             <DialogTrigger asChild>
                 <Button variant={'success'} style={{ display: 'flex', gap: '8px' }}>
                     Asignar trabajos
-                    <ChevronsRight />
                 </Button>
             </DialogTrigger>
             <DialogContent

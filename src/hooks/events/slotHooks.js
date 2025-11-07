@@ -1,8 +1,11 @@
 import {
-  apiAssignWorks, apiAssignWorkToSlot,
+  apiAssignWorks,
+  apiAssignWorkToSlot,
   apiCreateSlot,
+  apiDeleteAllWorkAssignmentsRooms,
   apiDeleteRooms,
-  apiDeleteSlot, apiDeleteWorkSlot,
+  apiDeleteSlot,
+  apiDeleteWorkSlot,
   apiGenerateFromPlantilla,
   apiGetSlotsWithWorks,
   apiUpdateSlot,
@@ -38,6 +41,25 @@ export function useDeleteRoomsMutation() {
         queryKey: ['getEventById', { eventId }],
       })
     },
+  });
+}
+
+export function useDeleteAllWorkAssignmentsMutation() {
+  const eventId = getEventId();
+  const queryClient = useQueryClient()
+  return useMutation({
+    mutationFn: async () => {
+      return await apiDeleteAllWorkAssignmentsRooms(eventId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['getSlotsWithWorks', { eventId }],
+      });
+
+      queryClient.invalidateQueries({
+        queryKey: ['getUnassignedWorks', { eventId }],
+      });
+    }
   });
 }
 
