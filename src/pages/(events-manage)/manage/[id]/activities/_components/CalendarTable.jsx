@@ -23,14 +23,15 @@ import {
   useGetSlotsWithWorksQuery, useGetUnassignedSlotsWithWorksQuery,
   useUpdateSlotMutation,
 } from '@/hooks/events/slotHooks.js'
+import { AlertTriangle, CheckCircle } from 'lucide-react'
 
 export default function CalendarTable({
   startDate,
   endDate,
   eventRooms,
 }) {
-  const { data: eventSlots, boolean: isLoading } = useGetSlotsWithWorksQuery()
-  const { data: unassignedWorks, boolean: _isLoading } = useGetUnassignedSlotsWithWorksQuery()
+  const { data: eventSlots, isLoading: isLoadingSlots } = useGetSlotsWithWorksQuery()
+  const { data: unassignedWorks, isLoading: isLoadingUnassigned } = useGetUnassignedSlotsWithWorksQuery()
 
   const calendarRef = useRef(null)
   const useDeleteSlot = useDeleteSlotMutation()
@@ -351,82 +352,104 @@ export default function CalendarTable({
     }
   }
 
+  const isLoading = isLoadingSlots || isLoadingUnassigned;
+  const numUnassigned = unassignedWorks?.length || 0;
+  const numAssigned = eventSlots?.reduce((acc, slot) => {
+    return acc + (slot.works?.length || 0);
+  }, 0) || 0;
+  const totalWorks = numAssigned + numUnassigned;
+  const allAssigned = numUnassigned === 0;
 
   return (
     <>
-      <FullCalendar
-        ref={calendarRef}
-        locale={esLocale}
-        schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
-        plugins={[
-          resourceTimeGridPlugin,
-          timeGridPlugin,
-          dayGridPlugin,
-          interactionPlugin,
-        ]}
-        initialView="resourceTimeGridDay"
-        initialDate={startDate}
-        editable={isEditable}
-        selectable={isEditable}
-        selectAllow={handleSelectAllow}
-        eventClick={handleEventClick}
-        select={handleDateSelect}
-        eventResize={handleEventResize}
-        eventDrop={handleEventDrop}
-        eventContent={renderEventContent}
-        eventClassNames={(info) => {
-          const type = info.event.extendedProps.type || 'slot'
-          const hasWorks = info.event.extendedProps.works?.length > 0
-          const classes = [
-            `event-${type}`,
-            hasWorks && 'event-with-works'
-          ].filter(Boolean)
+      <div style={{ position: 'relative' }}>
+        {!isLoading && unassignedWorks && eventSlots && (
+          <div className={allAssigned ? "unassigned-success" : "unassigned-warning"}>
+            {allAssigned ? (
+              <>
+                <CheckCircle className="status-icon" /> {totalWorks} de {totalWorks} {" "} {"trabajos asignados"}.
+              </>
+            ) : (
+              <>
+                <AlertTriangle className="status-icon" /> {numUnassigned} de {totalWorks}
+                {numUnassigned === 1 ? " trabajos sin asignar." : " trabajos sin asignar."}
+              </>
+            )}
+          </div>
+        )}
+        <FullCalendar
+          ref={calendarRef}
+          locale={esLocale}
+          schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
+          plugins={[
+            resourceTimeGridPlugin,
+            timeGridPlugin,
+            dayGridPlugin,
+            interactionPlugin,
+          ]}
+          initialView="resourceTimeGridDay"
+          initialDate={startDate}
+          editable={isEditable}
+          selectable={isEditable}
+          selectAllow={handleSelectAllow}
+          eventClick={handleEventClick}
+          select={handleDateSelect}
+          eventResize={handleEventResize}
+          eventDrop={handleEventDrop}
+          eventContent={renderEventContent}
+          eventClassNames={(info) => {
+            const type = info.event.extendedProps.type || 'slot'
+            const hasWorks = info.event.extendedProps.works?.length > 0
+            const classes = [
+              `event-${type}`,
+              hasWorks && 'event-with-works',
+            ].filter(Boolean)
 
-          if (info.event.id === selectedEvent?.id) {
-            classes.push('event-selected')
-          }
-          return classes
-        }}
-        headerToolbar={{
-          left: 'prevDay today nextDay',
-          center: 'title',
-          right: '',
-        }}
-
-        customButtons={{
-          prevDay: {
-            icon: 'chevron-left',
-            click: () => {
-              const calendarApi = calendarRef.current?.getApi()
-              if (calendarApi) {
-                const newStart = addDays(calendarApi.view.currentStart, -1)
-                calendarApi.gotoDate(newStart)
-              }
+            if (info.event.id === selectedEvent?.id) {
+              classes.push('event-selected')
+            }
+            return classes
+          }}
+          headerToolbar={{
+            left: 'prevDay today nextDay',
+            center: 'title',
+            right: '',
+          }}
+          customButtons={{
+            prevDay: {
+              icon: 'chevron-left',
+              click: () => {
+                const calendarApi = calendarRef.current?.getApi()
+                if (calendarApi) {
+                  const newStart = addDays(calendarApi.view.currentStart, -1)
+                  calendarApi.gotoDate(newStart)
+                }
+              },
             },
-          },
-          today: {
-            text: 'Primer día',
-            click: () => {
-              const calendarApi = calendarRef.current?.getApi()
-              if (calendarApi) {
-                calendarApi.gotoDate(startDate)
-              }
+            today: {
+              text: 'Primer día',
+              click: () => {
+                const calendarApi = calendarRef.current?.getApi()
+                if (calendarApi) {
+                  calendarApi.gotoDate(startDate)
+                }
+              },
             },
-          },
-          nextDay: {
-            icon: 'chevron-right',
-            click: () => {
-              const calendarApi = calendarRef.current?.getApi()
-              if (calendarApi) {
-                const newStart = addDays(calendarApi.view.currentStart, 1)
-                calendarApi.gotoDate(newStart)
-              }
+            nextDay: {
+              icon: 'chevron-right',
+              click: () => {
+                const calendarApi = calendarRef.current?.getApi()
+                if (calendarApi) {
+                  const newStart = addDays(calendarApi.view.currentStart, 1)
+                  calendarApi.gotoDate(newStart)
+                }
+              },
             },
-          },
-        }}
-        resources={resources}
-        events={[...events, ...inverseBackground]}
-      />
+          }}
+          resources={resources}
+          events={[...events, ...inverseBackground]}
+        />
+        </div>
       <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
