@@ -36,7 +36,6 @@ export default function CalendarTable({
   const useUpdateSlot = useUpdateSlotMutation()
   const resources = eventRooms.map(room => ({ id: room.name, title: room.name }))
 
-  // console.log("Unassigned works" + JSON.parse(unassignedEventSlots))
   useEffect(() => {
     const determineType = (type) => {
       if (!type) return 'slot'

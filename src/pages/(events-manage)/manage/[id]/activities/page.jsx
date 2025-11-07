@@ -11,6 +11,7 @@ import AssignDialog from "@/pages/(events-manage)/manage/[id]/activities/_compon
 import Icon from '@/components/Icon.jsx'
 import SetRemoveAllAssignmentsDialog
   from '@/pages/(events-manage)/manage/[id]/activities/_components/SetRemoveAllAssignmentsDialog.jsx'
+import { parseISO, addDays, isAfter, isBefore, isEqual, startOfDay } from 'date-fns'
 
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
@@ -50,9 +51,35 @@ export default function Page({ event }) {
   }
 
   async function onEditStartDate({ newDate }) {
+    const newStartDay = startOfDay(parseISO(newDate))
+    const hasEarlierSlot = mdataSlots.some(slot => {
+      const slotStart = parseISO(slot.start)
+      return isBefore(slotStart, newStartDay)
+    })
+
+    if (hasEarlierSlot) {
+      toast.error('No se puede actualizar la fecha de inicio.', {
+        description: 'Existen actividades programadas antes de la nueva fecha de inicio.',
+      })
+      return
+    }
     await onEditDate({ newDate: newDate, nameDate: 'START_DATE' })
   }
+
   async function onEditEndDate({ newDate }) {
+    const boundaryTime = addDays(startOfDay(parseISO(newDate)), 1)
+
+    const hasLaterSlot = mdataSlots.some(slot => {
+      const slotEnd = parseISO(slot.end)
+      return isAfter(slotEnd, boundaryTime) || isEqual(slotEnd, boundaryTime)
+    })
+
+    if (hasLaterSlot) {
+      toast.error('No se puede actualizar la fecha de fin.', {
+        description: 'Existen actividades programadas después de la nueva fecha de fin.',
+      })
+      return
+    }
     await onEditDate({ newDate: newDate, nameDate: 'END_DATE' })
   }
 
@@ -60,7 +87,6 @@ export default function Page({ event }) {
     let eventCopy = { ...event }
     if (!eventCopy.mdata) eventCopy.mdata = {}
     if (!eventCopy.mdata.slots) eventCopy.mdata.slots = []
-    // Add or update slot
     const idx = eventCopy.mdata.slots.findIndex((s) => s.id === newSlot.id)
     if (idx > -1) {
       eventCopy.mdata.slots[idx] = newSlot
