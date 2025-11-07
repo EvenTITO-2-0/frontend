@@ -11,11 +11,11 @@ import {
   formatISO,
   isWithinInterval,
   parseISO,
-  addDays, // This is already imported and is what we need
+  addDays,
 } from 'date-fns'
-import EventDialog from './EventDialog'
+import SlotEditDialog from './SlotEditDialog.jsx'
 import '/styles.css'
-import Icon from '@/components/Icon.jsx'
+import esLocale from '@fullcalendar/core/locales/es'
 
 export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, onDeleteSlot, slots = [], eventStatus }) {
   const calendarRef = useRef(null)
@@ -24,7 +24,6 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     setEvents(slots)
   }, [slots])
 
-  //const isEditable = eventStatus !== 'STARTED'
   const isEditable = true
 
   const [events, setEvents] = useState([])
@@ -208,9 +207,8 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         })
     )
 
-    // Save the change to the parent
     if (updatedEvent) {
-      onAddNewSlot(updatedEvent) // <-- THIS WAS MISSING
+      onAddNewSlot(updatedEvent)
     }
   }
 
@@ -227,7 +225,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
       return
     }
 
-    let updatedEvent = null // To capture the updated event
+    let updatedEvent = null
 
     setEvents((prevEvents) =>
         prevEvents.map((event) => {
@@ -252,6 +250,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
     <>
       <FullCalendar
         ref={calendarRef}
+        locale={esLocale}
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         plugins={[
           resourceTimeGridPlugin,
@@ -333,7 +332,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         resources={resources}
         events={[...events, ...inverseBackground]}
       />
-      <EventDialog
+      <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}

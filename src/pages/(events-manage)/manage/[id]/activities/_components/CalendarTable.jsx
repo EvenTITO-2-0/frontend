@@ -4,6 +4,8 @@ import resourceTimeGridPlugin from '@fullcalendar/resource-timegrid'
 import timeGridPlugin from '@fullcalendar/timegrid'
 import dayGridPlugin from '@fullcalendar/daygrid'
 import interactionPlugin from '@fullcalendar/interaction'
+import esLocale from '@fullcalendar/core/locales/es';
+
 import {
   addMilliseconds,
   differenceInMilliseconds,
@@ -13,7 +15,7 @@ import {
   parseISO,
   addDays,
 } from 'date-fns'
-import EventDialog from './EventDialog'
+import SlotEditDialog from './SlotEditDialog.jsx'
 import '/styles.css'
 import {
   useCreateSlotMutation,
@@ -354,6 +356,7 @@ export default function CalendarTable({
     <>
       <FullCalendar
         ref={calendarRef}
+        locale={esLocale}
         schedulerLicenseKey="GPL-My-Project-Is-Open-Source"
         plugins={[
           resourceTimeGridPlugin,
@@ -424,7 +427,7 @@ export default function CalendarTable({
         resources={resources}
         events={[...events, ...inverseBackground]}
       />
-      <EventDialog
+      <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}

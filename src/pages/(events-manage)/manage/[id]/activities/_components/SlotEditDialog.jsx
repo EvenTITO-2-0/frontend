@@ -20,7 +20,8 @@ import {
 import {Tabs, TabsList, TabsTrigger, TabsContent} from '@/components/ui/tabs'
 import AssignedWorksTab from "@/pages/(events-manage)/manage/[id]/activities/_components/AssignedWorksTab.jsx";
 import { Badge } from "@/components/ui/badge"
-export default function EventDialog({
+
+export default function SlotEditDialog({
   open,
   onOpenChange,
   onSave,
@@ -31,7 +32,7 @@ export default function EventDialog({
   unassignedWorks
 }) {
   const [formData, setFormData] = useState({
-    title: 'Intervalo',
+    title: '',
     date: '',
     startTime: '',
     endTime: '',
@@ -44,7 +45,7 @@ export default function EventDialog({
         const { startStr, endStr } = eventInfo
         if (startStr && endStr) {
           setFormData({
-            title: 'Intervalo',
+            title: '',
             date: format(parseISO(startStr), 'yyyy-MM-dd'),
             startTime: format(parseISO(startStr), 'HH:mm'),
             endTime: format(parseISO(endStr), 'HH:mm'),
@@ -109,14 +110,14 @@ export default function EventDialog({
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>
-            {isNewEvent ? 'Add New Event' : 'Edit Event'}
+            {isNewEvent ? 'Agregar Nuevo Evento' : 'Editar Evento'}
           </DialogTitle>
         </DialogHeader>
         <Tabs defaultValue={defaultTab} className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="details">Details</TabsTrigger>
+            <TabsTrigger value="details">Detalles</TabsTrigger>
             <TabsTrigger value="works" disabled={isNewEvent}>
-              Works
+              Trabajos
               {hasAssignedWorks && (
                 <Badge variant="secondary" className="ml-2">
                   {eventInfo.extendedProps.works.length}
@@ -128,17 +129,17 @@ export default function EventDialog({
           <TabsContent value="details">
             <div className="space-y-4 py-4">
               <div className="space-y-2">
-                <Label htmlFor="title">Event Title</Label>
+                <Label htmlFor="title">Título del Evento</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={handleInputChange}
                   required
-                  placeholder="e.g., Team Meeting"
+                  placeholder="ej., Reunión de Equipo"
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="date">Date</Label>
+                <Label htmlFor="date">Fecha</Label>
                 <Input
                   id="date"
                   type="date"
@@ -147,7 +148,7 @@ export default function EventDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="startTime">Start Time</Label>
+                <Label htmlFor="startTime">Hora de Inicio</Label>
                 <Input
                   id="startTime"
                   type="time"
@@ -156,7 +157,7 @@ export default function EventDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="endTime">End Time</Label>
+                <Label htmlFor="endTime">Hora de Fin</Label>
                 <Input
                   id="endTime"
                   type="time"
@@ -165,15 +166,15 @@ export default function EventDialog({
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="type">Type</Label>
+                <Label htmlFor="type">Tipo</Label>
                 <Select onValueChange={handleTypeChange} value={formData.type}>
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a type" />
+                    <SelectValue placeholder="Selecciona un tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="slot">Slot</SelectItem>
-                    <SelectItem value="break">Break</SelectItem>
-                    <SelectItem value="plenary">Plenary</SelectItem>
+                    <SelectItem value="slot">Bloque</SelectItem>
+                    <SelectItem value="break">Receso</SelectItem>
+                    <SelectItem value="plenary">Plenaria</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
@@ -186,7 +187,7 @@ export default function EventDialog({
                     variant="destructive"
                     onClick={handleDelete}
                   >
-                    Delete
+                    Eliminar
                   </Button>
                 )}
                 <Button
@@ -194,11 +195,11 @@ export default function EventDialog({
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                 >
-                  Cancel
+                  Cancelar
                 </Button>
               </div>
               <Button type="button" onClick={handleSave} disabled={!isFormValid}>
-                {isNewEvent ? 'Create Event' : 'Save Changes'}
+                {isNewEvent ? 'Crear Evento' : 'Guardar Cambios'}
               </Button>
             </DialogFooter>
           </TabsContent>
