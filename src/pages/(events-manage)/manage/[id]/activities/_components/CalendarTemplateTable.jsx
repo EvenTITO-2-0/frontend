@@ -258,6 +258,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
           dayGridPlugin,
           interactionPlugin,
         ]}
+        allDaySlot={false}
         initialView="resourceTimeGridSevenDay"
         initialDate={startDate}
         editable={isEditable}

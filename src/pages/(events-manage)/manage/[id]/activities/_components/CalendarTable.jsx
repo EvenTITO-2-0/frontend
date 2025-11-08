@@ -387,6 +387,7 @@ export default function CalendarTable({
             dayGridPlugin,
             interactionPlugin,
           ]}
+
           initialView="resourceTimeGridDay"
           initialDate={startDate}
           editable={isEditable}

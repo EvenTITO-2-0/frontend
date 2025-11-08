@@ -12,6 +12,8 @@ import Icon from '@/components/Icon.jsx'
 import SetRemoveAllAssignmentsDialog
   from '@/pages/(events-manage)/manage/[id]/activities/_components/SetRemoveAllAssignmentsDialog.jsx'
 import { parseISO, addDays, isAfter, isBefore, isEqual, startOfDay } from 'date-fns'
+import PublishCalendarDialog
+  from "@/pages/(events-manage)/manage/[id]/activities/_components/PublishCalendarDialog.jsx";
 
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
@@ -83,6 +85,13 @@ export default function Page({ event }) {
     await onEditDate({ newDate: newDate, nameDate: 'END_DATE' })
   }
 
+  async function onPublish() {
+    let eventCopy = { ...event }
+    if (!eventCopy.mdata) eventCopy.mdata = {}
+    eventCopy.mdata.was_published = true
+    await submitEditEvent({ eventData: eventCopy })
+  }
+
   async function onAddNewSlot(newSlot) {
     let eventCopy = { ...event }
     if (!eventCopy.mdata) eventCopy.mdata = {}
@@ -121,6 +130,7 @@ export default function Page({ event }) {
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <SetDeleteDialog />
                 <SetRemoveAllAssignmentsDialog />
+                <PublishCalendarDialog onPublish={onPublish}/>
                 <AssignDialog />
               </div>
             ) : (

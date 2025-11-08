@@ -141,3 +141,245 @@
   color: #092b00;
   margin-right: 3px;
 }
+
+/* --- Your Existing Styles (Unchanged) --- */
+.fc-event {
+  border-radius: 4px;
+  border: none;
+  color: white !important;
+  /* ADDITION: Add padding and a subtle shadow for depth */
+  padding: 4px 6px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+/* ADDITION: Add a hover effect to lift the event */
+.fc-event:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  cursor: pointer;
+}
+
+.fc-event.event-slot {
+  background-color: #3b82f6;
+}
+
+.fc-event.event-break {
+  background-color: #909193;
+  color: #374151 !important;
+}
+
+.fc-event.event-plenary {
+  background-color: #33bd91;
+}
+
+.fc-event.event-selected {
+  border: 2px solid #f59e0b;
+  /* ADDITION: Add a "glow" to the selected event */
+  box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4) !important;
+}
+
+.fc-event-title {
+  white-space: pre-wrap;
+  font-weight: 500; /* ADDITION: Make title font slightly bolder */
+}
+
+/* --- All Your Other Custom Styles --- */
+.event-assigned {
+  border-left: 5px solid #00796b;
+  background-color: #e0f2f1;
+}
+
+.track-tag {
+  display: inline-block;
+  padding: 2px 8px;
+  font-size: 0.8em;
+  font-weight: 600;
+  line-height: 1.5;
+  color: #fff;
+  background-color: #007bff;
+  border-radius: 12px;
+  margin-bottom: 5px;
+  text-align: center;
+  max-width: 100%;
+}
+
+.event-track-ai .track-tag {
+  background-color: #2980b9;
+}
+
+.event-track-data .track-tag {
+  background-color: #27ae60;
+}
+
+.work-item {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+  padding: 4px;
+  background-color: rgba(255, 255, 255, 0.15);
+  border-radius: 4px;
+}
+
+.event-content-work {
+  height: 100%;
+  overflow-y: hidden;
+  box-sizing: border-box;
+  -webkit-mask-image: linear-gradient(
+    to bottom,
+    black 70%,
+    transparent 100%
+  );
+  mask-image: linear-gradient(
+    to bottom,
+    black 70%,
+    transparent 100%
+  );
+}
+
+.unassigned-warning,
+.unassigned-success {
+  position: absolute;
+  top: 1px;
+  right: 10px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 4px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+}
+
+.status-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.unassigned-warning {
+  background-color: #fffbe6;
+  border: 1px solid #ffe58f;
+  color: #ad8b00;
+}
+
+.unassigned-warning .status-icon {
+  color: #ad8b00;
+}
+
+.unassigned-warning strong {
+  color: #876800;
+  margin-right: 3px;
+}
+
+.unassigned-success {
+  background-color: #f6fffb;
+  border: 1px solid #b7eb8f;
+  color: #135200;
+}
+
+.unassigned-success .status-icon {
+  color: #389e0d;
+}
+
+.unassigned-success strong {
+  color: #092b00;
+  margin-right: 3px;
+}
+
+/* ================================================= */
+/* ===  ✨ ADDITIONS FOR A PRETTIER CALENDAR ✨  === */
+/* ================================================= */
+
+/* --- Header Toolbar & Buttons --- */
+
+/* Style the toolbar container */
+.fc-header-toolbar {
+  padding: 10px 4px;
+  margin-bottom: 1.5em !important;
+}
+
+/* Style the main title (e.g., "November 2025") */
+.fc-toolbar-title {
+  font-size: 1.5em !important;
+  font-weight: 600;
+  color: #111827; /* Dark gray */
+}
+
+/* Style all toolbar buttons (prev, next, today, views) */
+.fc-button {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important; /* Light gray border */
+  color: #374151 !important; /* Dark text */
+  text-transform: capitalize !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+  padding: 6px 12px !important; /* Consistent padding */
+}
+
+/* Button hover state */
+.fc-button:hover {
+  background: #f9fafb !important; /* Very light gray hover */
+  border-color: #9ca3af !important;
+}
+
+/* Style for the "active" button (e.g., the current view) */
+.fc-button-primary:not(:disabled).fc-button-active,
+.fc-button-primary:not(:disabled):active {
+  background-color: #f3f4f6 !important; /* Slightly darker gray for active */
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
+}
+
+/* Focus ring for accessibility */
+.fc-button:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
+}
+
+/* --- Calendar Grid --- */
+
+/* A more modern, subtle background for the "today" column */
+.fc-day-today {
+  background-color: rgba(249, 250, 251, 0.5) !important; /* Very light, transparent gray */
+}
+
+/* Style the column headers (e.g., "Mon", "Tue") */
+.fc-col-header-cell-cushion {
+  font-weight: 500;
+  color: #374151;
+  padding: 8px 4px !important;
+}
+
+/* Lighten the grid lines */
+.fc-timegrid-slot,
+.fc-daygrid-day,
+.fc-col-header-cell {
+  border-color: #e5e7eb !important;
+}
+
+/* Style the time labels on the side (e.g., "1:00 PM") */
+.fc-timegrid-slot-label-frame {
+  text-align: right;
+  padding-right: 10px;
+  font-size: 0.85em;
+  color: #6b7281; /* Muted gray */
+}
+
+/* --- "Now" Indicator --- */
+
+/* The "now" indicator line */
+.fc-timegrid-now-indicator-line {
+  border-color: #ef4444 !imporant; /* Red color */
+  border-width: 2px !important;
+  opacity: 0.8;
+}
+
+/* The "now" arrow */
+.fc-timegrid-now-indicator-arrow {
+  border-color: #ef4444 !important; /* Red color */
+  opacity: 0.8;
+}
