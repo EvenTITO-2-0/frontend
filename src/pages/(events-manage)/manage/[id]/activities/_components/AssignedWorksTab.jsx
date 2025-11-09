@@ -38,18 +38,18 @@ export default function AssignedWorksTab({ works, slotId, unassignedWorks }) {
       await deleteWorkSlot.mutateAsync({ workId: workId })
       setLocalWorks((prev) => prev.filter((w) => w.id !== workId))
     } catch (e) {
-      alert('Failed to delete work.')
+      alert('Error al eliminar el trabajo.')
     }
   }
 
-const handleAssignClick = async (work) => {
+  const handleAssignClick = async (work) => {
     try {
       console.log(`Trying to assign work ${work.id} to slot ${slotId}`)
       setLocalWorks((prev) => [...prev, work])
       setLocalUnassignedWorks((prev) => prev.filter((w) => w.id !== work.id))
       await assignWork.mutateAsync({ slot_id: slotId, work_id: work.id })
     } catch (e) {
-      alert('Failed to assign work.')
+      alert('Error al asignar el trabajo.')
       console.error('Failed to assign work.', e)
       // Revert state on failure
       setLocalWorks(works || [])
@@ -61,7 +61,7 @@ const handleAssignClick = async (work) => {
     <Dialog open={isAddOpen} onOpenChange={setIsAddOpen}>
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-lg font-medium">Assigned Works</h3>
+          <h3 className="text-lg font-medium">Trabajos Asignados</h3>
           <DialogTrigger asChild>
             <Button size="icon" variant="outline">
               <Plus className="h-4 w-4" />
@@ -72,15 +72,19 @@ const handleAssignClick = async (work) => {
         <ScrollArea className="h-[400px] w-full rounded-md border">
           {localWorks.length === 0 ? (
             <div className="flex h-full items-center justify-center p-4 text-center text-muted-foreground">
-              No works assigned to this slot
+              No hay trabajos asignados a este horario
             </div>
           ) : (
             <div className="p-4">
               {localWorks.map((work) => (
                 <div key={work.id} className="mb-4 last:mb-0">
                   <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="font-medium">{work.title}</h4>
+                    {/* Added flex-1 and min-w-0 to allow truncation */}
+                    <div className="flex-1 min-w-0 pr-4">
+                      {/* Added line-clamp-2 for 2-line truncation */}
+                      <h4 className="font-medium line-clamp-2">
+                        {work.title}
+                      </h4>
                     </div>
                     <div className="flex items-center gap-2">
                       <Badge>{work.track}</Badge>
@@ -102,12 +106,12 @@ const handleAssignClick = async (work) => {
 
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Assign Work to Slot</DialogTitle>
+          <DialogTitle>Asignar Trabajo a Horario</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[400px] w-full rounded-md border p-4">
           {!localUnassignedWorks || localUnassignedWorks.length === 0 ? (
             <div className="text-center text-muted-foreground">
-              No unassigned works available.
+              No hay trabajos sin asignar disponibles.
             </div>
           ) : (
             localUnassignedWorks.map((work) => (
@@ -115,12 +119,16 @@ const handleAssignClick = async (work) => {
                 key={work.id}
                 className="flex items-center justify-between mb-4 last:mb-0"
               >
-                <div>
-                  <h4 className="font-medium">{work.title}</h4>
+                {/* Added flex-1, min-w-0 and pr-4 to allow truncation */}
+                <div className="flex-1 min-w-0 pr-4">
+                  {/* Added line-clamp-2 for 2-line truncation */}
+                  <h4 className="font-medium line-clamp-2">{work.title}</h4>
+
                   <p className="text-sm text-muted-foreground">
                     {work.track}
                   </p>
-                  <p className="text-xs text-muted-foreground">
+                  {/* Added line-clamp-2 for 2-line truncation */}
+                  <p className="text-xs text-muted-foreground line-clamp-2">
                     {work?.authors?.map((a) => a.full_name).join(', ')}
                   </p>
                 </div>
@@ -130,7 +138,7 @@ const handleAssignClick = async (work) => {
                   onClick={() => handleAssignClick(work)}
                   disabled={assignWork.isPending}
                 >
-                  {assignWork.isPending ? 'Assigning...' : 'Assign'}
+                  {assignWork.isPending ? 'Asignando...' : 'Asignar'}
                 </Button>
               </div>
             ))

@@ -172,7 +172,7 @@ export default function SlotEditDialog({
                     <SelectValue placeholder="Selecciona un tipo" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="slot">Bloque</SelectItem>
+                    <SelectItem value="slot">Presentacion de trabajos</SelectItem>
                     <SelectItem value="break">Receso</SelectItem>
                     <SelectItem value="plenary">Plenaria</SelectItem>
                   </SelectContent>
