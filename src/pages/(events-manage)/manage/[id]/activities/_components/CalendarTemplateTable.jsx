@@ -281,7 +281,6 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
           dayGridPlugin,
           interactionPlugin,
         ]}
-        allDaySlot={false}
         initialView="resourceTimeGridSevenDay"
         initialDate={startDate}
         editable={isEditable}
@@ -291,6 +290,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         select={handleDateSelect}
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
+        allDaySlot={false}
         eventContent={eventContent}
         eventClassNames={(info) => {
           const type = info.event.extendedProps.type || 'slot'

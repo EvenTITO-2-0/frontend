@@ -54,7 +54,7 @@ export default function CalendarTable({
       const transformedSlots = eventSlots.map(slot => {
         const type = determineType(slot.slot_type)
         const works = slot.works || []
-        let title = slot.slot_type
+        let title = slot.title
 
         if (type === 'slot') {
           title = 'Sin trabajos asignados'
@@ -393,6 +393,7 @@ export default function CalendarTable({
           select={handleDateSelect}
           eventResize={handleEventResize}
           eventDrop={handleEventDrop}
+          allDaySlot={false}
           eventContent={renderEventContent}
           eventClassNames={(info) => {
             const type = info.event.extendedProps.type || 'slot'
