@@ -1,123 +1,17 @@
-import { useState, useEffect } from 'react'
+import { useEffect, useState } from 'react'
 import {
   Dialog,
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogFooter,
 } from '@/components/ui/dialog'
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { format, parseISO } from 'date-fns'
-import {
-  Select,
-  SelectTrigger,
-  SelectValue,
-  SelectContent,
-  SelectItem,
-} from '@/components/ui/select'
-import {
-  Tabs,
-  TabsList,
-  TabsTrigger,
-  TabsContent,
-} from '@/components/ui/tabs'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import AssignedWorksTab from '@/pages/(events-manage)/manage/[id]/activities/_components/AssignedWorksTab.jsx'
 import { Badge } from '@/components/ui/badge'
+import { SlotDetails } from '@/pages/(events-manage)/manage/[id]/activities/_components/SlotDetails.jsx'
 
-// 1. Componente de formulario
-const SlotDetails = ({
-  formData,
-  handleInputChange,
-  handleTypeChange,
-  isNewEvent,
-  handleDelete, // <-- CORRECCIÓN: Recibe 'handleDelete'
-  onOpenChange,
-  handleSave,
-  isFormValid,
-}) => (
-  <>
-    <div className="space-y-4 py-4">
-      {/* ... (Todo el formulario que ya tenías) ... */}
-      <div className="space-y-2">
-        <Label htmlFor="title">Título del Evento</Label>
-        <Input
-          id="title"
-          value={formData.title}
-          onChange={handleInputChange}
-          required
-          placeholder="ej., Reunión de Equipo"
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="date">Fecha</Label>
-        <Input
-          id="date"
-          type="date"
-          value={formData.date}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="startTime">Hora de Inicio</Label>
-        <Input
-          id="startTime"
-          type="time"
-          value={formData.startTime}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="endTime">Hora de Fin</Label>
-        <Input
-          id="endTime"
-          type="time"
-          value={formData.endTime}
-          onChange={handleInputChange}
-        />
-      </div>
-      <div className="space-y-2">
-        <Label htmlFor="type">Tipo</Label>
-        <Select onValueChange={handleTypeChange} value={formData.type}>
-          <SelectTrigger>
-            <SelectValue placeholder="Selecciona un tipo" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="slot">Presentacion de trabajos</SelectItem>
-            <SelectItem value="break">Receso</SelectItem>
-            <SelectItem value="plenary">Plenaria</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-    </div>
-    <DialogFooter className="sm:justify-between">
-      <div className="flex space-x-2">
-        {!isNewEvent && (
-          <Button
-            type="button"
-            variant="destructive"
-            onClick={handleDelete} // <-- CORRECCIÓN: Ahora 'handleDelete' está en scope
-          >
-            Eliminar
-          </Button>
-        )}
-        <Button
-          type="button"
-          variant="outline"
-          onClick={() => onOpenChange(false)}
-        >
-          Cancelar
-        </Button>
-      </div>
-      <Button type="button" onClick={handleSave} disabled={!isFormValid}>
-        {isNewEvent ? 'Crear Evento' : 'Guardar Cambios'}
-      </Button>
-    </DialogFooter>
-  </>
-)
-
-// 2. Componente principal
+// 2. Componente principal (Modificado)
 export default function SlotEditDialog({
   open,
   onOpenChange,
@@ -128,6 +22,7 @@ export default function SlotEditDialog({
   lastSelectedType,
   unassignedWorks,
   withWorksTab = false,
+  eventRooms = [], // Prop nueva
 }) {
   const [formData, setFormData] = useState({
     title: '',
@@ -135,6 +30,7 @@ export default function SlotEditDialog({
     startTime: '',
     endTime: '',
     type: 'slot',
+    room_id: '', // Campo nuevo
   })
 
   useEffect(() => {
@@ -148,6 +44,7 @@ export default function SlotEditDialog({
             startTime: format(parseISO(startStr), 'HH:mm'),
             endTime: format(parseISO(endStr), 'HH:mm'),
             type: lastSelectedType,
+            room_id: '', // Campo nuevo
           })
         }
       } else {
@@ -159,6 +56,7 @@ export default function SlotEditDialog({
             startTime: format(start, 'HH:mm'),
             endTime: format(end, 'HH:mm'),
             type: eventInfo.extendedProps.type || 'slot',
+            room_id: eventInfo.extendedProps.room_id || '', // Campo nuevo
           })
         }
       }
@@ -177,6 +75,14 @@ export default function SlotEditDialog({
     }))
   }
 
+  // Handler nuevo para la sala
+  const handleRoomChange = (value) => {
+    setFormData((prev) => ({
+      ...prev,
+      room_id: value,
+    }))
+  }
+
   const handleSave = () => {
     const start = parseISO(`${formData.date}T${formData.startTime}`)
     const end = parseISO(`${formData.date}T${formData.endTime}`)
@@ -186,11 +92,12 @@ export default function SlotEditDialog({
       start,
       end,
       type: formData.type,
+      // CAMBIO: Añadir room_id solo si es relevante
+      room_id: formData.type === 'plenary' ? formData.room_id : null,
     })
     onOpenChange(false)
   }
 
-  // Esta es la función que debe pasarse
   const handleDelete = () => {
     if (onDelete && eventInfo?.id) {
       onDelete(eventInfo.id)
@@ -198,8 +105,14 @@ export default function SlotEditDialog({
     }
   }
 
+  // CAMBIO: Lógica de validación actualizada
+  const isTitleRequired =
+    formData.type === 'plenary' || formData.type === 'break'
   const isFormValid =
-    formData.title && formData.date && formData.startTime && formData.endTime
+    (isTitleRequired ? formData.title : true) && // El título es válido si no se requiere, o si se requiere Y está presente
+    formData.date &&
+    formData.startTime &&
+    formData.endTime
 
   const hasAssignedWorks = eventInfo?.extendedProps?.works?.length > 0
   const defaultTab = hasAssignedWorks ? 'works' : 'details'
@@ -210,13 +123,15 @@ export default function SlotEditDialog({
     formData,
     handleInputChange,
     handleTypeChange,
+    handleRoomChange, // Prop nueva
+    eventRooms, // Prop nueva
     isNewEvent,
-    handleDelete, // <-- CORRECCIÓN: Pasar la función 'handleDelete'
+    handleDelete,
     onOpenChange,
     handleSave,
     isFormValid,
   }
-
+  const showWorksTabs = withWorksTab && formData.type === 'slot'
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={dialogWidth}>
@@ -226,7 +141,7 @@ export default function SlotEditDialog({
           </DialogTitle>
         </DialogHeader>
 
-        {withWorksTab ? (
+        {showWorksTabs ? (
           <Tabs defaultValue={defaultTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2">
               <TabsTrigger value="details">Detalles</TabsTrigger>

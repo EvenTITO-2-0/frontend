@@ -13,11 +13,13 @@ import {
   parseISO,
   addDays,
 } from 'date-fns'
-import SlotWithWorksEditDialog from './SlotWithWorksEditDialog.jsx'
 import '/styles.css'
 import esLocale from '@fullcalendar/core/locales/es'
+import SlotEditDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SlotEditDialog.jsx'
+import { Label } from '@/components/ui/label.jsx'
+import { Badge } from '@/components/ui/badge.jsx'
 
-export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, onDeleteSlot, slots = [], eventStatus }) {
+export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot, onDeleteSlot, slots = [], eventRooms }) {
   const calendarRef = useRef(null)
 
   useEffect(() => {
@@ -115,6 +117,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: selectInfo.startStr,
         end: formatISO(newEndTime),
         resourceId: selectInfo.resource?.id,
+        room_id: copiedEvent.room_id
       }
       setEvents((prev) => [...prev, newEvent])
       setCopiedEvent(null)
@@ -144,7 +147,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
   }
 
   const handleSaveEvent = (eventData) => {
-    const { id, title, start, end, type } = eventData
+    const { id, title, start, end, type, room_id} = eventData
 
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
@@ -162,6 +165,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: formatISO(start),
         end: formatISO(end),
         type: type,
+        room_id: room_id
       };
       setEvents((prevEvents) =>
           prevEvents.map((event) =>
@@ -177,6 +181,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
         type: type,
+        room_id: room_id
       }
       setEvents((prev) => [...prev, newEvent])
       onAddNewSlot(newEvent)
@@ -246,6 +251,24 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
       onAddNewSlot(updatedEvent)
     }
   }
+
+  const eventContent = (arg) => {
+    const { title } = arg.event;
+    const type = arg.event.extendedProps.type;
+
+    return (
+      <>
+        {type === "slot" ? <div>Presentación de trabajos</div> : <div>{title}</div> }
+        {type === "plenary" && (
+          <div style={{ fontSize: '1em', color: '#ffffff' }}>
+            <strong>{arg.event.extendedProps.room_id}</strong>
+          </div>
+        )}
+      </>
+    );
+  }
+
+  console.log("Event rooms: " + JSON.stringify(eventRooms))
   return (
     <>
       <FullCalendar
@@ -268,6 +291,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         select={handleDateSelect}
         eventResize={handleEventResize}
         eventDrop={handleEventDrop}
+        eventContent={eventContent}
         eventClassNames={(info) => {
           const type = info.event.extendedProps.type || 'slot'
           const classes = [`event-${type}`]
@@ -333,7 +357,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         resources={resources}
         events={[...events, ...inverseBackground]}
       />
-      <SlotWithWorksEditDialog
+      <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}
@@ -343,6 +367,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         lastSelectedType={lastSelectedType}
         disabled={!isEditable}
         withWorksTab={false}
+        eventRooms={eventRooms}
       />
     </>
   )

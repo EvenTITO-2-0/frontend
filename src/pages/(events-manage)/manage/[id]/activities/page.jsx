@@ -165,6 +165,7 @@ export default function Page({ event }) {
                 onDeleteSlot={onDeleteSlot}
                 slots={mdataSlots}
                 eventStatus={eventStatus}
+                eventRooms={eventRooms}
               />
             )}
           </>

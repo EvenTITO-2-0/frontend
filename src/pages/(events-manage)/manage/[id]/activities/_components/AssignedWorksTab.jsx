@@ -119,7 +119,7 @@ export default function AssignedWorksTab({ works, slotId, unassignedWorks }) {
 
       <DialogContent className="sm:max-w-[500px]">
         <DialogHeader>
-          <DialogTitle>Asignar Trabajo a Horario</DialogTitle>
+          <DialogTitle>Agregar trabajo</DialogTitle>
         </DialogHeader>
         <ScrollArea className="h-[400px] w-full rounded-md border p-4">
           {!localUnassignedWorks || localUnassignedWorks.length === 0 ? (

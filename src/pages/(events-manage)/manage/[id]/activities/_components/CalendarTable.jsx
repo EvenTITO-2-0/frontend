@@ -15,7 +15,6 @@ import {
   parseISO,
   addDays,
 } from 'date-fns'
-import SlotWithWorksEditDialog from './SlotWithWorksEditDialog.jsx'
 import '/styles.css'
 import {
   useCreateSlotMutation,
@@ -24,6 +23,7 @@ import {
   useUpdateSlotMutation,
 } from '@/hooks/events/slotHooks.js'
 import { AlertTriangle, CheckCircle } from 'lucide-react'
+import SlotEditDialog from '@/pages/(events-manage)/manage/[id]/activities/_components/SlotEditDialog.jsx'
 
 export default function CalendarTable({
   startDate,
@@ -56,12 +56,8 @@ export default function CalendarTable({
         const works = slot.works || []
         let title = slot.slot_type
 
-        if (works.length > 0) {
-          title = works.map(w =>
-            `Work ID: ${w.id.substring(0, 8)}...`
-          ).join('\n')
-        } else if (type === 'slot') {
-          title = 'Available Slot'
+        if (type === 'slot') {
+          title = 'Sin trabajos asignados'
         }
 
         return {
@@ -451,7 +447,7 @@ export default function CalendarTable({
           events={[...events, ...inverseBackground]}
         />
         </div>
-      <SlotWithWorksEditDialog
+      <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}
