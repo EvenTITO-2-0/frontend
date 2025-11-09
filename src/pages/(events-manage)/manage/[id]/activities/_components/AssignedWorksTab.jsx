@@ -14,6 +14,8 @@ import {
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog'
+// 1. Importar el Separator
+import { Separator } from '@/components/ui/separator'
 
 export default function AssignedWorksTab({ works, slotId, unassignedWorks }) {
   const deleteWorkSlot = useDeleteWorkSlotMutation()
@@ -76,27 +78,38 @@ export default function AssignedWorksTab({ works, slotId, unassignedWorks }) {
             </div>
           ) : (
             <div className="p-4">
-              {localWorks.map((work) => (
-                <div key={work.id} className="mb-4 last:mb-0">
-                  <div className="flex items-center justify-between">
-                    {/* Added flex-1 and min-w-0 to allow truncation */}
+              {/* 2. Usar el index en el map */}
+              {localWorks.map((work, index) => (
+                // Envolver cada item para que la key esté en el div principal
+                <div key={work.id}>
+                  {/* 4. Agregar padding vertical (py-2) */}
+                  <div className="flex items-center justify-between py-2">
+                    {/* Estructura corregida para que el justify-between funcione */}
                     <div className="flex-1 min-w-0 pr-4">
-                      {/* Added line-clamp-2 for 2-line truncation */}
-                      <h4 className="font-medium line-clamp-2">
+                      <h4 className="font-small text-sm line-clamp-2 leading-relaxed">
+                        <Badge
+                          variant="default"
+                          className="mr-1.5 align-baseline text-xs px-1.5 py-0.5"
+                        >
+                          {work.track}
+                        </Badge>
                         {work.title}
                       </h4>
                     </div>
                     <div className="flex items-center gap-2">
-                      <Badge>{work.track}</Badge>
                       <Button
                         variant="destructive"
                         size="icon"
+                        // CAMBIO AQUÍ: Se agregó className para achicar el botón
+                        className="h-8 w-8"
                         onClick={() => handleDelete(work.id)}
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
+                  {/* 3. Agregar Separator si no es el último item */}
+                  {index < localWorks.length - 1 && <Separator />}
                 </div>
               ))}
             </div>
@@ -114,32 +127,31 @@ export default function AssignedWorksTab({ works, slotId, unassignedWorks }) {
               No hay trabajos sin asignar disponibles.
             </div>
           ) : (
-            localUnassignedWorks.map((work) => (
-              <div
-                key={work.id}
-                className="flex items-center justify-between mb-4 last:mb-0"
-              >
-                {/* Added flex-1, min-w-0 and pr-4 to allow truncation */}
-                <div className="flex-1 min-w-0 pr-4">
-                  {/* Added line-clamp-2 for 2-line truncation */}
-                  <h4 className="font-medium line-clamp-2">{work.title}</h4>
-
-                  <p className="text-sm text-muted-foreground">
-                    {work.track}
-                  </p>
-                  {/* Added line-clamp-2 for 2-line truncation */}
-                  <p className="text-xs text-muted-foreground line-clamp-2">
-                    {work?.authors?.map((a) => a.full_name).join(', ')}
-                  </p>
+            // 2. Usar el index en el map
+            localUnassignedWorks.map((work, index) => (
+              <div key={work.id}>
+                {/* 4. Agregar padding vertical (py-3) y quitar mb-4 */}
+                <div className="flex items-center justify-between py-3">
+                  <div className="flex-1 min-w-0 pr-4">
+                    <h4 className="font-medium line-clamp-2">{work.title}</h4>
+                    <p className="text-sm text-muted-foreground">
+                      {work.track}
+                    </p>
+                    <p className="text-xs text-muted-foreground line-clamp-2">
+                      {work?.authors?.map((a) => a.full_name).join(', ')}
+                    </p>
+                  </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => handleAssignClick(work)}
+                    disabled={assignWork.isPending}
+                  >
+                    {assignWork.isPending ? 'Asignando...' : 'Asignar'}
+                  </Button>
                 </div>
-                <Button
-                  size="sm"
-                  variant="outline"
-                  onClick={() => handleAssignClick(work)}
-                  disabled={assignWork.isPending}
-                >
-                  {assignWork.isPending ? 'Asignando...' : 'Asignar'}
-                </Button>
+                {/* 3. Agregar Separator si no es el último item */}
+                {index < localUnassignedWorks.length - 1 && <Separator />}
               </div>
             ))
           )}

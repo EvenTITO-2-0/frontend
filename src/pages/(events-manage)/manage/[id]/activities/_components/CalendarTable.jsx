@@ -15,7 +15,7 @@ import {
   parseISO,
   addDays,
 } from 'date-fns'
-import SlotEditDialog from './SlotEditDialog.jsx'
+import SlotWithWorksEditDialog from './SlotWithWorksEditDialog.jsx'
 import '/styles.css'
 import {
   useCreateSlotMutation,
@@ -451,7 +451,7 @@ export default function CalendarTable({
           events={[...events, ...inverseBackground]}
         />
         </div>
-      <SlotEditDialog
+      <SlotWithWorksEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}
@@ -461,6 +461,7 @@ export default function CalendarTable({
         lastSelectedType={lastSelectedType}
         disabled={!isEditable}
         unassignedWorks={unassignedWorks}
+        withWorksTab={true}
       />
     </>
   )

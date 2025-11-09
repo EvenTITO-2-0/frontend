@@ -13,7 +13,7 @@ import {
   parseISO,
   addDays,
 } from 'date-fns'
-import SlotEditDialog from './SlotEditDialog.jsx'
+import SlotWithWorksEditDialog from './SlotWithWorksEditDialog.jsx'
 import '/styles.css'
 import esLocale from '@fullcalendar/core/locales/es'
 
@@ -333,7 +333,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         resources={resources}
         events={[...events, ...inverseBackground]}
       />
-      <SlotEditDialog
+      <SlotWithWorksEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
         onSave={handleSaveEvent}
@@ -342,6 +342,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         isNewEvent={isNewEvent}
         lastSelectedType={lastSelectedType}
         disabled={!isEditable}
+        withWorksTab={false}
       />
     </>
   )
