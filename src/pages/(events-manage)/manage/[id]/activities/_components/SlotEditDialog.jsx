@@ -137,7 +137,7 @@ export default function SlotEditDialog({
       <DialogContent className={dialogWidth}>
         <DialogHeader>
           <DialogTitle>
-            {isNewEvent ? 'Agregar Nuevo Evento' : 'Editar Evento'}
+            {isNewEvent ? 'Agregar nueva actividad' : 'Editar actividad'}
           </DialogTitle>
         </DialogHeader>
 

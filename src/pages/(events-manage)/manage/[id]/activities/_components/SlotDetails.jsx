@@ -26,7 +26,7 @@ export const SlotDetails = ({
     <div className="space-y-4 py-4">
       {formData.type !== 'slot' && (
         <div className="space-y-2">
-          <Label htmlFor="title">Título del Evento</Label>
+          <Label htmlFor="title">Título de la actividad</Label>
           <Input
             id="title"
             value={formData.title}
@@ -117,8 +117,8 @@ export const SlotDetails = ({
           Cancelar
         </Button>
       </div>
-      <Button type="button" onClick={handleSave} disabled={!isFormValid}>
-        {isNewEvent ? 'Crear Evento' : 'Guardar Cambios'}
+      <Button type="button" onClick={handleSave} disabled={!isFormValid} >
+        {isNewEvent ? 'Crear actividad' : 'Guardar Cambios'}
       </Button>
     </DialogFooter>
   </>

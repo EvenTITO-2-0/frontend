@@ -4,7 +4,7 @@ import { Calendar, ChevronDown, ChevronRight, MapPin, Search } from 'lucide-reac
 import TalkDetails from './_components/TalkDetails'
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
-import LineTabs from '@/components/LineTabs.jsx'
+import ExternalLineTabs from '@/components/ExternalLineTabs.jsx'
 import { format, parseISO, eachDayOfInterval } from 'date-fns'
 import { es } from 'date-fns/locale'
 import PublishedCalendar from "@/pages/(events-manage)/events/[id]/view/calendar/_components/PublishedCalendar.jsx";
@@ -84,7 +84,7 @@ export default function ConferenceCalendar({ event, works }) {
           <TitlePage title={'Calendario de presentaciones'} />
         </div>
 
-        <LineTabs
+        <ExternalLineTabs
           tabs={calendarTabs}
           onValueChange={handleTabChange} // Pass the handler
           selected={selectedDate} // Start on the first tab
