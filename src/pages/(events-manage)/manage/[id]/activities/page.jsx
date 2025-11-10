@@ -14,7 +14,7 @@ import SetRemoveAllAssignmentsDialog
 import { parseISO, addDays, isAfter, isBefore, isEqual, startOfDay } from 'date-fns'
 import PublishCalendarDialog
   from "@/pages/(events-manage)/manage/[id]/activities/_components/PublishCalendarDialog.jsx";
-
+import UnpublishCalendarDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/UnpublishCalendarDialog.jsx";
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -25,6 +25,7 @@ export default function Page({ event }) {
   const { mutateAsync: submitEditEvent, isPending } = useEditEvent()
   console.log(event)
   const wasConfigured = event.mdata?.was_configured
+  const wasPublished = event.mdata?.was_published
 
   useEffect(() => {
     async function fetchStatus() {
@@ -92,6 +93,13 @@ export default function Page({ event }) {
     await submitEditEvent({ eventData: eventCopy })
   }
 
+  async function onUnpublish() {
+    let eventCopy = { ...event }
+    if (!eventCopy.mdata) eventCopy.mdata = {}
+    eventCopy.mdata.was_published = false
+    await submitEditEvent({ eventData: eventCopy })
+  }
+
   async function onAddNewSlot(newSlot) {
     let eventCopy = { ...event }
     if (!eventCopy.mdata) eventCopy.mdata = {}
@@ -127,12 +135,16 @@ export default function Page({ event }) {
           title={'Actividades del evento'}
           rightComponent={
             wasConfigured ? (
+              !wasPublished ? (
               <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
                 <SetDeleteDialog />
                 <SetRemoveAllAssignmentsDialog />
                 <PublishCalendarDialog onPublish={onPublish}/>
                 <AssignDialog />
               </div>
+              ) : (
+                <UnpublishCalendarDialog onClick={onUnpublish}/>
+              )
             ) : (
               <SetCalendarDialog eventRooms={eventRooms} />
             )

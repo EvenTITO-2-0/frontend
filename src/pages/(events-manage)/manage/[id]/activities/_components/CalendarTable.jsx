@@ -409,9 +409,9 @@ export default function CalendarTable({
             return classes
           }}
           headerToolbar={{
-            left: 'prevDay today nextDay',
-            center: 'title',
-            right: '',
+            right: 'prevDay today nextDay',
+            left: 'title',
+            center: '',
           }}
           customButtons={{
             prevDay: {
