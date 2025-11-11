@@ -1,166 +1,109 @@
-.fc-event {
-  border-radius: 4px;
-  border: none;
-  color: white !important;
+/* ================================================= */
+/* ===  ✨ ADDITIONS FOR A PRETTIER CALENDAR ✨  === */
+/* ================================================= */
+
+/* --- Header Toolbar & Buttons --- */
+.fc-header-toolbar {
+  padding: 10px 4px;
+  margin-bottom: 1.5em !important;
 }
 
-.fc-event.event-slot {
-  background-color: #3b82f6;
+.fc-toolbar-title {
+  font-size: 1.5em !important;
+  font-weight: 600;
+  color: #111827; /* Dark gray */
 }
 
-.fc-event.event-break {
-  background-color: #909193;
-  color: #374151 !important;
+.fc-button {
+  background: #ffffff !important;
+  border: 1px solid #d1d5db !important; /* Light gray border */
+  color: #374151 !important; /* Dark text */
+  text-transform: capitalize !important;
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  border-radius: 6px !important;
+  transition: all 0.2s ease;
+  padding: 6px 12px !important; /* Consistent padding */
 }
 
-.fc-event.event-plenary {
-  background-color: #33bd91;
+.fc-button:hover {
+  background: #f9fafb !important; /* Very light gray hover */
+  border-color: #9ca3af !important;
 }
 
-.fc-event.event-selected {
-  border: 2px solid #f59e0b;
+.fc-button-primary:not(:disabled).fc-button-active,
+.fc-button-primary:not(:disabled):active {
+  background-color: #f3f4f6 !important; /* Slightly darker gray for active */
+  border-color: #d1d5db !important;
+  color: #111827 !important;
+  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
 }
 
-.fc-event-title {
-  white-space: pre-wrap
+.fc-button:focus {
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
 }
 
-.event-assigned {
-  border-left: 5px solid #00796b;
-  background-color: #e0f2f1;
+/* --- Calendar Grid --- */
+.fc-day-today {
+  background-color: rgba(249, 250, 251, 0.5) !important; /* Very light, transparent gray */
 }
 
-/* Add this to your styles.css */
-
-.track-tag {
-  display: inline-block; /* Allows padding and margins */
-  padding: 2px 8px; /* Small padding */
-  font-size: 0.8em;   /* Smaller font */
-  font-weight: 600;  /* Bold text */
-  line-height: 1.5;
-  color: #fff;       /* White text */
-  background-color: #007bff; /* A nice blue color */
-  border-radius: 12px;     /* This makes it a "pill" or "blob" */
-  margin-bottom: 5px;    /* Space below the tag */
-  text-align: center;
-  max-width: 100%;       /* Ensure it doesn't overflow */
-}
-
-/* You can even add specific colors per track */
-.event-track-ai .track-tag {
-  background-color: #2980b9; /* Blue */
-}
-
-.event-track-data .track-tag {
-  background-color: #27ae60; /* Green */
-}
-
-/* Find your existing .work-item rule
-  and replace it with this one.
-*/
-.work-item {
-  display: flex;
-  flex-direction: row;  /* <-- This is the key change */
-  align-items: center;    /* Vertically aligns the tag and the ID */
-  gap: 8px;               /* Adds a nice space between the two items */
-  padding: 4px;
-  background-color: rgba(255, 255, 255, 0.15);
-  border-radius: 4px;
-}
-/* In your styles.css */
-
-.event-content-work {
-  /* ...all your other styles... */
-
-  /* --- CORE LAYOUT --- */
-  height: 100%;
-  overflow-y: hidden; /* We still need this! */
-  box-sizing: border-box;
-
-  /* --- THE FADE-OUT MASK --- */
-  /* This creates a gradient that goes from visible (black) to invisible (transparent) */
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 70%,  /* The top 70% is fully visible */
-    transparent 100% /* Fades to invisible at the bottom */
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black 70%,
-    transparent 100%
-  );
-}
-/* --- Common styles for the corner alert --- */
-.unassigned-warning,
-.unassigned-success {
-  position: absolute;
-  top: 10px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 10;
-  display: flex;
-  align-items: center;
-  padding: 6px 10px;
-  border-radius: 4px;
+.fc-col-header-cell-cushion {
   font-weight: 500;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  color: #374151;
+  padding: 8px 4px !important;
 }
 
-.status-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 8px;
-  flex-shrink: 0;
+.fc-timegrid-slot,
+.fc-daygrid-day,
+.fc-col-header-cell {
+  border-color: #e5e7eb !important;
 }
 
-.unassigned-warning {
-  background-color: #fffbe6;
-  border: 1px solid #ffe58f;
-  color: #ad8b00;
+.fc-timegrid-slot-label-frame {
+  text-align: right;
+  padding-right: 10px;
+  font-size: 0.85em;
+  color: #6b7281; /* Muted gray */
 }
 
-.unassigned-warning .status-icon {
-  color: #ad8b00;
+/* --- "Now" Indicator --- */
+.fc-timegrid-now-indicator-line {
+  border-color: #ef4444 !important; /* Red color */
+  border-width: 2px !important;
+  opacity: 0.8;
 }
 
-.unassigned-warning strong {
-  color: #876800;
-  margin-right: 3px;
+.fc-timegrid-now-indicator-arrow {
+  border-color: #ef4444 !important; /* Red color */
+  opacity: 0.8;
 }
 
-.unassigned-success {
-  background-color: #f6fffb;
-  border: 1px solid #b7eb8f;
-  color: #135200;
-}
+/* ================================================= */
+/* ===       ✨ BASE EVENT STYLES ✨         === */
+/* ================================================= */
 
-.unassigned-success .status-icon {
-  color: #389e0d;
-}
-
-.unassigned-success strong {
-  color: #092b00;
-  margin-right: 3px;
-}
-
-/* --- Your Existing Styles (Unchanged) --- */
+/* --- Base Event Container --- */
 .fc-event {
   border-radius: 4px;
   border: none;
   color: white !important;
-  /* ADDITION: Add padding and a subtle shadow for depth */
   padding: 4px 6px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* ADDITION: Add a hover effect to lift the event */
 .fc-event:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
   cursor: pointer;
 }
 
+.fc-event-title {
+  white-space: pre-wrap;
+  font-weight: 500;
+}
+
+/* --- Event Types & States --- */
 .fc-event.event-slot {
   background-color: #3b82f6;
 }
@@ -176,43 +119,72 @@
 
 .fc-event.event-selected {
   border: 2px solid #f59e0b;
-  /* ADDITION: Add a "glow" to the selected event */
   box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.4) !important;
 }
 
-.fc-event-title {
-  white-space: pre-wrap;
-  font-weight: 500; /* ADDITION: Make title font slightly bolder */
-}
-
-/* --- All Your Other Custom Styles --- */
 .event-assigned {
   border-left: 5px solid #00796b;
   background-color: #e0f2f1;
 }
 
+/* ================================================= */
+/* ===       ✨ EVENT CONTENT STYLES ✨      === */
+/* ================================================= */
+
+/* --- Simple Content (Breaks, Plenaries) --- */
+.event-content-simple {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  height: 100%;
+  padding: 4px;
+  box-sizing: border-box;
+}
+
+/* --- Grouped Content (Slots with Tracks) --- */
 .track-tag {
   display: inline-block;
-  padding: 2px 8px;
-  font-size: 0.8em;
+  padding: 4px 10px;
+  font-size: 0.9em;
   font-weight: 600;
   line-height: 1.5;
   color: #fff;
-  background-color: #007bff;
-  border-radius: 12px;
+  background-color: rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
   margin-bottom: 5px;
   text-align: center;
   max-width: 100%;
 }
 
-.event-track-ai .track-tag {
-  background-color: #2980b9;
+.track-group {
+  margin-bottom: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.event-track-data .track-tag {
-  background-color: #27ae60;
+.work-id-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
 }
 
+.work-id-chip {
+  background-color: rgba(255, 255, 255, 0.3);
+  color: #ffffff;
+  border-radius: 4px;
+  width: 2em;
+  height: 2em;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.9em;
+  font-family: 'Courier New', Courier, monospace;
+}
+
+/* --- Legacy / Other Content Styles --- */
 .work-item {
   display: flex;
   flex-direction: row;
@@ -227,22 +199,34 @@
   height: 100%;
   overflow-y: hidden;
   box-sizing: border-box;
-  -webkit-mask-image: linear-gradient(
-    to bottom,
-    black 70%,
-    transparent 100%
-  );
-  mask-image: linear-gradient(
-    to bottom,
-    black 70%,
-    transparent 100%
-  );
+  -webkit-mask-image: linear-gradient( to bottom, black 70%, transparent 100% );
+  mask-image: linear-gradient( to bottom, black 70%, transparent 100% );
 }
 
+.track-header {
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.track-works {
+  margin-left: 8px;
+}
+
+.color-square {
+  width: 10px;
+  height: 10px;
+  display: inline-block;
+  margin-right: 4px;
+  border-radius: 2px;
+}
+
+/* ================================================= */
+/* ===       ✨ UNASSIGNED STATUS BAR ✨      === */
+/* ================================================= */
 .unassigned-warning,
 .unassigned-success {
   position: absolute;
-  top: 10px;
+  top: 15px;
   left: 50%;
   transform: translateX(-50%);
   z-index: 10;
@@ -292,96 +276,113 @@
 }
 
 /* ================================================= */
-/* ===  ✨ ADDITIONS FOR A PRETTIER CALENDAR ✨  === */
+/* ===   ✨ CSS FOR 3-STATE EVENT LAYOUTS ✨   === */
 /* ================================================= */
 
-/* --- Header Toolbar & Buttons --- */
-
-/* Style the toolbar container */
-.fc-header-toolbar {
-  padding: 10px 4px;
-  margin-bottom: 1.5em !important;
+/* --- 1. DEFAULT (FULL) STATE ---
+ * Show the full layout, hide the other two.
+ */
+.event-content-grouped {
+  /* This is the base container, it holds one of the layouts */
+  height: 100%;
 }
 
-/* Style the main title (e.g., "November 2025") */
-.fc-toolbar-title {
-  font-size: 1.5em !important;
+.event-layout-full {
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Horizontal center */
+  justify-content: center; /* <-- ADDED: Vertical center */
+  height: 100%; /* <-- ADDED: Fill the container */
+  box-sizing: border-box; /* ADDED: Good practice with padding */
+  gap: 4px;
+  padding: 4px;
+}
+
+.event-layout-medium {
+  display: none;
+}
+
+.event-layout-small {
+  display: none;
+}
+
+/* --- 2. MEDIUM STATE (.is-medium) ---
+ * Show the medium layout, hide the others.
+ */
+.fc-event.is-medium .event-layout-full {
+  display: none;
+}
+.fc-event.is-medium .event-layout-medium {
+  display: flex; /* This will show the medium layout */
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  overflow: hidden;
+  height: 100%;
+  padding: 4px; /* Add padding to match full view */
+}
+.fc-event.is-medium .event-layout-small {
+  display: none;
+}
+
+/* --- STYLING for the "sideways" medium layout --- */
+.fc-event.is-medium .track-group {
+  flex-direction: row; /* This is the "sideways" part */
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 0;
+  max-width: 100%;
+  overflow: hidden;
+}
+.fc-event.is-medium .track-tag {
+  margin-bottom: 0; /* Remove default margin */
+  flex-shrink: 0; /* Don't let the tag shrink */
+}
+.fc-event.is-medium .work-id-list {
+  flex-wrap: nowrap; /* Keep chips in one line */
+  overflow: hidden; /* Hide chips that don't fit */
+  gap: 3px;
+}
+.fc-event.is-medium .work-id-chip {
+  /* Make chips smaller for the medium view */
+  width: 1.5em;
+  height: 1.5em;
+  font-size: 0.8em;
+}
+
+
+/* --- 3. SMALL STATE (.is-small) ---
+ * Show the small layout, hide the others.
+ * (Using your final version)
+ */
+.fc-event.is-small .event-layout-full {
+  display: none;
+}
+.fc-event.is-small .event-layout-medium {
+  display: none;
+}
+.fc-event.is-small .event-layout-small {
+  display: flex; /* This will show the small layout */
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: flex-start; /* Aligns tags to the top */
+  justify-content: center; /* Horizontally center */
+  height: 100%; /* Use 100% */
+  gap: 3px;
+  overflow: hidden;
+  padding: 0 2px 2px; /* 0 top padding */
+}
+
+/* --- STYLING for the "smallest" layout --- */
+.fc-event.is-small .track-tag {
+  font-size: 0.8em;
+  padding: 2px 2px;
+  margin-bottom: 0;
+  overflow: hidden;
+  -webkit-mask-image: linear-gradient( to bottom, black 70%, transparent 100% );
+  mask-image: linear-gradient( to bottom, black 70%, transparent 100% );
+}
+.fc-event.is-small .event-slot-title {
+  font-size: 0.9em;
   font-weight: 600;
-  color: #111827; /* Dark gray */
-}
-
-/* Style all toolbar buttons (prev, next, today, views) */
-.fc-button {
-  background: #ffffff !important;
-  border: 1px solid #d1d5db !important; /* Light gray border */
-  color: #374151 !important; /* Dark text */
-  text-transform: capitalize !important;
-  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-  border-radius: 6px !important;
-  transition: all 0.2s ease;
-  padding: 6px 12px !important; /* Consistent padding */
-}
-
-/* Button hover state */
-.fc-button:hover {
-  background: #f9fafb !important; /* Very light gray hover */
-  border-color: #9ca3af !important;
-}
-
-/* Style for the "active" button (e.g., the current view) */
-.fc-button-primary:not(:disabled).fc-button-active,
-.fc-button-primary:not(:disabled):active {
-  background-color: #f3f4f6 !important; /* Slightly darker gray for active */
-  border-color: #d1d5db !important;
-  color: #111827 !important;
-  box-shadow: inset 0 1px 2px 0 rgba(0, 0, 0, 0.05) !important;
-}
-
-/* Focus ring for accessibility */
-.fc-button:focus {
-  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2) !important;
-}
-
-/* --- Calendar Grid --- */
-
-/* A more modern, subtle background for the "today" column */
-.fc-day-today {
-  background-color: rgba(249, 250, 251, 0.5) !important; /* Very light, transparent gray */
-}
-
-/* Style the column headers (e.g., "Mon", "Tue") */
-.fc-col-header-cell-cushion {
-  font-weight: 500;
-  color: #374151;
-  padding: 8px 4px !important;
-}
-
-/* Lighten the grid lines */
-.fc-timegrid-slot,
-.fc-daygrid-day,
-.fc-col-header-cell {
-  border-color: #e5e7eb !important;
-}
-
-/* Style the time labels on the side (e.g., "1:00 PM") */
-.fc-timegrid-slot-label-frame {
-  text-align: right;
-  padding-right: 10px;
-  font-size: 0.85em;
-  color: #6b7281; /* Muted gray */
-}
-
-/* --- "Now" Indicator --- */
-
-/* The "now" indicator line */
-.fc-timegrid-now-indicator-line {
-  border-color: #ef4444 !imporant; /* Red color */
-  border-width: 2px !important;
-  opacity: 0.8;
-}
-
-/* The "now" arrow */
-.fc-timegrid-now-indicator-arrow {
-  border-color: #ef4444 !important; /* Red color */
-  opacity: 0.8;
 }
