@@ -65,12 +65,12 @@ export default function PublishCalendarDialog({ onPublish }) {
             Cerrar
           </Button>
           <Button
-            variant="success"
+            variant="default"
             onClick={handleClick}
             disabled={isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Publicar calendario
+            Publicar
           </Button>
         </div>
       </DialogContent>

@@ -100,7 +100,7 @@ export default function AssignDialog() {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant="success" style={{ display: 'flex', gap: '8px' }}>
+        <Button variant="default" style={{ display: 'flex', gap: '8px' }}>
           Asignar trabajos
         </Button>
       </DialogTrigger>
@@ -188,7 +188,7 @@ export default function AssignDialog() {
             <Button variant="notApproved" onClick={() => setOpen(false)} disabled={isPending}>
               Cancelar
             </Button>
-            <Button variant="success" onClick={handleClick} disabled={isPending}>
+            <Button variant="default" onClick={handleClick} disabled={isPending}>
               {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
               Asignar
             </Button>

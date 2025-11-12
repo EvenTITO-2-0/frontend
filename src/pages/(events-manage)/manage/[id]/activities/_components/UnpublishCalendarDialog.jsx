@@ -65,12 +65,12 @@ export default function UnpublishCalendarDialog({ onClick }) {
             Cerrar
           </Button>
           <Button
-            variant="success"
+            variant="default"
             onClick={handleClick}
             disabled={isPending}
           >
             {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            Despublicar calendario
+            Despublicar
           </Button>
         </div>
       </DialogContent>
