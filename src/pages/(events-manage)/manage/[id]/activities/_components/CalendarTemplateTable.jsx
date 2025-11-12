@@ -48,7 +48,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
 
-  const resources = [{ id: 'a', title: 'Plantilla de planificacion' }]
+  const resources = [{ id: 'a', title: 'Plantilla de planificación' }]
   const inverseBackground = [
     {
       groupId: 'testGroupId',
@@ -309,7 +309,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
           resourceTimeGridSevenDay: {
             type: 'resourceTimeGrid',
             duration: { days: 7 },
-            buttonText: 'Week',
+            buttonText: 'Semana',
           },
         }}
         customButtons={{

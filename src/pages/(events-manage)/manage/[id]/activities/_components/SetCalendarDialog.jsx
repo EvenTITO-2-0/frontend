@@ -48,7 +48,7 @@ export default function SetCalendarDialog({ eventRooms }) {
       }}
     >
       <DialogTrigger asChild>
-        <Button variant={'success'} style={{ display: 'flex', gap: '8px' }}>
+        <Button variant={'default'} style={{ display: 'flex', gap: '8px' }}>
           Generar Calendario
           <ChevronsRight />
         </Button>
@@ -102,7 +102,7 @@ export default function SetCalendarDialog({ eventRooms }) {
                   Seguir editando
                 </Button>
                 <Button
-                    variant={'success'}
+                    variant={'default'}
                     onClick={handleClick}
                     disabled={isPending}
                 >
