@@ -272,8 +272,8 @@ export default function CalendarTable({
   }
 
   const handleSaveEvent = (eventData) => {
-    const { id, title, start, end, type, room_name} = eventData
-    console.log("handleSaveEvent event:", eventData)
+    const { id, title, start, end, type, room_name } = eventData
+    console.log('handleSaveEvent event:', eventData)
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
       ...prev,
@@ -283,22 +283,40 @@ export default function CalendarTable({
     setLastSelectedType(type)
 
     if (id) {
-        const updatedEvent = {
-            id,
-            title,
-            start: formatISO(start),
-            end: formatISO(end),
-            type: type,
-            resourceId: room_name,
-            room_name: room_name
-        };
-      setEvents((prevEvents) =>
-        prevEvents.map((event) =>
-          event.id === id ? updatedEvent : event
-        )
-      )
+      const updatedEvent = {
+        id,
+        title,
+        start: formatISO(start),
+        end: formatISO(end),
+        type: type,
+        resourceId: room_name,
+        room_name: room_name,
+      }
       // Update the slot on backend (if we have a numeric id)
       updateSlotAsync(updatedEvent)
+      
+      setEvents((prevEvents) =>
+        prevEvents.map((event) => {
+          if (event.id === id) {
+            // This is the event to update
+            return {
+              ...event,
+              id,
+              title,
+              start: formatISO(start),
+              end: formatISO(end),
+              type: type,
+              resourceId: room_name,
+              room_name: room_name,
+              extendedProps: {
+                ...event.extendedProps,
+                originalType: type,
+              },
+            }
+          }
+          return event
+        })
+      )
     } else {
       const newEvent = {
         id: String(Date.now()),
@@ -307,7 +325,7 @@ export default function CalendarTable({
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
         type: type,
-        room_name: room_name
+        room_name: room_name,
       }
       setEvents((prev) => [...prev, newEvent])
       // Create the slot on backend
