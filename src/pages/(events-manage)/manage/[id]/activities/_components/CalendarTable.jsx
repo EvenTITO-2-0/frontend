@@ -141,6 +141,7 @@ export default function CalendarTable({
     }
 
     if (eventSlots) {
+      console.log("Transforming event slots:", eventSlots)
       const transformedSlots = eventSlots.map(slot => {
         const type = determineType(slot.slot_type)
         const works = slot.works || []
@@ -166,6 +167,7 @@ export default function CalendarTable({
           resourceId: slot.room_name,
           type: type,
           title: title,
+          room_name: slot.room_name,
           extendedProps: {
             works: works,
             originalType: slot.slot_type,
@@ -243,6 +245,8 @@ export default function CalendarTable({
     if (!isBetweenAllowedDates(info.event.start, info.event.end)) {
       return
     }
+    console.log('Event :', JSON.stringify(info))
+    console.log('Event info clicked:', JSON.stringify(info.event))
     setSelectedEvent(info.event)
     setDialogEventInfo(info.event)
     setIsNewEvent(false)
@@ -268,6 +272,7 @@ export default function CalendarTable({
         end: formatISO(newEndTime),
         resourceId: selectInfo.resource?.id,
         type: copiedEvent.type,
+        room_name: selectInfo.resource?.id,
       }
       setEvents((prev) => [...prev, newEvent])
       setCopiedEvent(null)
@@ -297,8 +302,8 @@ export default function CalendarTable({
   }
 
   const handleSaveEvent = (eventData) => {
-    const { id, title, start, end, type } = eventData
-
+    const { id, title, start, end, type, room_name} = eventData
+    console.log("handleSaveEvent event:", eventData)
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
       ...prev,
@@ -314,7 +319,8 @@ export default function CalendarTable({
             start: formatISO(start),
             end: formatISO(end),
             type: type,
-            resourceId: dialogEventInfo?.resource?.id || events.find(e => e.id === id)?.resourceId
+            resourceId: room_name,
+            room_name: room_name
         };
       setEvents((prevEvents) =>
         prevEvents.map((event) =>
@@ -331,6 +337,7 @@ export default function CalendarTable({
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
         type: type,
+        room_name: room_name
       }
       setEvents((prev) => [...prev, newEvent])
       // Create the slot on backend
@@ -369,6 +376,7 @@ export default function CalendarTable({
       end: info.event.endStr,
       resourceId: info.event.getResources()[0]?.id,
       title: info.event.title,
+      room_name: info.event.room_name,
       type: info.event.extendedProps.type || info.event.type,
     })
   }
@@ -392,15 +400,18 @@ export default function CalendarTable({
               start: info.event.startStr,
               end: info.event.endStr,
               resourceId: finalResourceId,
+              room_name: finalResourceId
             }
           : event
       )
     )
+    console.log(finalResourceId)
     updateSlotAsync({
       id: info.event.id,
       start: info.event.startStr,
       end: info.event.endStr,
       resourceId: finalResourceId,
+      room_name: finalResourceId,
       title: info.event.title,
       type: info.event.extendedProps.type || info.event.type,
     })
@@ -415,7 +426,7 @@ export default function CalendarTable({
         start: slot.start,
         end: slot.end,
         type: slot.type,
-        room_name: slot.resourceId || slot.room_name,
+        room_name: slot.room_name,
       }
       return await useCreateSlot.mutateAsync({slot: body})
     } catch (err) {
@@ -425,13 +436,14 @@ export default function CalendarTable({
 
   const updateSlotAsync = async (slot) => {
     if (!isNumericId(slot.id)) return
+    console.log("updateSlotAsync slot:", slot)
     try {
       const body = {
         title: slot.title,
         start: slot.start,
         end: slot.end,
         type: slot.type,
-        room_name: slot.resourceId || slot.room_name,
+        room_name: slot.room_name,
       }
       return await useUpdateSlot.mutateAsync({slotId: slot.id, slot: body})
     } catch (err) {
@@ -533,6 +545,8 @@ export default function CalendarTable({
   const totalWorks = numAssigned + numUnassigned;
   const allAssigned = numUnassigned === 0;
 
+
+  console.log("CalendarTable dialogEventInfo: " + JSON.stringify(dialogEventInfo))
   return (
     <>
       <div style={{ position: 'relative' }}>
@@ -638,6 +652,7 @@ export default function CalendarTable({
         disabled={isEditable}
         unassignedWorks={unassignedWorks}
         withWorksTab={true}
+        eventRooms={eventRooms}
       />
     </>
   )

@@ -30,7 +30,7 @@ export default function SlotEditDialog({
     startTime: '',
     endTime: '',
     type: 'slot',
-    room_id: '', // Campo nuevo
+    room_name: '', // Campo nuevo
   })
 
   useEffect(() => {
@@ -44,7 +44,7 @@ export default function SlotEditDialog({
             startTime: format(parseISO(startStr), 'HH:mm'),
             endTime: format(parseISO(endStr), 'HH:mm'),
             type: lastSelectedType,
-            room_id: '', // Campo nuevo
+            room_name: '', // Campo nuevo
           })
         }
       } else {
@@ -56,7 +56,7 @@ export default function SlotEditDialog({
             startTime: format(start, 'HH:mm'),
             endTime: format(end, 'HH:mm'),
             type: eventInfo.extendedProps.type || 'slot',
-            room_id: eventInfo.extendedProps.room_id || '', // Campo nuevo
+            room_name: eventInfo.extendedProps.room_name || '', // Campo nuevo
           })
         }
       }
@@ -79,7 +79,7 @@ export default function SlotEditDialog({
   const handleRoomChange = (value) => {
     setFormData((prev) => ({
       ...prev,
-      room_id: value,
+      room_name: value,
     }))
   }
 
@@ -92,8 +92,8 @@ export default function SlotEditDialog({
       start,
       end,
       type: formData.type,
-      // CAMBIO: Añadir room_id solo si es relevante
-      room_id: formData.type === 'plenary' ? formData.room_id : null,
+      // CAMBIO: Añadir room_name solo si es relevante
+      room_name: formData.type === 'plenary' ? formData.room_name : null,
     })
     onOpenChange(false)
   }
@@ -132,6 +132,7 @@ export default function SlotEditDialog({
     isFormValid,
   }
   const showWorksTabs = withWorksTab && formData.type === 'slot'
+  console.log("SlotEditDialog eventInfo: " + JSON.stringify(eventInfo))
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className={dialogWidth}>

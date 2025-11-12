@@ -81,7 +81,7 @@ export const SlotDetails = ({
       {formData.type === 'plenary' && (
         <div className="space-y-2">
           <Label htmlFor="room">Sala</Label>
-          <Select onValueChange={handleRoomChange} value={formData.room_id}>
+          <Select onValueChange={handleRoomChange} value={formData.room_id ? formData.room_id : formData.room_name}>
             <SelectTrigger>
               <SelectValue placeholder="Selecciona una sala" />
             </SelectTrigger>
