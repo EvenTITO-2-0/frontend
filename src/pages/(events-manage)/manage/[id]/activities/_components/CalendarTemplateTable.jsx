@@ -117,7 +117,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: selectInfo.startStr,
         end: formatISO(newEndTime),
         resourceId: selectInfo.resource?.id,
-        room_id: copiedEvent.room_id
+        room_name: copiedEvent.room_name
       }
       setEvents((prev) => [...prev, newEvent])
       setCopiedEvent(null)
@@ -147,7 +147,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
   }
 
   const handleSaveEvent = (eventData) => {
-    const { id, title, start, end, type, room_id} = eventData
+    const { id, title, start, end, type, room_name} = eventData
 
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
@@ -165,7 +165,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         start: formatISO(start),
         end: formatISO(end),
         type: type,
-        room_id: room_id
+        room_name: room_name
       };
       setEvents((prevEvents) =>
           prevEvents.map((event) =>
@@ -181,7 +181,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         end: formatISO(end),
         resourceId: dialogEventInfo?.resource?.id,
         type: type,
-        room_id: room_id
+        room_name: room_name
       }
       setEvents((prev) => [...prev, newEvent])
       onAddNewSlot(newEvent)
@@ -261,7 +261,7 @@ export default function CalendarTemplateTable({ startDate, endDate, onAddNewSlot
         {type === "slot" ? <div>Presentación de trabajos</div> : <div>{title}</div> }
         {type === "plenary" && (
           <div style={{ fontSize: '1em', color: '#ffffff' }}>
-            <strong>{arg.event.extendedProps.room_id}</strong>
+            <strong>{arg.event.extendedProps.room_name}</strong>
           </div>
         )}
       </>

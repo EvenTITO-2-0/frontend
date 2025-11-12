@@ -196,7 +196,6 @@ export default function CalendarTable({
   })
 
   const [selectedEvent, setSelectedEvent] = useState(null)
-  const [copiedEvent, setCopiedEvent] = useState(null)
   const [isEventDialogOpen, setIsEventDialogOpen] = useState(false)
   const [dialogEventInfo, setDialogEventInfo] = useState(null)
   const [isNewEvent, setIsNewEvent] = useState(false)
@@ -210,20 +209,6 @@ export default function CalendarTable({
       backgroundColor: '#595959',
     },
   ]
-
-  useEffect(() => {
-    const handleKeyDown = (event) => {
-      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        if (selectedEvent) {
-          setCopiedEvent(selectedEvent)
-        }
-      }
-    }
-    document.addEventListener('keydown', handleKeyDown)
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown)
-    }
-  }, [selectedEvent])
 
   const isBetweenAllowedDates = (startDate, endDate) => {
     return (
@@ -254,51 +239,36 @@ export default function CalendarTable({
   }
 
   const handleDateSelect = (selectInfo) => {
+    console.log('handleDateSelect.: ' + JSON.stringify(selectInfo))
     if (!isBetweenAllowedDates(selectInfo.start, selectInfo.end)) {
       console.log('Selected range is outside conference period.')
       return
     }
+    const duration = differenceInMilliseconds(
+      selectInfo.end,
+      selectInfo.start
+    )
+    let calculatedEndStr = selectInfo.endStr
 
-    if (copiedEvent) {
-      const duration = differenceInMilliseconds(
-        copiedEvent.end,
-        copiedEvent.start
+    if (duration === 0) {
+      const defaultDuration = lastDurations[lastSelectedType]
+      const calculatedEndDate = addMilliseconds(
+        selectInfo.start,
+        defaultDuration
       )
-      const newEndTime = addMilliseconds(selectInfo.start, duration)
-      const newEvent = {
-        id: String(Date.now()),
-        title: copiedEvent.title,
-        start: selectInfo.startStr,
-        end: formatISO(newEndTime),
-        resourceId: selectInfo.resource?.id,
-        type: copiedEvent.type,
-        room_name: selectInfo.resource?.id,
-      }
-      setEvents((prev) => [...prev, newEvent])
-      setCopiedEvent(null)
-    } else {
-      const duration = differenceInMilliseconds(
-        selectInfo.end,
-        selectInfo.start
-      )
-      let calculatedEndStr = selectInfo.endStr
-
-      if (duration === 0) {
-        const defaultDuration = lastDurations[lastSelectedType]
-        const calculatedEndDate = addMilliseconds(
-          selectInfo.start,
-          defaultDuration
-        )
-        calculatedEndStr = formatISO(calculatedEndDate)
-      }
-
-      setDialogEventInfo({
-        ...selectInfo,
-        endStr: calculatedEndStr,
-      })
-      setIsNewEvent(true)
-      setIsEventDialogOpen(true)
+      calculatedEndStr = formatISO(calculatedEndDate)
     }
+    setDialogEventInfo({
+      ...selectInfo,
+      endStr: calculatedEndStr,
+      extendedProps: {
+        type: lastSelectedType,
+        room_name: selectInfo.resource?.id,
+      },
+      resourceId: selectInfo.resource?.id,
+    })
+    setIsNewEvent(true)
+    setIsEventDialogOpen(true)
   }
 
   const handleSaveEvent = (eventData) => {
@@ -352,6 +322,7 @@ export default function CalendarTable({
   }
 
   const handleEventResize = (info) => {
+    console.log("HandleEventResize info:", info.event)
     const newStart = info.event.start
     const newEnd = info.event.end
     if (!isBetweenAllowedDates(newStart, newEnd)) {
@@ -376,7 +347,7 @@ export default function CalendarTable({
       end: info.event.endStr,
       resourceId: info.event.getResources()[0]?.id,
       title: info.event.title,
-      room_name: info.event.room_name,
+      room_name: info.event.extendedProps.room_name,
       type: info.event.extendedProps.type || info.event.type,
     })
   }

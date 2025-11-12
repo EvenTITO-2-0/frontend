@@ -44,7 +44,7 @@ export default function SlotEditDialog({
             startTime: format(parseISO(startStr), 'HH:mm'),
             endTime: format(parseISO(endStr), 'HH:mm'),
             type: lastSelectedType,
-            room_name: '', // Campo nuevo
+            room_name: eventInfo.extendedProps?.room_name, // Campo nuevo
           })
         }
       } else {
@@ -56,7 +56,7 @@ export default function SlotEditDialog({
             startTime: format(start, 'HH:mm'),
             endTime: format(end, 'HH:mm'),
             type: eventInfo.extendedProps.type || 'slot',
-            room_name: eventInfo.extendedProps.room_name || '', // Campo nuevo
+            room_name: eventInfo.extendedProps?.room_name || '', // Campo nuevo
           })
         }
       }
@@ -92,8 +92,7 @@ export default function SlotEditDialog({
       start,
       end,
       type: formData.type,
-      // CAMBIO: Añadir room_name solo si es relevante
-      room_name: formData.type === 'plenary' ? formData.room_name : null,
+      room_name: formData.type === 'plenary' ? formData.room_name : eventInfo.extendedProps?.room_name
     })
     onOpenChange(false)
   }
@@ -112,7 +111,8 @@ export default function SlotEditDialog({
     (isTitleRequired ? formData.title : true) && // El título es válido si no se requiere, o si se requiere Y está presente
     formData.date &&
     formData.startTime &&
-    formData.endTime
+    formData.endTime &&
+    (formData.type !== 'plenary' || formData.room_name)
 
   const hasAssignedWorks = eventInfo?.extendedProps?.works?.length > 0
   const defaultTab = hasAssignedWorks ? 'works' : 'details'
