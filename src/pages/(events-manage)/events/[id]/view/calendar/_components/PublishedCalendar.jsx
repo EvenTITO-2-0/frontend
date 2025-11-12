@@ -136,7 +136,7 @@ const PublishedCalendar = forwardRef(({
       const transformedSlots = eventSlots.map(slot => {
         const type = determineType(slot.slot_type)
         const works = slot.works || []
-        let title = slot.slot_type // Use slot_type as base title
+        let title = slot.title // Use slot_type as base title
 
         if (type === 'slot' && works.length === 0) {
           title = 'Available Slot' // Or 'Slot Vacío'
