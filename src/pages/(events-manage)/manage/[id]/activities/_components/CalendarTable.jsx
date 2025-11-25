@@ -141,7 +141,6 @@ export default function CalendarTable({
     }
 
     if (eventSlots) {
-      console.log("Transforming event slots:", eventSlots)
       const transformedSlots = eventSlots.map(slot => {
         const type = determineType(slot.slot_type)
         const works = slot.works || []
@@ -230,8 +229,6 @@ export default function CalendarTable({
     if (!isBetweenAllowedDates(info.event.start, info.event.end)) {
       return
     }
-    console.log('Event :', JSON.stringify(info))
-    console.log('Event info clicked:', JSON.stringify(info.event))
     setSelectedEvent(info.event)
     setDialogEventInfo(info.event)
     setIsNewEvent(false)
@@ -239,9 +236,7 @@ export default function CalendarTable({
   }
 
   const handleDateSelect = (selectInfo) => {
-    console.log('handleDateSelect.: ' + JSON.stringify(selectInfo))
     if (!isBetweenAllowedDates(selectInfo.start, selectInfo.end)) {
-      console.log('Selected range is outside conference period.')
       return
     }
     const duration = differenceInMilliseconds(
@@ -273,7 +268,6 @@ export default function CalendarTable({
 
   const handleSaveEvent = (eventData) => {
     const { id, title, start, end, type, room_name } = eventData
-    console.log('handleSaveEvent event:', eventData)
     const newDuration = differenceInMilliseconds(end, start)
     setLastDurations((prev) => ({
       ...prev,
@@ -294,7 +288,7 @@ export default function CalendarTable({
       }
       // Update the slot on backend (if we have a numeric id)
       updateSlotAsync(updatedEvent)
-      
+
       setEvents((prevEvents) =>
         prevEvents.map((event) => {
           if (event.id === id) {
@@ -340,7 +334,6 @@ export default function CalendarTable({
   }
 
   const handleEventResize = (info) => {
-    console.log("HandleEventResize info:", info.event)
     const newStart = info.event.start
     const newEnd = info.event.end
     if (!isBetweenAllowedDates(newStart, newEnd)) {
@@ -394,7 +387,6 @@ export default function CalendarTable({
           : event
       )
     )
-    console.log(finalResourceId)
     updateSlotAsync({
       id: info.event.id,
       start: info.event.startStr,
@@ -425,7 +417,6 @@ export default function CalendarTable({
 
   const updateSlotAsync = async (slot) => {
     if (!isNumericId(slot.id)) return
-    console.log("updateSlotAsync slot:", slot)
     try {
       const body = {
         title: slot.title,
@@ -535,7 +526,6 @@ export default function CalendarTable({
   const allAssigned = numUnassigned === 0;
 
 
-  console.log("CalendarTable dialogEventInfo: " + JSON.stringify(dialogEventInfo))
   return (
     <>
       <div style={{ position: 'relative' }}>
