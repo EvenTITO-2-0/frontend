@@ -31,5 +31,5 @@ export function dateIsValid(minDate = null, maxDate = null) {
 }
 
 export function formatDayToText(day) {
-  return format(day, 'full')
+  return format(day, 'full', 'es' )
 }

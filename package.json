@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "vite build --watch",
     "preview": "vite preview",
     "prepare": "husky install",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
@@ -96,7 +96,14 @@
     "tailwindcss-animate": "^1.0.7",
     "vite-plugin-svgr": "^4.2.0",
     "zod": "^3.23.8",
-    "@heroicons/react": "^2.1.1"
+    "@heroicons/react": "^2.1.1",
+    "@fullcalendar/core": "^6.x.x",
+    "@fullcalendar/daygrid": "^6.x.x",
+    "@fullcalendar/resource-timegrid": "^6.x.x",
+    "@fullcalendar/timegrid": "^6.x.x",
+    "@fullcalendar/react": "^6.x.x",
+    "@fullcalendar/interaction": "^6.x.x",
+    "@fullcalendar/bootstrap5": "^6.x.x"
   },
   "devDependencies": {
     "@eslint/js": "^9.11.1",

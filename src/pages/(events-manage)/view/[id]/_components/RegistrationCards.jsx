@@ -214,6 +214,8 @@ function RegistrationCard({
 }
 
 function LimitDate({ limitDate, isOpen }) {
+  if (!limitDate) return null; // Prevent formatting null/undefined
+
   if (isOpen) {
     return <p className="text-gray-500">Fecha límite: {format(limitDate)}</p>
   }

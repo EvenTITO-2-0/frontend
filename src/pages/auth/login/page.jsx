@@ -1,8 +1,8 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, Navigate, Outlet } from 'react-router-dom'
 import { Mail, Lock } from 'lucide-react'
 import { Input } from '@/components/ui/input'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import {
   useLoginWithEmailAndPassword,
   useLoginWithGoogle,
@@ -11,10 +11,15 @@ import ButtonWithLoading from '@/components/ButtonWithLoading'
 import ContainerAuthPage from '../_components/ContainerAuthPage'
 import GoogleButton from '../_components/GoogleButton'
 import { isAuthenticated } from '@/lib/routes/isAuthenticated.js'
-import Header from '@/pages/_components/Headers/home-admin/index.jsx'
-import Footer from '@/components/LayoutPage/Footer.jsx'
+import { clearAuth } from '@/state/auth/authSlice.js'
 
 export default function LoginPage() {
+  const dispatch = useDispatch()
+
+  useEffect(() => {
+    dispatch(clearAuth());
+  }, [dispatch]);
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const { currentUser } = useSelector((state) => state.user)
@@ -48,6 +53,9 @@ export default function LoginPage() {
 
   if (isAuthenticated()) {
     return <Navigate to={'/home'} />
+  }
+  if (idUser && authEmail && (!currentUser || !isAuthenticated())) {
+    return <Navigate to="/complete-register" replace />
   }
 
   return (

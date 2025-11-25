@@ -69,6 +69,7 @@ export default function SignupPage() {
   const onGoogleSignup = async () => {
     try {
       await googleSignupMutation.mutateAsync()
+      setRedirectToCompleteRegister(true)
     } catch (error) {
       setError(true)
       setErrorMessage('Error al registrarse con Google')

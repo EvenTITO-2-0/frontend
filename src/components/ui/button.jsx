@@ -22,6 +22,7 @@ const buttonVariants = cva(
         selectable: 'hover:bg-slate-100',
         notApproved: 'bg-red-50 hover:bg-red-200',
         header: 'hover:text-gray-200 hover:bg-gray-700',
+        success:'bg-green-600 text-white hover:bg-green-700 focus-visible:ring-green-600',
       },
       size: {
         default: 'h-10 px-4 py-2',
