@@ -67,7 +67,7 @@ const itemList = [
         isOrganizerRoute: true,
       },
       {
-        label: 'Actividades',
+        label: 'Calendario',
         icon: <SidebarIcon name="Calendar" />,
         to: 'activities',
         requiredRoles: [ORGANIZER_ROLE],
@@ -114,7 +114,7 @@ const itemList = [
         isOrganizerRoute: true,
       },
       {
-        label: 'Presentaciones',
+        label: 'Entregas',
         icon: <SidebarIcon name="CalendarCheck" />,
         to: 'talks',
         requiredRoles: [ORGANIZER_ROLE],

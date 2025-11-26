@@ -1,7 +1,6 @@
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import SpeakersList from './_components/SpeakersList'
-import CalendarView from './_components/CalendarView'
 import SpeakerDialog from './_components/SpeakerDialog'
 import { useChangeTalkForWork } from '@/hooks/manage/talksHooks'
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
@@ -37,21 +36,13 @@ export default function Page({ works, rooms }) {
 
   return (
     <ContainerPage>
-      <TitlePage title={'Asignación de Presentaciones'} />
+      <TitlePage title={'Entregas'} />
       <Tabs defaultValue="speakers" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="speakers">Presentadores</TabsTrigger>
-          <TabsTrigger value="calendar">Calendario</TabsTrigger>
         </TabsList>
         <TabsContent value="speakers">
           <SpeakersList works={works} onSpeakerClick={handleSpeakerClick} />
-        </TabsContent>
-        <TabsContent value="calendar">
-          <CalendarView
-            works={works}
-            rooms={rooms}
-            onWorkClick={handleWorkClick}
-          />
         </TabsContent>
       </Tabs>
 

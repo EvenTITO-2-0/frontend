@@ -15,10 +15,7 @@ export default function WorkItem({ work, rooms, onSave }) {
 
   return (
     <>
-      <Card
-        className="hover:shadow-md transition-all duration-200 cursor-pointer group"
-        onClick={() => setIsEditDialogOpen(true)}
-      >
+      <Card>
         <CardContent className="p-4">
           <div className="flex justify-between items-start mb-2">
             <h4 className="font-semibold group-hover:text-primary transition-colors">

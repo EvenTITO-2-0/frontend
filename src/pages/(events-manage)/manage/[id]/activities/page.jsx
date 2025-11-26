@@ -132,7 +132,7 @@ export default function Page({ event }) {
     <ContainerPage>
       <div className="space-y-6">
         <TitlePage
-          title={'Actividades del evento'}
+          title={ wasConfigured ? 'Calendario del evento' : 'Plantilla de calendario del evento' }
           rightComponent={
             wasConfigured ? (
               !wasPublished ? (
