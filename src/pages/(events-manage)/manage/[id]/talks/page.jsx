@@ -2,18 +2,27 @@ import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import SpeakersList from './_components/SpeakersList'
 import SpeakerDialog from './_components/SpeakerDialog'
+import TracksList from './_components/TracksList'
+import TrackDialog from './_components/TrackDialog'
 import { useChangeTalkForWork } from '@/hooks/manage/talksHooks'
 import ContainerPage from '@/pages/(events-manage)/_components/containerPage'
 import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 
 export default function Page({ works, rooms }) {
   const [selectedSpeaker, setSelectedSpeaker] = useState(null)
+  const [selectedTrack, setSelectedTrack] = useState(null)
   const [selectedWork, setSelectedWork] = useState(null)
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const { mutateAsync: updateTalkForWork } = useChangeTalkForWork()
 
   const handleSpeakerClick = (speaker) => {
     setSelectedSpeaker(speaker)
+    setSelectedWork(null)
+    setIsDialogOpen(true)
+  }
+
+  const handleTrackClick = (track) => {
+    setSelectedTrack(track)
     setSelectedWork(null)
     setIsDialogOpen(true)
   }
@@ -27,6 +36,7 @@ export default function Page({ works, rooms }) {
   const handleCloseDialog = () => {
     setIsDialogOpen(false)
     setSelectedSpeaker(null)
+    setSelectedTrack(null)
     setSelectedWork(null)
   }
 
@@ -40,17 +50,29 @@ export default function Page({ works, rooms }) {
       <Tabs defaultValue="speakers" className="w-full">
         <TabsList className="mb-4">
           <TabsTrigger value="speakers">Presentadores</TabsTrigger>
+          <TabsTrigger value="tracks">Tracks</TabsTrigger>
         </TabsList>
         <TabsContent value="speakers">
           <SpeakersList works={works} onSpeakerClick={handleSpeakerClick} />
         </TabsContent>
+        <TabsContent value="tracks">
+          <TracksList works={works} onTrackClick={handleTrackClick} />
+        </TabsContent>
       </Tabs>
 
       <SpeakerDialog
-        isOpen={isDialogOpen}
+        isOpen={isDialogOpen && !!selectedSpeaker}
         onClose={handleCloseDialog}
         onSave={handleSaveWork}
         speaker={selectedSpeaker}
+        selectedWork={selectedWork}
+        rooms={rooms}
+      />
+      <TrackDialog
+        isOpen={isDialogOpen && !!selectedTrack}
+        onClose={handleCloseDialog}
+        onSave={handleSaveWork}
+        track={selectedTrack}
         selectedWork={selectedWork}
         rooms={rooms}
       />
