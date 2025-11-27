@@ -191,10 +191,11 @@ export default function CalendarTable({
   const isEditable = true // eventStatus !== 'STARTED'
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')
+  const [currentDate, setCurrentDate] = useState(parseISO(startDate))
 
   const conferencePeriod = {
     start: parseISO(startDate),
-    end: addDays(parseISO(endDate), 1),
+    end: parseISO(endDate),
   }
 
   const [lastDurations, setLastDurations] = useState({
@@ -212,7 +213,7 @@ export default function CalendarTable({
     {
       groupId: 'testGroupId',
       start: format(conferencePeriod.start, 'yyyy-MM-dd'),
-      end: format(conferencePeriod.end, 'yyyy-MM-dd'),
+      end: format(addDays(conferencePeriod.end, 1), 'yyyy-MM-dd'),
       display: 'inverse-background',
       backgroundColor: '#595959',
     },
@@ -222,16 +223,53 @@ export default function CalendarTable({
     return (
       isWithinInterval(startDate, {
         start: conferencePeriod.start,
-        end: conferencePeriod.end,
+        end: addDays(conferencePeriod.end, 1),
       }) &&
       isWithinInterval(endDate, {
         start: conferencePeriod.start,
-        end: conferencePeriod.end,
+        end: addDays(conferencePeriod.end, 1),
       })
     )
   }
   const handleSelectAllow = (selectInfo) => {
     return isBetweenAllowedDates(selectInfo.start, selectInfo.end)
+  }
+
+  const handleDatesSet = (dateInfo) => {
+    setCurrentDate(dateInfo.start)
+
+    // Update button states
+    const calendarApi = calendarRef.current?.getApi()
+    if (calendarApi) {
+      const prevDayDate = addDays(dateInfo.start, -1)
+      const nextDayDate = addDays(dateInfo.start, 1)
+
+      // Get the button elements
+      const prevButton = document.querySelector('.fc-prevDay-button')
+      const nextButton = document.querySelector('.fc-nextDay-button')
+
+      // Disable prev button if previous day is before start date
+      if (prevButton) {
+        if (prevDayDate < conferencePeriod.start) {
+          prevButton.disabled = true
+          prevButton.classList.add('fc-button-disabled')
+        } else {
+          prevButton.disabled = false
+          prevButton.classList.remove('fc-button-disabled')
+        }
+      }
+
+      // Disable next button if next day is after end date
+      if (nextButton) {
+        if (nextDayDate > conferencePeriod.end) {
+          nextButton.disabled = true
+          nextButton.classList.add('fc-button-disabled')
+        } else {
+          nextButton.disabled = false
+          nextButton.classList.remove('fc-button-disabled')
+        }
+      }
+    }
   }
 
   const handleEventClick = (info) => {
@@ -592,6 +630,7 @@ export default function CalendarTable({
             left: 'title',
             center: '',
           }}
+          datesSet={handleDatesSet}
           customButtons={{
             prevDay: {
               icon: 'chevron-left',
@@ -599,7 +638,10 @@ export default function CalendarTable({
                 const calendarApi = calendarRef.current?.getApi()
                 if (calendarApi) {
                   const newStart = addDays(calendarApi.view.currentStart, -1)
-                  calendarApi.gotoDate(newStart)
+                  // Only navigate if within bounds
+                  if (newStart >= conferencePeriod.start) {
+                    calendarApi.gotoDate(newStart)
+                  }
                 }
               },
             },
@@ -618,7 +660,10 @@ export default function CalendarTable({
                 const calendarApi = calendarRef.current?.getApi()
                 if (calendarApi) {
                   const newStart = addDays(calendarApi.view.currentStart, 1)
-                  calendarApi.gotoDate(newStart)
+                  // Only navigate if within bounds
+                  if (newStart <= conferencePeriod.end) {
+                    calendarApi.gotoDate(newStart)
+                  }
                 }
               },
             },
