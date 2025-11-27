@@ -102,8 +102,17 @@ const renderEventContent = (eventInfo) => {
 
       {/* --- VERSION 3: SMALL LAYOUT (Tag only) --- */}
       <div className="event-layout-small">
-        {hasWorks && Object.entries(groupedByTrack).map(([trackName]) => (
-          <span key={trackName} className="track-tag">{trackName}</span>
+        {hasWorks && Object.entries(groupedByTrack).map(([trackName, worksInGroup]) => (
+          <div key={trackName} className="track-group-small">
+            <span className="track-tag-small">{trackName}</span>
+            <div className="work-id-list-small">
+              {worksInGroup.map((work) => (
+                <span key={work.id} className="work-id-chip-small">
+                  {work.work_number}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
         {!hasWorks && (
           <div className="event-slot-title">
@@ -150,12 +159,12 @@ export default function CalendarTable({
           title = 'Sin trabajos asignados'
         }
         let numTracks = 0;
-          if (works.length > 0) {
-            const grouped = works.reduce((acc, work) => {
-              const trackName = work.track || 'No Track';
-              if (!acc[trackName]) acc[trackName] = [];
-              acc[trackName].push(work);
-              return acc;
+        if (works.length > 0) {
+          const grouped = works.reduce((acc, work) => {
+            const trackName = work.track || 'No Track';
+            if (!acc[trackName]) acc[trackName] = [];
+            acc[trackName].push(work);
+            return acc;
           }, {});
           numTracks = Object.keys(grouped).length;
         }
@@ -344,10 +353,10 @@ export default function CalendarTable({
       prevEvents.map((event) =>
         event.id === info.event.id
           ? {
-              ...event,
-              start: info.event.startStr,
-              end: info.event.endStr,
-            }
+            ...event,
+            start: info.event.startStr,
+            end: info.event.endStr,
+          }
           : event
       )
     )
@@ -378,12 +387,12 @@ export default function CalendarTable({
       prevEvents.map((event) =>
         event.id === info.event.id
           ? {
-              ...event,
-              start: info.event.startStr,
-              end: info.event.endStr,
-              resourceId: finalResourceId,
-              room_name: finalResourceId
-            }
+            ...event,
+            start: info.event.startStr,
+            end: info.event.endStr,
+            resourceId: finalResourceId,
+            room_name: finalResourceId
+          }
           : event
       )
     )
@@ -409,7 +418,7 @@ export default function CalendarTable({
         type: slot.type,
         room_name: slot.room_name,
       }
-      return await useCreateSlot.mutateAsync({slot: body})
+      return await useCreateSlot.mutateAsync({ slot: body })
     } catch (err) {
       console.error('Failed to create slot', err)
     }
@@ -425,7 +434,7 @@ export default function CalendarTable({
         type: slot.type,
         room_name: slot.room_name,
       }
-      return await useUpdateSlot.mutateAsync({slotId: slot.id, slot: body})
+      return await useUpdateSlot.mutateAsync({ slotId: slot.id, slot: body })
     } catch (err) {
       console.error('Failed to update slot', err)
     }
@@ -483,21 +492,21 @@ export default function CalendarTable({
       if (height < thresholdSmall) {
         // --- SMALL STATE ---
         if (!el.classList.contains('is-small')) {
-            console.log(`Event ${eventId}: ADDING .is-small (Height: ${height.toFixed(1)} < ${thresholdSmall})`);
+          console.log(`Event ${eventId}: ADDING .is-small (Height: ${height.toFixed(1)} < ${thresholdSmall})`);
         }
         el.classList.add('is-small');
         el.classList.remove('is-medium');
       } else if (height < thresholdMedium) {
         // --- MEDIUM STATE ---
         if (!el.classList.contains('is-medium')) {
-            console.log(`Event ${eventId}: ADDING .is-medium (Height: ${height.toFixed(1)} < ${thresholdMedium})`);
+          console.log(`Event ${eventId}: ADDING .is-medium (Height: ${height.toFixed(1)} < ${thresholdMedium})`);
         }
         el.classList.add('is-medium');
         el.classList.remove('is-small');
       } else {
         // --- FULL STATE ---
         if (el.classList.contains('is-small') || el.classList.contains('is-medium')) {
-            console.log(`Event ${eventId}: REMOVING classes (Height: ${height.toFixed(1)} >= ${thresholdMedium})`);
+          console.log(`Event ${eventId}: REMOVING classes (Height: ${height.toFixed(1)} >= ${thresholdMedium})`);
         }
         el.classList.remove('is-small');
         el.classList.remove('is-medium');
@@ -619,7 +628,7 @@ export default function CalendarTable({
           eventDidMount={handleEventDidMount}
           eventWillUnmount={handleEventWillUnmount}
         />
-        </div>
+      </div>
       <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}
