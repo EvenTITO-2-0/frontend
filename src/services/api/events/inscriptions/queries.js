@@ -55,3 +55,15 @@ export const apiUpdateInscriptionStatus = async (
 export const apiUpdatePaymentStatus = async (eventId, paymentId, update) => {
   return await eventsClient.patch(`/${eventId}/payments/${paymentId}`, update)
 }
+
+export const apiGetPaymentCheckoutUrl = async (
+  eventId,
+  inscriptionId,
+  paymentId
+) => {
+  return (
+    await eventsClient.get(
+      `/${eventId}/inscriptions/${inscriptionId}/payments/${paymentId}/checkout-url`
+    )
+  ).data
+}
