@@ -15,6 +15,9 @@ import { parseISO, addDays, isAfter, isBefore, isEqual, startOfDay } from 'date-
 import PublishCalendarDialog
   from "@/pages/(events-manage)/manage/[id]/activities/_components/PublishCalendarDialog.jsx";
 import UnpublishCalendarDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/UnpublishCalendarDialog.jsx";
+import {STARTED_STATUS} from "@/lib/Constants.js";
+import StepNavigationButtons
+    from "@/pages/(events-manage)/manage/[id]/administration/_components/StepNavigationButtons.jsx";
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -181,6 +184,10 @@ export default function Page({ event }) {
               />
             )}
           </>
+        )}
+        {/* Only show navigation buttons if event is not published */}
+        {event.status !== STARTED_STATUS && (
+          <StepNavigationButtons currentStep="activities" eventInfo={event} />
         )}
       </div>
     </ContainerPage>
