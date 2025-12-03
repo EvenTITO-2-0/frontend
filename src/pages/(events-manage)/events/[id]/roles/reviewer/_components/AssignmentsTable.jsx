@@ -8,6 +8,7 @@ import {
 import { format } from '@formkit/tempo'
 import TableCursorRow from '@/components/TableCursorRow'
 import TableHeaderTitle from '@/components/TableHeaderTitle'
+import { WORKS_STATUS_LABELS, REVIEW_STATUS_LABELS } from '@/lib/Constants'
 
 export default function AssignmentsTable({ assignments, handleRowClick }) {
   return (
@@ -19,6 +20,8 @@ export default function AssignmentsTable({ assignments, handleRowClick }) {
           <TableHead>Usuario</TableHead>
           <TableHead>Fecha límite de revisión</TableHead>
           <TableHead>Track</TableHead>
+          <TableHead>Tu revisión</TableHead>
+          <TableHead>Estado del trabajo</TableHead>
         </TableRow>
       </TableHeaderTitle>
       <TableBody>
@@ -32,6 +35,12 @@ export default function AssignmentsTable({ assignments, handleRowClick }) {
             <TableCell>{assignment.submitter}</TableCell>
             <TableCell>{format(assignment.maxReviewDate, 'long')}</TableCell>
             <TableCell>{assignment.track}</TableCell>
+            <TableCell>
+              {assignment.reviewStatus ? REVIEW_STATUS_LABELS[assignment.reviewStatus] : '-'}
+            </TableCell>
+            <TableCell>
+              {assignment.workState ? WORKS_STATUS_LABELS[assignment.workState] : '-'}
+            </TableCell>
           </TableCursorRow>
         ))}
       </TableBody>

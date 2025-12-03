@@ -22,8 +22,8 @@ export default function SignupPage() {
     useState(false)
   const { currentUser } = useSelector((state) => state.user)
   const { idUser, email: authEmail } = useSelector((state) => state.auth)
-  const validationPasswordRegex =
-    /^(?=.*[0-9])(?=.*[!@#$&])[a-zA-Z0-9!@#$&]{6,15}$/
+  // Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one number.
+  const validationPasswordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).{8,}$/
 
   const signupMutation = useSignUpWithEmailAndPassword()
   const googleSignupMutation = useSignUpWithGoogle()
@@ -39,7 +39,7 @@ export default function SignupPage() {
     if (!validationPasswordRegex.test(password)) {
       setError(true)
       setErrorMessage(
-        'Contraseña inválida. Debe contener entre 6 y 15 caracteres con al menos un número y un carácter especial (Ejemplo: !,@,#,$ o &).'
+        'Contraseña inválida. Debe contener al menos 8 caracteres, una letra mayúscula, una letra minúscula y un número.'
       )
       return
     }

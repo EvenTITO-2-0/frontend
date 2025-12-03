@@ -43,6 +43,7 @@ export default function Page({ selectedWork, reviews, reviewers }) {
             submitChairReview={chairReview.mutateAsync}
             isPending={chairReview.isPending}
             onSubmit={onSubmit}
+            hasReviews={reviews && reviews.length > 0}
           />
         }
       />

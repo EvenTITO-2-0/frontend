@@ -20,9 +20,6 @@ export default function SpeakersList({ works, onSpeakerClick }) {
         <h2 className="text-xl font-semibold mb-2">
           Ninguna presentación disponible{' '}
         </h2>
-        <p className="text-gray-500 mb-4">
-          Agregar presentaciones para agendarlas en el calendario
-        </p>
       </div>
     )
   }
@@ -55,7 +52,7 @@ export default function SpeakersList({ works, onSpeakerClick }) {
               </div>
             </div>
             <div className="flex items-center">
-              <Badge variant="secondary">{speaker.works.length} charlas</Badge>
+              <Badge variant="secondary">{speaker.works.length} entregas</Badge>
               <ChevronRight className="ml-2" />
             </div>
           </CardContent>

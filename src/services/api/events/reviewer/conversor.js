@@ -25,6 +25,11 @@ function convertAssignment(assignment) {
     track: assignment.work.track,
     authors: assignment.work.authors,
     abstract: assignment.work.abstract,
+    reviews: assignment.reviews || [],
+    workState: assignment.work.state,
+    reviewStatus: assignment.reviews && assignment.reviews.length > 0
+      ? assignment.reviews[0].status
+      : null,
   }
 }
 

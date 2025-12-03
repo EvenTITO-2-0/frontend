@@ -102,8 +102,17 @@ const renderEventContent = (eventInfo) => {
 
       {/* --- VERSION 3: SMALL LAYOUT (Tag only) --- */}
       <div className="event-layout-small">
-        {hasWorks && Object.entries(groupedByTrack).map(([trackName]) => (
-          <span key={trackName} className="track-tag">{trackName}</span>
+        {hasWorks && Object.entries(groupedByTrack).map(([trackName, worksInGroup]) => (
+          <div key={trackName} className="track-group-small">
+            <span className="track-tag-small">{trackName}</span>
+            <div className="work-id-list-small">
+              {worksInGroup.map((work) => (
+                <span key={work.id} className="work-id-chip-small">
+                  {work.work_number}
+                </span>
+              ))}
+            </div>
+          </div>
         ))}
         {!hasWorks && (
           <div className="event-slot-title">
@@ -150,12 +159,12 @@ export default function CalendarTable({
           title = 'Sin trabajos asignados'
         }
         let numTracks = 0;
-          if (works.length > 0) {
-            const grouped = works.reduce((acc, work) => {
-              const trackName = work.track || 'No Track';
-              if (!acc[trackName]) acc[trackName] = [];
-              acc[trackName].push(work);
-              return acc;
+        if (works.length > 0) {
+          const grouped = works.reduce((acc, work) => {
+            const trackName = work.track || 'No Track';
+            if (!acc[trackName]) acc[trackName] = [];
+            acc[trackName].push(work);
+            return acc;
           }, {});
           numTracks = Object.keys(grouped).length;
         }
@@ -182,10 +191,11 @@ export default function CalendarTable({
   const isEditable = true // eventStatus !== 'STARTED'
   const [events, setEvents] = useState([])
   const [lastSelectedType, setLastSelectedType] = useState('slot')
+  const [currentDate, setCurrentDate] = useState(parseISO(startDate))
 
   const conferencePeriod = {
     start: parseISO(startDate),
-    end: addDays(parseISO(endDate), 1),
+    end: parseISO(endDate),
   }
 
   const [lastDurations, setLastDurations] = useState({
@@ -203,7 +213,7 @@ export default function CalendarTable({
     {
       groupId: 'testGroupId',
       start: format(conferencePeriod.start, 'yyyy-MM-dd'),
-      end: format(conferencePeriod.end, 'yyyy-MM-dd'),
+      end: format(addDays(conferencePeriod.end, 1), 'yyyy-MM-dd'),
       display: 'inverse-background',
       backgroundColor: '#595959',
     },
@@ -213,16 +223,53 @@ export default function CalendarTable({
     return (
       isWithinInterval(startDate, {
         start: conferencePeriod.start,
-        end: conferencePeriod.end,
+        end: addDays(conferencePeriod.end, 1),
       }) &&
       isWithinInterval(endDate, {
         start: conferencePeriod.start,
-        end: conferencePeriod.end,
+        end: addDays(conferencePeriod.end, 1),
       })
     )
   }
   const handleSelectAllow = (selectInfo) => {
     return isBetweenAllowedDates(selectInfo.start, selectInfo.end)
+  }
+
+  const handleDatesSet = (dateInfo) => {
+    setCurrentDate(dateInfo.start)
+
+    // Update button states
+    const calendarApi = calendarRef.current?.getApi()
+    if (calendarApi) {
+      const prevDayDate = addDays(dateInfo.start, -1)
+      const nextDayDate = addDays(dateInfo.start, 1)
+
+      // Get the button elements
+      const prevButton = document.querySelector('.fc-prevDay-button')
+      const nextButton = document.querySelector('.fc-nextDay-button')
+
+      // Disable prev button if previous day is before start date
+      if (prevButton) {
+        if (prevDayDate < conferencePeriod.start) {
+          prevButton.disabled = true
+          prevButton.classList.add('fc-button-disabled')
+        } else {
+          prevButton.disabled = false
+          prevButton.classList.remove('fc-button-disabled')
+        }
+      }
+
+      // Disable next button if next day is after end date
+      if (nextButton) {
+        if (nextDayDate > conferencePeriod.end) {
+          nextButton.disabled = true
+          nextButton.classList.add('fc-button-disabled')
+        } else {
+          nextButton.disabled = false
+          nextButton.classList.remove('fc-button-disabled')
+        }
+      }
+    }
   }
 
   const handleEventClick = (info) => {
@@ -344,10 +391,10 @@ export default function CalendarTable({
       prevEvents.map((event) =>
         event.id === info.event.id
           ? {
-              ...event,
-              start: info.event.startStr,
-              end: info.event.endStr,
-            }
+            ...event,
+            start: info.event.startStr,
+            end: info.event.endStr,
+          }
           : event
       )
     )
@@ -378,12 +425,12 @@ export default function CalendarTable({
       prevEvents.map((event) =>
         event.id === info.event.id
           ? {
-              ...event,
-              start: info.event.startStr,
-              end: info.event.endStr,
-              resourceId: finalResourceId,
-              room_name: finalResourceId
-            }
+            ...event,
+            start: info.event.startStr,
+            end: info.event.endStr,
+            resourceId: finalResourceId,
+            room_name: finalResourceId
+          }
           : event
       )
     )
@@ -409,7 +456,7 @@ export default function CalendarTable({
         type: slot.type,
         room_name: slot.room_name,
       }
-      return await useCreateSlot.mutateAsync({slot: body})
+      return await useCreateSlot.mutateAsync({ slot: body })
     } catch (err) {
       console.error('Failed to create slot', err)
     }
@@ -425,7 +472,7 @@ export default function CalendarTable({
         type: slot.type,
         room_name: slot.room_name,
       }
-      return await useUpdateSlot.mutateAsync({slotId: slot.id, slot: body})
+      return await useUpdateSlot.mutateAsync({ slotId: slot.id, slot: body })
     } catch (err) {
       console.error('Failed to update slot', err)
     }
@@ -483,21 +530,21 @@ export default function CalendarTable({
       if (height < thresholdSmall) {
         // --- SMALL STATE ---
         if (!el.classList.contains('is-small')) {
-            console.log(`Event ${eventId}: ADDING .is-small (Height: ${height.toFixed(1)} < ${thresholdSmall})`);
+          console.log(`Event ${eventId}: ADDING .is-small (Height: ${height.toFixed(1)} < ${thresholdSmall})`);
         }
         el.classList.add('is-small');
         el.classList.remove('is-medium');
       } else if (height < thresholdMedium) {
         // --- MEDIUM STATE ---
         if (!el.classList.contains('is-medium')) {
-            console.log(`Event ${eventId}: ADDING .is-medium (Height: ${height.toFixed(1)} < ${thresholdMedium})`);
+          console.log(`Event ${eventId}: ADDING .is-medium (Height: ${height.toFixed(1)} < ${thresholdMedium})`);
         }
         el.classList.add('is-medium');
         el.classList.remove('is-small');
       } else {
         // --- FULL STATE ---
         if (el.classList.contains('is-small') || el.classList.contains('is-medium')) {
-            console.log(`Event ${eventId}: REMOVING classes (Height: ${height.toFixed(1)} >= ${thresholdMedium})`);
+          console.log(`Event ${eventId}: REMOVING classes (Height: ${height.toFixed(1)} >= ${thresholdMedium})`);
         }
         el.classList.remove('is-small');
         el.classList.remove('is-medium');
@@ -583,6 +630,7 @@ export default function CalendarTable({
             left: 'title',
             center: '',
           }}
+          datesSet={handleDatesSet}
           customButtons={{
             prevDay: {
               icon: 'chevron-left',
@@ -590,7 +638,10 @@ export default function CalendarTable({
                 const calendarApi = calendarRef.current?.getApi()
                 if (calendarApi) {
                   const newStart = addDays(calendarApi.view.currentStart, -1)
-                  calendarApi.gotoDate(newStart)
+                  // Only navigate if within bounds
+                  if (newStart >= conferencePeriod.start) {
+                    calendarApi.gotoDate(newStart)
+                  }
                 }
               },
             },
@@ -609,7 +660,10 @@ export default function CalendarTable({
                 const calendarApi = calendarRef.current?.getApi()
                 if (calendarApi) {
                   const newStart = addDays(calendarApi.view.currentStart, 1)
-                  calendarApi.gotoDate(newStart)
+                  // Only navigate if within bounds
+                  if (newStart <= conferencePeriod.end) {
+                    calendarApi.gotoDate(newStart)
+                  }
                 }
               },
             },
@@ -619,7 +673,7 @@ export default function CalendarTable({
           eventDidMount={handleEventDidMount}
           eventWillUnmount={handleEventWillUnmount}
         />
-        </div>
+      </div>
       <SlotEditDialog
         open={isEventDialogOpen}
         onOpenChange={setIsEventDialogOpen}

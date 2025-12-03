@@ -61,7 +61,7 @@ export default function StepNavigationButtons({
     {
       title: 'Información',
       shortTitle: 'Información general',
-      destination: 'basic-config',
+      destination: 'info',
       condition: () => metadataIsDefined(eventInfo),
     },
     {
