@@ -9,34 +9,55 @@ import {
 } from '@/components/ui/table'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { PlusIcon } from 'lucide-react'
-import { format } from '@formkit/tempo'
 import { useNavigator } from '@/lib/navigation'
 import { PAYMENT_STATUS_LABELS } from '@/lib/Constants.js'
 import { useNavigate } from 'react-router-dom'
 import { useGetProviderStatus } from '@/hooks/events/useProviderHooks'
 import { getEventId } from '@/lib/utils'
-import MercadoPagoPayment from './MercadoPagoPayment'
-import { useEffect } from 'react'
+import { apiGetPaymentCheckoutUrl } from '@/services/api/events/inscriptions/queries'
+import { useEffect, useState } from 'react'
 
 export default function PaymentsTab({ inscription }) {
   const navigator = useNavigator()
   const navigate = useNavigate()
   const eventId = getEventId()
+  const [loadingUrl, setLoadingUrl] = useState(null)
   const {
     data: providerStatus,
     isLoading: isLoadingProvider,
     error: providerError,
   } = useGetProviderStatus(eventId)
 
-  const payments = inscription.payments || []
+  const payments = (inscription.payments || []).sort((a, b) => {
+    const dateA = new Date(a.created_at || a.creation_date || a.date)
+    const dateB = new Date(b.created_at || b.creation_date || b.date)
+    return dateB - dateA
+  })
+
   const hasActiveProvider = providerStatus?.account_status === 'ACTIVE'
   const hasPendingApproval = payments.some(
-    (payment) => payment.status === 'PENDING_APPROVAL'
+    (payment) => payment.status === 'PENDING_APPROVAL' || payment.status === 'PENDING'
   )
   const hasApprovedPayment = payments.some(
     (payment) => payment.status === 'APPROVED'
   )
   const canCreateNewPayment = !hasPendingApproval && !hasApprovedPayment
+
+  const handleContinuePayment = async (payment) => {
+    try {
+      setLoadingUrl(payment.id)
+      const data = await apiGetPaymentCheckoutUrl(eventId, inscription.id, payment.id)
+      if (data && data.checkout_url) {
+        window.location.href = data.checkout_url
+      } else {
+        console.error('No checkout URL returned')
+      }
+    } catch (error) {
+      console.error('Error getting checkout URL:', error)
+    } finally {
+      setLoadingUrl(null)
+    }
+  }
 
   useEffect(() => {
     console.log('PaymentsTab - Provider Status:', {
@@ -55,7 +76,6 @@ export default function PaymentsTab({ inscription }) {
   ])
 
   if (isLoadingProvider) {
-    console.log('PaymentsTab - Loading provider status...')
     return (
       <Card>
         <CardHeader>
@@ -66,7 +86,6 @@ export default function PaymentsTab({ inscription }) {
   }
 
   if (providerError) {
-    console.error('PaymentsTab - Provider error:', providerError)
     return (
       <Card>
         <CardHeader>
@@ -81,8 +100,7 @@ export default function PaymentsTab({ inscription }) {
       <CardHeader>
         <CardTitle className="flex items-center justify-between">
           <span>Mis pagos</span>
-          {/* Botón de nuevo pago (deshabilitado si hay pago aprobado o en revisión) */}
-          {canCreateNewPayment ? (
+          {canCreateNewPayment && payments.length === 0 && (
             <Button
               onClick={() =>
                 navigate(`/events/${eventId}/roles/attendee/new-payment`)
@@ -90,10 +108,6 @@ export default function PaymentsTab({ inscription }) {
             >
               <PlusIcon className="mr-2 h-4 w-4" />
               {hasActiveProvider ? 'Nuevo pago' : 'Nuevo pago de prueba'}
-            </Button>
-          ) : (
-            <Button disabled variant="secondary">
-              {hasApprovedPayment ? 'Pago aprobado' : 'Pago en revisión'}
             </Button>
           )}
         </CardTitle>
@@ -105,97 +119,73 @@ export default function PaymentsTab({ inscription }) {
               No hay pagos registrados
             </div>
           ) : (
-            payments.map((payment) => (
-              <div key={payment.id}>
-                {hasActiveProvider && payment.status === 'PENDING' && (
-                  <>
-                    <MercadoPagoPayment
-                      payment={payment}
-                      inscription={inscription}
-                    />
-                    <Table className="mt-4">
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Nombre</TableHead>
-                          <TableHead>Estado</TableHead>
-                          <TableHead>Fecha</TableHead>
-                          <TableHead>Acciones</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        <TableRow>
-                          <TableCell>{payment.name}</TableCell>
-                          <TableCell>
-                            {PAYMENT_STATUS_LABELS[payment.status]}
-                          </TableCell>
-                          <TableCell>
-                            {format(payment.created_at, 'DD/MM/YYYY')}
-                          </TableCell>
-                          <TableCell>
-                            {payment.status === 'PENDING' && (
-                              <Button
-                                variant="outline"
-                                size="sm"
-                                onClick={() =>
-                                  navigate(
-                                    `/events/${eventId}/roles/attendee/new-payment`
-                                  )
-                                }
-                              >
-                                Reintentar pago
-                              </Button>
-                            )}
-                          </TableCell>
-                        </TableRow>
-                      </TableBody>
-                    </Table>
-                  </>
-                )}
-                {(!hasActiveProvider || payment.status !== 'PENDING') && (
-                  <Table>
-                    <TableHeader>
-                      <TableRow>
-                        <TableHead>Nombre</TableHead>
-                        <TableHead>Estado</TableHead>
-                        <TableHead>Fecha</TableHead>
-                        <TableHead>Acciones</TableHead>
-                      </TableRow>
-                    </TableHeader>
-                    <TableBody>
-                      <TableRow>
-                        <TableCell>{payment.name}</TableCell>
-                        <TableCell>
-                          {PAYMENT_STATUS_LABELS[payment.status]}
-                        </TableCell>
-                        <TableCell>
-                          {format(
-                            payment.date || payment.created_at,
-                            'DD/MM/YYYY'
-                          )}
-                        </TableCell>
-                        <TableCell>
-                          {['REJECTED', 'UNCOMPLETED'].includes(
-                            payment.status
-                          ) && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() =>
-                                navigate(
-                                  `/events/${eventId}/roles/attendee/new-payment`
-                                )
-                              }
-                            >
-                              Reintentar pago
-                            </Button>
-                          )}
-                        </TableCell>
-                      </TableRow>
-                    </TableBody>
-                  </Table>
-                )}
-              </div>
-            ))
+            <Table>
+              <TableHeader>
+                <TableRow>
+                  <TableHead>Nombre</TableHead>
+                  <TableHead>Estado</TableHead>
+                  <TableHead>Fecha</TableHead>
+                  <TableHead>Acciones</TableHead>
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {payments.map((payment, index) => {
+                  const isLatest = index === 0
+                  const isPending = ['PENDING', 'PENDING_APPROVAL'].includes(payment.status)
+                  
+                  const canContinue = isPending
+
+                  const canRetry =
+                    isLatest &&
+                    !hasPendingApproval &&
+                    !hasApprovedPayment &&
+                    ['REJECTED', 'UNCOMPLETED', 'CANCELLED'].includes(payment.status)
+
+                  return (
+                    <TableRow key={payment.id}>
+                      <TableCell>{payment.fare_name || payment.name || '-'}</TableCell>
+                      <TableCell>
+                        {PAYMENT_STATUS_LABELS[payment.status] || payment.status}
+                      </TableCell>
+                      <TableCell>
+                        {(() => {
+                          const dateStr = payment.creation_date || payment.created_at || payment.date
+                          const utcDateStr = dateStr && !dateStr.endsWith('Z') && !dateStr.includes('+') 
+                            ? `${dateStr}Z` 
+                            : dateStr
+                          return new Date(utcDateStr).toLocaleString()
+                        })()}
+                      </TableCell>
+                      <TableCell>
+                        {canContinue && (
+                           <Button
+                             variant="default"
+                             size="sm"
+                             disabled={loadingUrl === payment.id}
+                             onClick={() => handleContinuePayment(payment)}
+                           >
+                             {loadingUrl === payment.id ? 'Cargando...' : 'Continuar pago'}
+                           </Button>
+                        )}
+                        {canRetry && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() =>
+                              navigate(
+                                `/events/${eventId}/roles/attendee/new-payment`
+                              )
+                            }
+                          >
+                            Reintentar pago
+                          </Button>
+                        )}
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
           )}
         </div>
       </CardContent>

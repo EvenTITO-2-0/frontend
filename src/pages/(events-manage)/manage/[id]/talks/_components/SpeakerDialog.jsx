@@ -25,7 +25,7 @@ export default function SpeakerDialog({
         <DialogHeader>
           <DialogTitle className="text-2xl font-bold">
             {selectedWork
-              ? 'Detalles de la charla'
+              ? 'Detalles de la presentación'
               : 'Detalles del presentador'}
           </DialogTitle>
         </DialogHeader>
@@ -53,7 +53,7 @@ export default function SpeakerDialog({
           </div>
           <div>
             <h3 className="text-xl font-semibold mb-4">
-              {selectedWork ? 'Charla' : 'Charlas'}
+              Entregas
             </h3>
             <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
               {works.map((work) => (

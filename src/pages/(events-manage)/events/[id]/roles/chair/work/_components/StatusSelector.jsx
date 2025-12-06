@@ -36,6 +36,7 @@ export default function StatusSelector({
   submitChairReview,
   isPending,
   onSubmit,
+  hasReviews,
 }) {
   const [open, setOpen] = useState(false)
   const [selectedStatus, setSelectedStatus] = useState('')
@@ -49,6 +50,7 @@ export default function StatusSelector({
   }
 
   const handleContinue = async () => {
+    if (!hasReviews) return // safety guard
     await submitChairReview({ status: selectedStatus, deadlineDate: date })
     setOpen(false)
     onSubmit()
@@ -108,12 +110,20 @@ export default function StatusSelector({
               </Popover>
             </div>
           )}
+          {/* Warning when no reviews */}
+          {!hasReviews && (
+            <p className="text-sm text-red-600">No hay revisiones para esta entrega. No se puede publicar la revisión.</p>
+          )}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>
             Cancelar
           </Button>
-          <ButtonWithLoading onClick={handleContinue} isLoading={isPending}>
+          <ButtonWithLoading
+            onClick={handleContinue}
+            isLoading={isPending}
+            disabled={!hasReviews}
+          >
             Continuar
           </ButtonWithLoading>
         </DialogFooter>

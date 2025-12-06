@@ -11,6 +11,7 @@ import { sleep } from '@/lib/utils'
 import { useState } from 'react'
 import { Button } from '@nextui-org/button'
 import { useToast } from '@/components/ui/use-toast'
+import { useNavigate } from 'react-router-dom'
 
 export default function RegistrationForm({
   trigger,
@@ -18,6 +19,7 @@ export default function RegistrationForm({
   speakerDisabled,
   setInscriptionSuccess,
   prices = [],
+  eventId,
 }) {
   const [isLoading, setIsLoading] = useState(false)
   const [role, setRole] = useState(null)
@@ -36,6 +38,7 @@ export default function RegistrationForm({
 
   const { mutateAsync: newPayment } = useNewPayment()
   const { toast } = useToast()
+  const navigate = useNavigate()
 
   const isPaidEvent =
     Array.isArray(prices) && prices.some((p) => Number(p.value) > 0)
@@ -64,6 +67,12 @@ export default function RegistrationForm({
         affiliation: filiation,
       }
       await submitInscription({ inscriptionData })
+
+      const priceValue = price.amount || price.price || price.value
+      if (Number(priceValue) === 0) {
+        navigate(`/events/${eventId}/roles/attendee`)
+        return
+      }
 
       const paymentData = {
         fare_name: price.name,
@@ -124,7 +133,7 @@ export default function RegistrationForm({
       title={'Inscripción al evento ' + eventTitle}
       onSubmit={handleSubmit}
       isPending={isLoading}
-      submitButtonText={'Finalizar inscripción'}
+      hideSubmitButton={true}
       submitButtonDisabled={isPaidEvent && !paymentCompleted}
     >
       {showFiliation ? (
@@ -147,7 +156,12 @@ export default function RegistrationForm({
         />
       )}
       <InscriptionRoleSelector
-        label={<LabelForm label="Seleccionar el rol en el evento" isRequired />}
+        label={
+          <LabelForm
+            label="Seleccionar un rol para visualizar sus tarifas"
+            isRequired
+          />
+        }
         role={role}
         setRole={(newRole) => {
           setRole(newRole)
@@ -156,9 +170,8 @@ export default function RegistrationForm({
         speakerDisabled={speakerDisabled}
       />
 
-      {isPaidEvent && selectedRoleForPricing && (
+      {selectedRoleForPricing && (
         <div className="space-y-4">
-          <LabelForm label="Selecciona una tarifa" isRequired />
           <div className="space-y-2">
             {getPricesForSelectedRole().map((price, index) => (
               <div
@@ -174,16 +187,16 @@ export default function RegistrationForm({
                   </div>
                   <div className="ml-4 flex flex-col items-center">
                     <Button
-                      className="w-32"
+                      className="w-full rounded-md"
                       color="primary"
-                      variant="flat"
+                      variant="solid"
                       onPress={() => {
                         handlePaymentRedirect(price)
                       }}
                     >
                       <div className="flex flex-col items-center">
-                        <span>Realizar pago</span>
-                        <span className="text-sm font-bold">
+                        <span className="text-sm font-bold">Inscribirme</span>
+                        <span>
                           ${price.amount || price.price || price.value}{' '}
                           {price.currency || 'ARS'}
                         </span>

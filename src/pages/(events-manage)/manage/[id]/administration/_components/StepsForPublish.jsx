@@ -46,9 +46,8 @@ export default function StepsForPublish({ eventInfo }) {
 
   const statusList = [
     startDateIsDefined(eventInfo) && endDateIsDefined(eventInfo),
-    submissionLimitIsDefined(eventInfo),
+    submissionLimitIsDefined(eventInfo) && tracksAreDefined(eventInfo),
     metadataIsDefined(eventInfo),
-    tracksAreDefined(eventInfo),
     pricesAreDefined(eventInfo),
     mercadoPagoIsConnected(providerStatus),
   ]
@@ -63,7 +62,7 @@ export default function StepsForPublish({ eventInfo }) {
           status={statusList[0]}
         />
         <StatusCheck
-          title="Definir fecha límite de recepción de trabajos"
+          title="Definir fecha límite de recepción de trabajos y configurar al menos un track"
           navigateTo={() => navigate('tracks')}
           status={statusList[1]}
         />
@@ -73,18 +72,13 @@ export default function StepsForPublish({ eventInfo }) {
           status={statusList[2]}
         />
         <StatusCheck
-          title="Configurar al menos un track"
-          navigateTo={() => navigate('tracks')}
-          status={statusList[3]}
-        />
-        <StatusCheck
           title="Configurar al menos una tarifa"
           navigateTo={() => navigate('pricing')}
-          status={statusList[4]}
+          status={statusList[3]}
         />
         <MercadoPagoStatusCheck
           title="Conectar cuenta de Mercado Pago"
-          status={statusList[5]}
+          status={statusList[4]}
           onConnect={connectWithMercadoPago}
           isRedirecting={isRedirecting}
           providerStatus={providerStatus}

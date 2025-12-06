@@ -92,6 +92,7 @@ export default function Details({ event, onClose, onSetEventStatus }) {
               className="w-full"
               onClick={() => handleSetEventStatus('CREATED')}
               isLoading={isPending}
+              variant={'default'}
             >
               Aceptar
             </ButtonWithLoading>
