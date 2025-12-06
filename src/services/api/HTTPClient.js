@@ -9,12 +9,17 @@ export class HTTPClient {
   }
 
   async createHeaders() {
-    const token = await getAuthUser()?.getIdToken()
+    const user = getAuthUser()
+    const token = await user?.getIdToken()
+    const headers = {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    }
+    if (user?.uid) {
+      headers['X-User-Id'] = user.uid
+    }
     return {
-      headers: {
-        'Content-Type': 'application/json',
-        Authorization: `Bearer ${token}`,
-      },
+      headers: headers,
     }
   }
 
