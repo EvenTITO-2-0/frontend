@@ -15,9 +15,9 @@ import { parseISO, addDays, isAfter, isBefore, isEqual, startOfDay } from 'date-
 import PublishCalendarDialog
   from "@/pages/(events-manage)/manage/[id]/activities/_components/PublishCalendarDialog.jsx";
 import UnpublishCalendarDialog from "@/pages/(events-manage)/manage/[id]/activities/_components/UnpublishCalendarDialog.jsx";
-import {STARTED_STATUS} from "@/lib/Constants.js";
+import { STARTED_STATUS } from "@/lib/Constants.js";
 import StepNavigationButtons
-    from "@/pages/(events-manage)/manage/[id]/administration/_components/StepNavigationButtons.jsx";
+  from "@/pages/(events-manage)/manage/[id]/administration/_components/StepNavigationButtons.jsx";
 export default function Page({ event }) {
   const eventRooms = event.mdata?.rooms || []
   const startDate = event.dates.filter((d) => d.name === 'START_DATE')[0]?.date
@@ -124,7 +124,7 @@ export default function Page({ event }) {
       return
     }
     const updatedSlots = eventCopy.mdata.slots.filter(
-        (slot) => slot.id !== slotIdToDelete
+      (slot) => slot.id !== slotIdToDelete
     )
     eventCopy.mdata.slots = updatedSlots
     setMdataSlots(updatedSlots)
@@ -135,21 +135,21 @@ export default function Page({ event }) {
     <ContainerPage>
       <div className="space-y-6">
         <TitlePage
-          title={ wasConfigured ? 'Calendario del evento' : 'Plantilla de calendario del evento' }
+          title={wasConfigured ? 'Calendario del evento' : 'Plantilla de calendario del evento'}
           rightComponent={
             wasConfigured ? (
               !wasPublished ? (
-              <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-                <SetDeleteDialog />
-                <SetRemoveAllAssignmentsDialog />
-                <PublishCalendarDialog onPublish={onPublish}/>
-                <AssignDialog />
-              </div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+                  <SetDeleteDialog />
+                  <SetRemoveAllAssignmentsDialog />
+                  <PublishCalendarDialog onPublish={onPublish} />
+                  <AssignDialog />
+                </div>
               ) : (
-                <UnpublishCalendarDialog onClick={onUnpublish}/>
+                <UnpublishCalendarDialog onClick={onUnpublish} />
               )
             ) : (
-              <SetCalendarDialog eventRooms={eventRooms} />
+              <SetCalendarDialog eventRooms={eventRooms} disabled={event.status !== STARTED_STATUS} />
             )
           }
         />

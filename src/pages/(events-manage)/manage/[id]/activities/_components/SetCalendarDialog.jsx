@@ -10,12 +10,16 @@ import { Button } from '@/components/ui/button'
 import { useNavigate } from 'react-router-dom'
 import { AlertTriangle } from 'lucide-react'
 import { ChevronsRight, Loader2 } from 'lucide-react'
-
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from '@/components/ui/tooltip'
 import { useGenerateFromPlantillaMutation } from '@/hooks/events/slotHooks'
-import {getEventId} from "@/lib/utils.js";
+import { getEventId } from '@/lib/utils.js'
 
-export default function SetCalendarDialog({ eventRooms }) {
-
+export default function SetCalendarDialog({ eventRooms, disabled }) {
   const [open, setOpen] = useState(false)
   const { mutateAsync, isPending } = useGenerateFromPlantillaMutation()
   const navigate = useNavigate()
@@ -38,6 +42,32 @@ export default function SetCalendarDialog({ eventRooms }) {
 
   const hasNoRooms = !eventRooms || eventRooms.length === 0
 
+  const triggerButton = (
+    <Button
+      disabled={disabled}
+      variant={'default'}
+      style={{ display: 'flex', gap: '8px' }}
+    >
+      Generar Calendario
+      <ChevronsRight />
+    </Button>
+  )
+
+  if (disabled) {
+    return (
+      <TooltipProvider>
+        <Tooltip>
+          <TooltipTrigger asChild>
+            <span tabIndex={0}>{triggerButton}</span>
+          </TooltipTrigger>
+          <TooltipContent>
+            <p>El calendario podrá ser generado una vez se publique el evento</p>
+          </TooltipContent>
+        </Tooltip>
+      </TooltipProvider>
+    )
+  }
+
   return (
     <Dialog
       open={open}
@@ -47,70 +77,63 @@ export default function SetCalendarDialog({ eventRooms }) {
         }
       }}
     >
-      <DialogTrigger asChild>
-        <Button variant={'default'} style={{ display: 'flex', gap: '8px' }}>
-          Generar Calendario
-          <ChevronsRight />
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{triggerButton}</DialogTrigger>
 
       <DialogContent
-          onInteractOutside={(e) => {
-            if (isPending) {
-              e.preventDefault()
-            }
-          }}
+        onInteractOutside={(e) => {
+          if (isPending) {
+            e.preventDefault()
+          }
+        }}
       >
         {hasNoRooms ? (
-            <>
-              <DialogHeader>
-                <DialogTitle className="flex items-center gap-2 text-destructive">
-                  <AlertTriangle />
-                  El evento no tiene salas
-                </DialogTitle>
-              </DialogHeader>
-              <p>
-                Para generar un calendario de actividades, primero debe
-                configurar las salas (rooms) donde ocurrirá el evento.
-              </p>
-              <div className="w-full flex justify-end gap-2">
-                <Button variant={'outline'} onClick={() => setOpen(false)}>
-                  Cerrar
-                </Button>
-                <Button onClick={handleRedirectToRooms}>
-                  Ir a crear salas
-                </Button>
-              </div>
-            </>
+          <>
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2 text-destructive">
+                <AlertTriangle />
+                El evento no tiene salas
+              </DialogTitle>
+            </DialogHeader>
+            <p>
+              Para generar un calendario de actividades, primero debe configurar
+              las salas (rooms) donde ocurrirá el evento.
+            </p>
+            <div className="w-full flex justify-end gap-2">
+              <Button variant={'outline'} onClick={() => setOpen(false)}>
+                Cerrar
+              </Button>
+              <Button onClick={handleRedirectToRooms}>Ir a crear salas</Button>
+            </div>
+          </>
         ) : (
-            <>
-              <DialogHeader>
-                <DialogTitle>
-                  ¿Está seguro que desea generar el calendario?
-                </DialogTitle>
-              </DialogHeader>
-              <p>
-                Se está por generar el calendario en base a la plantilla definida.
-                En la próxima pantalla podrá editar el calendario para cada sala.
-              </p>
-              <div className="w-full flex justify-end" style={{ gap: '8px' }}>
-                <Button
-                    variant={'notApproved'}
-                    onClick={() => setOpen(false)}
-                    disabled={isPending}
-                >
-                  Seguir editando
-                </Button>
-                <Button
-                    variant={'default'}
-                    onClick={handleClick}
-                    disabled={isPending}
-                >
-                  {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Aceptar
-                </Button>
-              </div>
-            </>
+          <>
+            <DialogHeader>
+              <DialogTitle>
+                ¿Está seguro que desea generar el calendario?
+              </DialogTitle>
+            </DialogHeader>
+            <p>
+              Se está por generar el calendario en base a la plantilla definida.
+              En la próxima pantalla podrá editar el calendario para cada sala.
+            </p>
+            <div className="w-full flex justify-end" style={{ gap: '8px' }}>
+              <Button
+                variant={'notApproved'}
+                onClick={() => setOpen(false)}
+                disabled={isPending}
+              >
+                Seguir editando
+              </Button>
+              <Button
+                variant={'default'}
+                onClick={handleClick}
+                disabled={isPending}
+              >
+                {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                Aceptar
+              </Button>
+            </div>
+          </>
         )}
       </DialogContent>
     </Dialog>
