@@ -67,6 +67,7 @@ export function useSubmitInscription() {
     },
     {
       serviceCode: 'SUBMIT_INSCRIPTION',
+      successShow: false,
     }
   )
 }
