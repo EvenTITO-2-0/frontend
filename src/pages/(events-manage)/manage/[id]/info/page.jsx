@@ -122,15 +122,6 @@ export default function Page({ eventInfo, inscriptions }) {
           onSave={handleUpdateLogo}
         />
         <DescriptionCard
-          title="Descripción corta"
-          descriptionText={
-            eventInfo.mdata?.short_description || 'Sin descripción'
-          }
-          defaultValue={eventInfo.mdata?.short_description}
-          handleUpdate={handleUpdateShortDescription}
-          maxValue={200}
-        />
-        <DescriptionCard
           title="Acerca del evento"
           descriptionText={eventInfo.mdata?.description || 'Sin descripción'}
           defaultValue={eventInfo.mdata?.description}
