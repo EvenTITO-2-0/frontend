@@ -18,9 +18,11 @@ export default function AddTrackButton({ onSave, isLoading }) {
   function trigger(onOpen) {
     return (
       <Button
+        variant="flat"
         color="primary"
-        variant="light"
-        className="w-full"
+        radius="sm"
+        size="md"
+        className="text-sm"
         startContent={<Icon name="Plus" />}
         onPress={onOpen}
       >
