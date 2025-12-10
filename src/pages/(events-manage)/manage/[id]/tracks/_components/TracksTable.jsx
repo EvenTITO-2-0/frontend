@@ -72,7 +72,7 @@ function EmptyTracksPage({ addTrackButton }) {
     <div className="text-center py-10">
       <h2 className="text-xl font-semibold mb-2">Ningún track cargado</h2>
       <p className="text-gray-500 mb-4">
-        Agregar uno nuevo para visualizarlo. Debe configurar al menos un track
+        Debe configurar al menos un track
         para publicar el evento.
       </p>
       {addTrackButton}

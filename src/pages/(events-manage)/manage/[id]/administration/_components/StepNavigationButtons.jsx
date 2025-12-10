@@ -52,6 +52,13 @@ export default function StepNavigationButtons({
     eventInfo.pricing[0]?.value === 0
   const steps = [
     {
+      title: 'Actividades',
+      shortTitle: 'Fecha de comienzo y fin',
+      destination: 'activities',
+      condition: () =>
+        startDateIsDefined(eventInfo) && endDateIsDefined(eventInfo),
+    },
+    {
       title: 'Tracks',
       shortTitle: 'Fecha límite y tracks',
       destination: 'tracks',
