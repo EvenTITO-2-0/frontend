@@ -8,6 +8,7 @@ import { useNavigator } from '@/lib/navigation'
 import { SPEAKER_ROLE } from '@/lib/Constants'
 import { useGetMyInscription } from '@/hooks/events/attendeeHooks'
 import { useGetMyWorks } from '@/hooks/events/authorHooks'
+import TitlePage from '@/pages/(events-manage)/_components/titlePage'
 
 export default function RegistrationCards({
   startDate,
@@ -21,44 +22,47 @@ export default function RegistrationCards({
 }) {
   return (
     <div>
-      <RegistrationCard
-        open={{
-          title: 'Inscripciones abiertas para asistir al evento',
-          description: 'Haz click para ir al formulario de inscripción',
-        }}
-        close={{
-          title: 'Inscripciones cerradas para asistir al evento',
-        }}
-        isOpen={new Date() < startDate}
-        limitDate={startDate}
-        eventTitle={eventTitle}
-        speakerDisabled={new Date() >= submissionLimit}
-        eventId={eventId}
-        activeRegistration={activeRegistration}
-        inscriptionSuccess={inscriptionSuccess}
-        setInscriptionSuccess={setInscriptionSuccess}
-        prices={prices}
-      />
-      <RegistrationCard
-        open={{
-          title: 'Perído de presentación de trabajos abierto',
-          description:
-            'Presenta tu trabajo (requiere estar inscripto como Autor).',
-        }}
-        close={{
-          title: 'Período de presentación de trabajos cerrado',
-        }}
-        limitDate={submissionLimit}
-        isOpen={new Date() < submissionLimit}
-        eventTitle={eventTitle}
-        speakerDisabled={new Date() >= submissionLimit}
-        eventId={eventId}
-        activeRegistration={activeRegistration}
-        inscriptionSuccess={inscriptionSuccess}
-        setInscriptionSuccess={setInscriptionSuccess}
-        prices={prices}
-        isSubmissionCard
-      />
+      <TitlePage title="Registro" />
+      <div className="space-y-6">
+        <RegistrationCard
+          open={{
+            title: 'Inscripciones abiertas para asistir al evento',
+            description: 'Haz click para ir al formulario de inscripción',
+          }}
+          close={{
+            title: 'Inscripciones cerradas para asistir al evento',
+          }}
+          isOpen={new Date() < startDate}
+          limitDate={startDate}
+          eventTitle={eventTitle}
+          speakerDisabled={new Date() >= submissionLimit}
+          eventId={eventId}
+          activeRegistration={activeRegistration}
+          inscriptionSuccess={inscriptionSuccess}
+          setInscriptionSuccess={setInscriptionSuccess}
+          prices={prices}
+        />
+        <RegistrationCard
+          open={{
+            title: 'Perído de presentación de trabajos abierto',
+            description:
+              'Presenta tu trabajo (requiere estar inscripto como Autor).',
+          }}
+          close={{
+            title: 'Período de presentación de trabajos cerrado',
+          }}
+          limitDate={submissionLimit}
+          isOpen={new Date() < submissionLimit}
+          eventTitle={eventTitle}
+          speakerDisabled={new Date() >= submissionLimit}
+          eventId={eventId}
+          activeRegistration={activeRegistration}
+          inscriptionSuccess={inscriptionSuccess}
+          setInscriptionSuccess={setInscriptionSuccess}
+          prices={prices}
+          isSubmissionCard
+        />
+      </div>
     </div>
   )
 }
@@ -102,11 +106,11 @@ function RegistrationCard({
     // Card informativa con botón explícito
     return (
       <Card>
-        <CardHeader className="flex flex-row items-center justify-between">
+        <CardHeader className="flex flex-row items-center justify-between pb-1">
           <CardTitle>{headerTitle}</CardTitle>
           <LimitDate limitDate={limitDate} isOpen={isOpen} />
         </CardHeader>
-        <CardContent className="flex items-center justify-between gap-4 flex-wrap">
+        <CardContent className="flex items-center justify-between gap-4 flex-wrap pt-3">
           <p className="text-muted-foreground">
             {isSubmissionCard
               ? 'Presenta trabajos durante el período habilitado.'
@@ -158,7 +162,7 @@ function RegistrationCard({
     if (!hasInscription) {
       return (
         <Button
-          onClick={() => navigator.to(`/events/${eventId}/view`)}
+          disabled
           variant="outline"
         >
           Debes inscribirte primero
