@@ -15,7 +15,7 @@ export default function ConfirmFreeEventDialog({ onConfirm, isLoading }) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className="w-full">
+        <Button className="w-64">
           <Zap className="h-4 w-4 mr-2" />
           Hacer evento gratuito
         </Button>
