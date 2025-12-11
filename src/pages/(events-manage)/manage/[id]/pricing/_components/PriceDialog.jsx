@@ -87,7 +87,11 @@ export default function PriceDialog({
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <span>
-          <Button variant="outline" disabled={!price && hasFreePrice}>
+          <Button 
+            variant="outline" 
+            disabled={!price && hasFreePrice}
+            className={!price ? "w-64" : ""}
+          >
             <Plus className="h-4 w-4 mr-2" />
             {price ? 'Editar' : 'Nueva tarifa'}
           </Button>
