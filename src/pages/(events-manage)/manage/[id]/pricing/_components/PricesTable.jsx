@@ -23,7 +23,7 @@ export default function PricesTable({
           Agregar una nueva para visualizarla. Debe configurar al menos una
           tarifa para publicar el evento.
         </p>
-        <div className="flex flex-col space-y-4 max-w-sm mx-auto">
+        <div className="flex flex-col items-center space-y-4">
           <PriceDialog onSave={onUpdatePrice} isLoading={isLoading} />
           <MakeEventFreeButton
             onMakeEventFree={onMakeEventFree}

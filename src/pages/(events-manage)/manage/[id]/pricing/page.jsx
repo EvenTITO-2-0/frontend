@@ -105,14 +105,16 @@ export default function Page({ prices, dates }) {
       <TitlePage
         title={'Tarifas del evento'}
         rightComponent={
-          <PriceDialog
-            onSave={handleAddPrice}
-            isLoading={addOrModifyFare.isPending}
-            dates={dates}
-            hasFreePrice={
-              (prices || []).length === 1 && prices?.[0]?.value === 0
-            }
-          />
+          (prices || []).length > 0 ? (
+            <PriceDialog
+              onSave={handleAddPrice}
+              isLoading={addOrModifyFare.isPending}
+              dates={dates}
+              hasFreePrice={
+                (prices || []).length === 1 && prices?.[0]?.value === 0
+              }
+            />
+          ) : null
         }
       />
       <PricesTable
