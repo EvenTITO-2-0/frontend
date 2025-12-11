@@ -155,7 +155,7 @@ export default function AssignDialog() {
 
                 {/* --- Same room --- */}
                 <div className="space-y-1 mt-4">
-                  <Label>Priorizar mantener el mismo salón entre días</Label>
+                  <Label>Evitar mezclar tracks en una misma sala</Label>
                   <Slider
                     value={[sameRoomWeight]}
                     onValueChange={([v]) => setSameRoomWeight(v)}
